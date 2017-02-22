@@ -1,0 +1,8 @@
+.sublimelinterrc
+*.DS_Store
+*.pyc
+*.log
+*.sqlite3
+__pycache__
+.idea
+media/
