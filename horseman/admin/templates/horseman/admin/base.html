@@ -1,0 +1,18 @@
+{% load static %}<!DOCTYPE html>
+<html>
+	<head>
+		<meta name="viewport" content="width=device-width, initial-scale=1">
+
+		<meta name="robots" content="noindex">
+
+	    
+	</head>
+
+	<body role="document">
+		<div id="root"></div>
+	{% if init_data %}
+	    <script>window.__INIT__ = {{ init_data|safe }};</script>
+	{% endif %}
+	    
+	</body>
+</html>

@@ -1,3 +1,5 @@
+*.egg-info/
+*.egg
 .sublimelinterrc
 *.DS_Store
 *.pyc
@@ -6,3 +8,4 @@
 __pycache__
 .idea
 media/
+node_modules

@@ -1,0 +1,11 @@
+{
+  "name": "django-horseman-admin",
+  "main": "frontend/index.jsx",
+  "version": "1.0.0",
+  "description": "Admin for Django Horseman CMS",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "Walker Angell",
+  "license": "ISC"
+}
