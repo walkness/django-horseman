@@ -1,8 +1,11 @@
 from django.shortcuts import render as base_render
+from django.contrib.auth.decorators import login_required
 
 from rest_framework.renderers import JSONRenderer
 
-from horseman.users import get_user_serializer
+from horseman.horsemannodes.models import Node
+from horseman.horsemannodes.serializers import NodeConfigurationSerializer
+from horseman.horsemanusers import get_user_serializer
 
 
 def render(request, _init_data=None):
@@ -19,5 +22,7 @@ def render(request, _init_data=None):
     )
 
 
+@login_required
 def default(request, *args, **kwargs):
-    return render(request)
+    node_configuration = NodeConfigurationSerializer(Node.get_all_node_types(), many=True).data
+    return render(request, {'nodes': node_configuration})

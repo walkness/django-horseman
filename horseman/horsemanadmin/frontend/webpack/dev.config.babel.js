@@ -10,7 +10,7 @@ import config from './base.config.babel';
 config.entry = [
   'webpack-dev-server/client?http://0.0.0.0:3000',
   'webpack/hot/only-dev-server',
-  path.resolve(__dirname, '../app/scripts/main'),
+  path.resolve(__dirname, '../js/main'),
 ];
 
 // Tell django to use this URL to load packages and not use STATIC_URL + bundle_name
@@ -20,7 +20,7 @@ config.plugins = config.plugins.concat([
 
   new webpack.HotModuleReplacementPlugin(),
 
-  new webpack.NoErrorsPlugin(),
+  new webpack.NoEmitOnErrorsPlugin(),
 
   new webpack.DefinePlugin({
     'process.env': {
@@ -31,14 +31,28 @@ config.plugins = config.plugins.concat([
   }),
 ]);
 
-config.module.loaders.push(
+config.module.rules.push(
   {
     test: /js\/.*\.(js|jsx)$/,
-    loaders: ['babel'],
+    exclude: /node_modules/,
+    loader: 'babel-loader',
   },
   {
     test: /\.scss$/,
-    loader: 'style-loader!css-loader?sourceMap!postcss-loader!sass-loader?sourceMap',
+    use: [
+      'style-loader',
+      'css-loader',
+      'postcss-loader',
+      'sass-loader',
+    ]
+  },
+  {
+    test: /\.css$/,
+    use: [
+      'style-loader',
+      'css-loader',
+      'postcss-loader',
+    ]
   },
 );
 
