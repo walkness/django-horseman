@@ -16,7 +16,23 @@ function* callAPI(endpoint, action, args) {
   }
 }
 
+function* watchNodesRequest() {
+  while (true) {
+    const { args } = yield take(types.NODES.REQUEST);
+    yield fork(callAPI, api.getNodes, actions.nodes, [args]);
+  }
+}
+
+function* watchNodeRequest() {
+  while (true) {
+    const { pk, args } = yield take(types.NODE.REQUEST);
+    yield fork(callAPI, api.getNode, actions.node, [pk, args]);
+  }
+}
+
 export default function* rootSaga() {
   yield [
+    watchNodesRequest(),
+    watchNodeRequest(),
   ];
 }

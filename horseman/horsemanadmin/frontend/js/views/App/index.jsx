@@ -5,9 +5,11 @@ import Sidebar from './components/Sidebar';
 
 
 const App = ({ children, ...props }) => (
-  <div className='app'>
+  <div id='app'>
 
-    { children }
+    <main>
+      { children }
+    </main>
 
     <Sidebar {...props} />
 

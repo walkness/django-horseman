@@ -2,6 +2,7 @@ import uuid
 
 from django.db import models, connection
 from django.conf import settings as django_settings
+from django.apps import apps
 from django.utils import timezone
 from django.contrib.postgres.fields import JSONField
 
@@ -21,11 +22,21 @@ class AbstractNode(models.Model):
 
     published = models.BooleanField(default=False)
 
+    admin_fields = []
+    api_fields = ['pk', 'created_at', 'published_at', 'modified_at', 'slug', 'published']
+
     class Meta:
         abstract = True
 
+    def __str__(self):
+        return self.slug
+
     def get_url_path(self):
         raise NotImplementedError
+
+    @property
+    def title_display(self):
+        return self.slug
 
 
 class Node(AbstractNode):
@@ -46,9 +57,14 @@ class Node(AbstractNode):
     def get_editable_fields(cls):
         fields = []
         for field in cls._meta.get_fields():
-            if field.editable:
+            if field.editable and not field.auto_created:
                 fields.append(field)
         return fields
+
+    @classmethod
+    def get_node_class_from_type(self, node_type):
+        app_label, model_name = node_type.split('.')
+        return apps.get_model(app_label=app_label, model_name=model_name)
 
 
 class NodeRevision(models.Model):

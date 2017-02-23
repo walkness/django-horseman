@@ -1,8 +1,8 @@
-from django.db.models import Field
+from django.db.models import TextField
 from django.contrib.postgres.fields import JSONField
 
 
-class RichTextField(Field):
+class RichTextField(TextField):
     pass
 
 
@@ -16,3 +16,12 @@ class StructuredField(JSONField):
         name, path, args, kwargs = super(StructuredField, self).deconstruct()
         args.insert(0, self.blocks)
         return name, path, args, kwargs
+
+    def get_extra_config(self):
+        blocks = []
+        for block in self.blocks:
+            blocks.append({
+                'type': block.name,
+                'verbose_name': getattr(block, 'verbose_name', block.name),
+            })
+        return {'blocks': blocks}

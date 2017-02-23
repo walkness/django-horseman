@@ -1,0 +1,72 @@
+import React, { Component, PropTypes } from 'react';
+import { autobind } from 'core-decorators';
+
+import InputWrapper from '../InputWrapper';
+
+import { RichText } from './Blocks';
+import AddBlock from './AddBlock';
+
+
+class StructuredField extends Component {
+
+  constructor(props, context) {
+    super(props, context);
+    this.state = {
+      value: [],
+    };
+    if (Array.isArray(props.value)) this.state.value = props.value;
+    this.blockRefs = [];
+  }
+
+  updateBlock(index, newValue) {
+    const value = this.state.value.slice(0);
+    value[index] = Object.assign({}, value[index], newValue);
+    this.setState({ value });
+  }
+
+  @autobind
+  addNewBlock(type, before = null) {
+    const value = this.state.value.slice(0);
+    if (before) {
+      value.insertAt({ type }, before);
+    } else {
+      value.push({ type });
+    }
+    this.setState({ value });
+  }
+
+  getAPIValue() {
+    return this.state.value.map((block, i) => {
+      return this.blockRefs[i].getAPIValue();
+    });
+  }
+
+  render() {
+    const { label } = this.props;
+    return (
+      <InputWrapper label={label}>
+
+        { this.state.value.map((block, i) => {
+          const blockProps = {
+            key: i,
+            onChange: v => this.updateBlock(i, v),
+            ref: c => { this.blockRefs[i] = c; },
+            block,
+          };
+          if (block.type === 'richtext') {
+            return <RichText {...blockProps} />;
+          }
+          return null;
+        }) }
+
+        <AddBlock
+          blocks={this.props.fieldConfig.blocks}
+          onClick={this.addNewBlock}
+        />
+
+      </InputWrapper>
+    );
+  }
+}
+
+export default StructuredField;

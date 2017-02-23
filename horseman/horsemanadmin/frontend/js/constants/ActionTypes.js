@@ -10,6 +10,10 @@ function createRequestTypes(base) {
   return res;
 }
 
+export const NODES = createRequestTypes('NODES');
+export const NODE = createRequestTypes('NODE');
+export const NODE_UPDATED = 'NODE_UPDATED';
+
 export const NODES_CONFIGURATION = 'NODES_CONFIGURATION';
 
 export const LOGIN = createRequestTypes('LOGIN');

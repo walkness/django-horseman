@@ -89,3 +89,7 @@ const queryString = (_args, defaults) => {
   const args = Object.assign({}, defaults, _args);
   return Object.keys(args).map(key => `${key}=${args[key]}`).join('&');
 };
+
+export const getNodes = (args) => callApi(`nodes/?${queryString(args)}`);
+export const getNode = (pk, args) => callApi(`nodes/${pk}/?${queryString(args)}`);
+export const updateNode = (pk, data, args) => sendApi(`nodes/${pk}/?${queryString(args)}`, 'PATCH', data);
