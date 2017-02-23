@@ -7,6 +7,7 @@ from django.utils import timezone
 from django.contrib.postgres.fields import JSONField
 
 from horseman import settings
+from horseman.horsemanimages.models import Image
 
 
 class AbstractNode(models.Model):
@@ -65,6 +66,14 @@ class Node(AbstractNode):
     def get_node_class_from_type(self, node_type):
         app_label, model_name = node_type.split('.')
         return apps.get_model(app_label=app_label, model_name=model_name)
+
+    def get_related_images(self):
+        ids = []
+        for field in self._meta.get_fields():
+            get_image_ids = getattr(field, 'get_image_ids', None)
+            if callable(get_image_ids):
+                ids.extend(get_image_ids(getattr(self, field.name)))
+        return Image.objects.filter(pk__in=ids)
 
 
 class NodeRevision(models.Model):

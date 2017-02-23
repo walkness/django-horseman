@@ -1,5 +1,7 @@
 from rest_framework import serializers
 
+from horseman.horsemanimages.serializers import ImageSerializer
+
 from . import models
 
 
@@ -11,6 +13,8 @@ class NodeSerializer(serializers.ModelSerializer):
         fields = models.Node.api_fields + ['title']
 
     def __init__(self, *args, **kwargs):
+        self.current_model_class = kwargs.pop(
+            'current_model_class', self.__class__.Meta.model)
         super(NodeSerializer, self).__init__(*args, **kwargs)
         single_instance = self.instance
         if isinstance(self.instance, list):
@@ -22,13 +26,30 @@ class NodeSerializer(serializers.ModelSerializer):
                 if field not in models.Node.api_fields
             ]
             for field in extra_model_fields:
-                self.fields[field] = serializers.ModelField(
-                    model_field=single_instance.__class__._meta.get_field(field))
+                model_field = single_instance.__class__._meta.get_field(field)
+                self.fields[field] = serializers.ModelField(model_field=model_field)
+
+            get_related_images = getattr(single_instance, 'get_related_images', None)
+            if callable(get_related_images):
+                self.fields['related_images'] = ImageSerializer(
+                    source='get_related_images', many=True)
+
+    def get_current_model_class(self):
+        model_class = self.current_model_class
+        if self.instance:
+            model_class = self.instance.__class__
+        return model_class
 
     def get_title(self, obj):
         if hasattr(obj, 'title'):
             return obj.title
         return obj.get_title()
+
+    def validate(self, attrs):
+        model_class = self.get_current_model_class()
+        instance = model_class(**attrs)
+        instance.full_clean()
+        return attrs
 
 
 class NodeConfigurationSerializer(serializers.Serializer):

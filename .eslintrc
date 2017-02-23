@@ -1,0 +1,20 @@
+{
+  "extends": "airbnb",
+
+  "parser": "babel-eslint",
+
+  "rules": {
+    "valid-jsdoc": [2, {
+      "requireReturn": false,
+      "requireReturnDescription": false,
+      "prefer": {
+        "returns": "return"
+      }
+    }],
+    "func-names": 0,
+    "jsx-quotes": [2, "prefer-single"],
+    "no-underscore-dangle": [2, {
+      "allowAfterThis": true
+    }]
+  }
+}

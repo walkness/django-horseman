@@ -13,4 +13,5 @@ class NodeViewSet(viewsets.ModelViewSet):
         node_type = self.request.query_params.get('type', None)
         if node_type:
             node_class = models.Node.get_node_class_from_type(node_type)
-        return node_class.objects.all()
+        qs = node_class.objects.all()
+        return qs
