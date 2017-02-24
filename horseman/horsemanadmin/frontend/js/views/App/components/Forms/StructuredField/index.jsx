@@ -60,7 +60,14 @@ class StructuredField extends Component {
             return <RichText {...blockProps} />;
           }
           if (block.type === 'image') {
-            return <Image {...blockProps} imagesById={this.props.imagesById} />;
+            return (
+              <Image
+                {...blockProps}
+                imagesById={this.props.imagesById}
+                orderedImages={this.props.orderedImages}
+                imagesRequest={this.props.imagesRequest}
+              />
+            );
           }
           return null;
         }) }

@@ -7,7 +7,6 @@ var config = require('./horseman/horsemanadmin/frontend/webpack/dev.config.babel
 
 new WebpackDevServer(webpack(config), {
   publicPath: config.output.publicPath,
-  contentBase: 'app/bundles/client/',
   hot: true,
   historyApiFallback: true,
   stats: {

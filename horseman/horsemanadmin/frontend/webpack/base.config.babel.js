@@ -25,7 +25,7 @@ export default {
         use: [
           {
             loader: 'url-loader',
-            options: { limit: 10000, hash: 'sha512', digest: 'hex', name: 'images/[name]-[hash].[ext]' } 
+            options: { limit: 10000, hash: 'sha512', digest: 'hex', name: 'images/[name]-[hash].[ext]' },
           },
           {
             loader: 'image-webpack-loader',
@@ -33,10 +33,10 @@ export default {
               progressive: true,
               optimizationLevel: 7,
               interlaced: false,
-              pngquant: { quality: '65-90', speed: 4 }
+              pngquant: { quality: '65-90', speed: 4 },
             },
           },
-        ]
+        ],
       },
       {
         test: /\.(woff2?|ttf|eot)$/,
@@ -53,9 +53,10 @@ export default {
         postcss: [autoprefixer],
         sassLoader: {
           sourceMaps: true,
-          includePaths: [path.resolve(__dirname, '../scss')]
+          includePaths: [context],
         },
-      }
+        context,
+      },
     }),
     new webpack.NamedModulesPlugin(),
   ],

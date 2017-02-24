@@ -16,5 +16,7 @@ export const NODE_UPDATED = 'NODE_UPDATED';
 
 export const NODES_CONFIGURATION = 'NODES_CONFIGURATION';
 
+export const IMAGES = createRequestTypes('IMAGES');
+
 export const LOGIN = createRequestTypes('LOGIN');
 export const LOGOUT = createRequestTypes('LOGOUT');

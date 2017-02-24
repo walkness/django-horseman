@@ -93,3 +93,5 @@ const queryString = (_args, defaults) => {
 export const getNodes = (args) => callApi(`nodes/?${queryString(args)}`);
 export const getNode = (pk, args) => callApi(`nodes/${pk}/?${queryString(args)}`);
 export const updateNode = (pk, data, args) => sendApi(`nodes/${pk}/?${queryString(args)}`, 'PATCH', data);
+
+export const getImages = (args) => callApi(`images/?${queryString(args)}`);

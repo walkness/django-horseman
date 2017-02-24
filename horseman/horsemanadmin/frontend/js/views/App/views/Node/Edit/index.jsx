@@ -3,7 +3,11 @@ import { connect } from 'react-redux';
 import Formsy from 'formsy-react';
 import { autobind } from 'core-decorators';
 
-import { node as nodeAction, nodeUpdated } from '../../../../../actions';
+import {
+  node as nodeAction,
+  nodeUpdated,
+  images as imagesAction,
+} from '../../../../../actions';
 import { updateNode } from '../../../../../services/api';
 import { Input } from '../../../components/Forms';
 import Field from './Field';
@@ -83,8 +87,10 @@ class EditNode extends Component {
               value={node[fieldName]}
               fieldRef={(c) => { this.fieldRefs[fieldName] = c; }}
               imagesById={this.props.imagesById}
+              orderedImages={this.props.orderedImages}
+              imagesRequest={this.props.imagesRequest}
             />
-          );          
+          );
         }) }
 
         <button type='submit'>Update</button>
@@ -99,12 +105,15 @@ class EditNode extends Component {
 const mapStateToProps = state => ({
   nodes: state.nodes,
   imagesById: state.images.byId,
+  orderedImages: state.images.ordered,
 });
 
 const nodeRequest = nodeAction.request;
+const imagesRequest = imagesAction.request;
 
 export default connect(
   mapStateToProps, {
     nodeRequest,
     nodeUpdated,
+    imagesRequest,
   })(EditNode);

@@ -36,6 +36,16 @@ export default function imagesReducer(state = initialState.nodes, action) {
         byId: Object.assign({}, state.byId, processNodes([action.data])),
       });
 
+    case types.IMAGES.SUCCESS: {
+      const { byId, ids } = processImages(action.response.results);
+      return Object.assign({}, state, {
+        byId: Object.assign({}, state.byId, byId),
+        ordered: Object.assign({}, state.ordered, {
+          default: ids,
+        }),
+      });
+    }
+
     default:
       return state;
   }

@@ -20,6 +20,12 @@ export const node = {
 
 export const nodeUpdated = (data, nodeType) => action(types.NODE_UPDATED, { data, nodeType });
 
+export const images = {
+  request: (args) => action(types.IMAGES.REQUEST, { args }),
+  success: (args, response) => action(types.IMAGES.SUCCESS, { args, response }),
+  failure: (args, error) => action(types.IMAGES.FAILURE, { args, error }),
+};
+
 export const login = {
   request: (email, password) => action(types.LOGIN.REQUEST, { email, password }),
   success: (email, password, response) => action(types.LOGIN.SUCCESS, { email, password, response }), // eslint-disable-line max-len

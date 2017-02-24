@@ -3,6 +3,8 @@ import { autobind } from 'core-decorators';
 
 import BlockWrapper from './Wrapper';
 
+import ImageChooserModal from '../../../ImageChooser/Modal';
+
 
 class ImageBlock extends Component {
 
@@ -30,6 +32,12 @@ class ImageBlock extends Component {
         <img
           src={image.renditions.thumbnail_300.url}
           alt={image.title}
+        />
+
+        <ImageChooserModal
+          imagesById={imagesById}
+          orderedImages={this.props.orderedImages}
+          imagesRequest={this.props.imagesRequest}
         />
 
       </BlockWrapper>

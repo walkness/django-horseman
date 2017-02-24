@@ -34,23 +34,55 @@ config.module.rules.push(
     test: /js\/.*\.(js|jsx)$/,
     exclude: /node_modules/,
     loader: 'babel-loader',
+    query: {
+      plugins: [
+        ['babel-plugin-react-css-modules', {
+          context: config.context,
+          filetypes: {
+            '.scss': 'postcss-scss',
+          },
+          webpackHotModuleReloading: true,
+        }],
+      ],
+    },
   },
   {
     test: /\.scss$/,
+    include: path.resolve(config.context, './js/'),
+    use: [
+      'style-loader',
+      'css-loader?sourceMap&modules&importLoaders=1&localIdentName=[path]___[name]__[local]___[hash:base64:5]',
+      'postcss-loader',
+      'sass-loader',
+    ],
+  },
+  {
+    test: /\.scss$/,
+    exclude: path.resolve(config.context, './js/'),
     use: [
       'style-loader',
       'css-loader',
       'postcss-loader',
       'sass-loader',
-    ]
+    ],
   },
   {
     test: /\.css$/,
+    include: path.resolve(config.context, './js/'),
+    use: [
+      'style-loader',
+      'css-loader?sourceMap&modules&importLoaders=1&localIdentName=[path]___[name]__[local]___[hash:base64:5]',
+      'postcss-loader',
+    ],
+  },
+  {
+    test: /\.css$/,
+    exclude: path.resolve(config.context, './js/'),
     use: [
       'style-loader',
       'css-loader',
       'postcss-loader',
-    ]
+    ],
   },
 );
 
