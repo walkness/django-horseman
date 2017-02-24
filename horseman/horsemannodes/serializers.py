@@ -18,7 +18,10 @@ class NodeSerializer(serializers.ModelSerializer):
         super(NodeSerializer, self).__init__(*args, **kwargs)
         single_instance = self.instance
         if isinstance(self.instance, list):
-            single_instance = self.instance[0]
+            if len(self.instance) > 0:
+                single_instance = self.instance[0]
+            else:
+                single_instance = None
 
         if single_instance and single_instance.__class__ is not models.Node:
             extra_model_fields = [

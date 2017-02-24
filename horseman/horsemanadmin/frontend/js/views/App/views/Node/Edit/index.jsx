@@ -82,6 +82,7 @@ class EditNode extends Component {
               config={field}
               value={node[fieldName]}
               fieldRef={(c) => { this.fieldRefs[fieldName] = c; }}
+              imagesById={this.props.imagesById}
             />
           );          
         }) }
@@ -97,6 +98,7 @@ class EditNode extends Component {
 
 const mapStateToProps = state => ({
   nodes: state.nodes,
+  imagesById: state.images.byId,
 });
 
 const nodeRequest = nodeAction.request;

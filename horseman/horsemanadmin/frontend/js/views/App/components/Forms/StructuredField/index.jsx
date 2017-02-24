@@ -3,7 +3,7 @@ import { autobind } from 'core-decorators';
 
 import InputWrapper from '../InputWrapper';
 
-import { RichText } from './Blocks';
+import { RichText, Image } from './Blocks';
 import AddBlock from './AddBlock';
 
 
@@ -37,7 +37,10 @@ class StructuredField extends Component {
 
   getAPIValue() {
     return this.state.value.map((block, i) => {
-      return this.blockRefs[i].getAPIValue();
+      if (this.blockRefs[i]) {
+        return this.blockRefs[i].getAPIValue();
+      }
+      return block;
     });
   }
 
@@ -55,6 +58,9 @@ class StructuredField extends Component {
           };
           if (block.type === 'richtext') {
             return <RichText {...blockProps} />;
+          }
+          if (block.type === 'image') {
+            return <Image {...blockProps} imagesById={this.props.imagesById} />;
           }
           return null;
         }) }

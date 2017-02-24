@@ -5,4 +5,8 @@ export default {
     byId: {},
   },
   nodes: {},
+  images: {
+    byId: {},
+    ordered: {},
+  },
 };
