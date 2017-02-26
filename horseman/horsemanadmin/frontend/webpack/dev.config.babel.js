@@ -51,7 +51,7 @@ config.module.rules.push(
     include: path.resolve(config.context, './js/'),
     use: [
       'style-loader',
-      'css-loader?sourceMap&modules&importLoaders=1&localIdentName=[path]___[name]__[local]___[hash:base64:5]',
+      'css-loader?sourceMap&modules&importLoaders=2&localIdentName=[path]___[name]__[local]___[hash:base64:5]',
       'postcss-loader',
       'sass-loader',
     ],
@@ -61,7 +61,7 @@ config.module.rules.push(
     exclude: path.resolve(config.context, './js/'),
     use: [
       'style-loader',
-      'css-loader',
+      'css-loader?importLoaders=2',
       'postcss-loader',
       'sass-loader',
     ],
@@ -80,7 +80,7 @@ config.module.rules.push(
     exclude: path.resolve(config.context, './js/'),
     use: [
       'style-loader',
-      'css-loader',
+      'css-loader?importLoaders=1',
       'postcss-loader',
     ],
   },

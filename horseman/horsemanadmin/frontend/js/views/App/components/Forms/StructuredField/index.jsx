@@ -35,6 +35,13 @@ class StructuredField extends Component {
     this.setState({ value });
   }
 
+  @autobind
+  deleteBlock(index) {
+    const value = this.state.value.slice(0);
+    value.splice(index, 1);
+    this.setState({ value });
+  }
+
   getAPIValue() {
     return this.state.value.map((block, i) => {
       if (this.blockRefs[i]) {
@@ -52,7 +59,9 @@ class StructuredField extends Component {
         { this.state.value.map((block, i) => {
           const blockProps = {
             key: i,
+            index: i,
             onChange: v => this.updateBlock(i, v),
+            deleteBlock: this.deleteBlock,
             ref: c => { this.blockRefs[i] = c; },
             block,
           };

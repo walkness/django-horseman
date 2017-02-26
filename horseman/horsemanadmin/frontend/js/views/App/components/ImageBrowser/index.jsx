@@ -10,8 +10,8 @@ class ImageBrowser extends Component {
   }
 
   render() {
-    const { imagesById, orderedImages } = this.props;
-    const ids = orderedImages.default;
+    const { imagesById, orderedImages, selected, onImageClick } = this.props;
+    const ids = orderedImages.default || [];
     return (
       <div className='image-browser'>
 
@@ -19,6 +19,8 @@ class ImageBrowser extends Component {
           ids={ids}
           imagesById={imagesById}
           getLink={this.props.getLink}
+          selected={selected}
+          onImageClick={onImageClick}
         />
 
       </div>

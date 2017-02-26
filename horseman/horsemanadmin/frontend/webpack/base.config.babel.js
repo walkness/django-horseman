@@ -50,7 +50,6 @@ export default {
     new webpack.LoaderOptionsPlugin({
       context,
       options: {
-        postcss: [autoprefixer],
         sassLoader: {
           sourceMaps: true,
           includePaths: [context],

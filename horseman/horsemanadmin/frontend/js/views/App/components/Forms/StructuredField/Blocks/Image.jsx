@@ -1,16 +1,25 @@
 import React, { Component, PropTypes } from 'react';
 import { autobind } from 'core-decorators';
 
-import BlockWrapper from './Wrapper';
+import Block from './HOC';
 
+import Image from '../../../Image';
 import ImageChooserModal from '../../../ImageChooser/Modal';
 
 
 class ImageBlock extends Component {
 
+  constructor(props, context) {
+    super(props, context);
+    this.state = {
+      showModal: false,
+    };
+  }
+
   @autobind
-  handleChange(value) {
-    this.props.onChange(this.getBlock(value));
+  handleChange(id) {
+    this.props.onChange(this.getBlock(id));
+    this.setState({ showModal: false });
   }
 
   getBlock(id) {
@@ -19,30 +28,40 @@ class ImageBlock extends Component {
   }
 
   getAPIValue() {
-    return this.getBlock();
+    return this.getBlock(this.props.block.id);
   }
 
   render() {
     const { imagesById, block } = this.props;
+    const { showModal } = this.state;
     const { id } = block;
     const image = imagesById[id];
     return (
-      <BlockWrapper>
+      <div>
 
-        <img
-          src={image.renditions.thumbnail_300.url}
-          alt={image.title}
-        />
+        { image ?
+          <Image image={image} srcSize='thumbnail_300' />
+        : null }
 
-        <ImageChooserModal
-          imagesById={imagesById}
-          orderedImages={this.props.orderedImages}
-          imagesRequest={this.props.imagesRequest}
-        />
+        <button
+          type='button'
+          onClick={() => this.setState({ showModal: !showModal })}
+        >
+          Select image
+        </button>
 
-      </BlockWrapper>
+        { showModal ?
+          <ImageChooserModal
+            imagesById={imagesById}
+            orderedImages={this.props.orderedImages}
+            imagesRequest={this.props.imagesRequest}
+            onSubmit={this.handleChange}
+          />
+        : null }
+
+      </div>
     );
   }
 }
 
-export default ImageBlock;
+export default Block(ImageBlock);

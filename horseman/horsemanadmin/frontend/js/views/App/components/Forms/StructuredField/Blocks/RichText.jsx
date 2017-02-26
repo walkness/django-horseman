@@ -2,7 +2,7 @@ import React, { Component, PropTypes } from 'react';
 import RichTextEditor from 'react-rte';
 import { autobind } from 'core-decorators';
 
-import BlockWrapper from './Wrapper';
+import Block from './HOC';
 
 
 class RichTextBlock extends Component {
@@ -24,20 +24,16 @@ class RichTextBlock extends Component {
   render() {
     const { value } = this.props.block;
     return (
-      <BlockWrapper>
-
-        <RichTextEditor
-          value={(
-            !(value instanceof RichTextEditor.EditorValue) ?
-            RichTextEditor.createValueFromString(value || '', 'html') :
-            value
-          )}
-          onChange={this.handleChange}
-        />
-
-      </BlockWrapper>
+      <RichTextEditor
+        value={(
+          !(value instanceof RichTextEditor.EditorValue) ?
+          RichTextEditor.createValueFromString(value || '', 'html') :
+          value
+        )}
+        onChange={this.handleChange}
+      />
     );
   }
 }
 
-export default RichTextBlock;
+export default Block(RichTextBlock);

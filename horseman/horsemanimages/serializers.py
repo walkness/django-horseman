@@ -48,4 +48,4 @@ class ImageSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = models.Image
-        fields = ['pk', 'title', 'url', 'width', 'height', 'renditions']
+        fields = ['pk', 'title', 'url', 'width', 'height', 'created_at', 'created_by', 'renditions']

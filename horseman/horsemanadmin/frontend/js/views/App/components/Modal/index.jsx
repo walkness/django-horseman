@@ -1,13 +1,21 @@
 import React, { PropTypes } from 'react';
 import classNames from 'classnames';
 
-import styles from './styles.css';
+import modal from './modal.css';
 
 
 const Modal = ({ children, className, ...props }) => (
-  <div className={classNames('modal', className)} styleName='styles.modal' {...props}>
+  <div>
 
-    
+    <div className={classNames('modal', className)} styleName='modal.modal' {...props}>
+
+      <div styleName='modal.content'>
+        { children }
+      </div>
+
+    </div>
+
+    <div styleName='modal.backdrop' />
 
   </div>
 );

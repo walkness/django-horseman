@@ -1,0 +1,23 @@
+a,
+.link {
+  $color: #6e9ab5;
+  color: $color;
+  background-color: transparent;
+  border: 0;
+  cursor: pointer;
+
+  &:hover,
+  &:active,
+  &:focus {
+    outline: none;
+  }
+
+  &:hover {
+    color: darken($color, 15%);
+  }
+
+  &:active,
+  &.active {
+    color: darken($color, 25%);
+  }
+}

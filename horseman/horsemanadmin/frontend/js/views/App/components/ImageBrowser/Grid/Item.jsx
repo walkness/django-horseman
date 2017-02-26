@@ -1,36 +1,45 @@
 import React, { PropTypes } from 'react';
+import classNames from 'classnames';
+
+import Image from '../../Image';
+
+import styles from './styles.css';
 
 
-const Item = ({ image, getLink, onClick }) => {
-  const inner = (
-    <img
-      src={image.renditions.thumbnail_150.url}
-      alt={image.title}
-    />
-  );
+const Item = ({ image, getLink, onClick, selected }) => {
+  const inner = <Image image={image} srcSize='thumbnail_150' />;
 
-  const wrapperProps = { className: 'image' };
+  const linkProps = { className: styles.action };
   if (onClick) {
-    wrapperProps.onClick = onClick;
+    linkProps.onClick = e => onClick(image.pk, e);
   }
 
+  let link;
   if (getLink) {
-    return (
-      <a href={getLink(image)} {...wrapperProps}>
+    link = (
+      <a href={getLink(image)} {...linkProps}>
         { inner }
       </a>
     );
-  }
-  if (onClick) {
-    return (
-      <button {...wrapperProps}>
+  } else if (onClick) {
+    link = (
+      <button {...linkProps} type='button'>
         { inner }
       </button>
     );
+  } else {
+    link = (
+      <span {...linkProps}>
+        { inner }
+      </span>
+    );
   }
+
   return (
-    <div {...wrapperProps}>
-      { inner }
+    <div className={classNames('image', { selected, [styles.selected]: selected })} styleName='styles.item'>
+      <div>
+        { link }
+      </div>
     </div>
   );
 };

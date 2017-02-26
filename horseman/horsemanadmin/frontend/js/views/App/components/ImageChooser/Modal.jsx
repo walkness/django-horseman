@@ -6,7 +6,9 @@ import Modal from '../Modal';
 
 const ImageChooserModal = ({ modalProps, ...props }) => (
   <Modal {...modalProps}>
+
     <ImageChooser {...props} />
+
   </Modal>
 );
 
