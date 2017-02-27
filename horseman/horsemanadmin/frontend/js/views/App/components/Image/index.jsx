@@ -1,15 +1,19 @@
 import React, { PropTypes } from 'react';
 
 
+const threshold = 100;
+
+
 const Image = ({ image, srcSize, alt, sizes, ...props }) => {
   const rendition = image.renditions[srcSize];
   const src = rendition || image;
   const aspect = src.width / src.height;
+  const roundedAspect = Math.round(aspect * threshold);
   const srcs = Object.values(image.renditions || {}).filter(({ width, height }) => {
     const renditionAspect = width / height;
-    return renditionAspect === aspect;
+    return Math.round(renditionAspect * threshold) === roundedAspect;
   });
-  if (image.width / image.height === aspect) {
+  if (Math.round((image.width / image.height) * threshold) === roundedAspect) {
     srcs.push(image);
   }
   srcs.sort((a, b) => {

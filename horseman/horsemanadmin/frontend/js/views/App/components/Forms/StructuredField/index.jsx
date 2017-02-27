@@ -75,6 +75,7 @@ class StructuredField extends Component {
                 imagesById={this.props.imagesById}
                 orderedImages={this.props.orderedImages}
                 imagesRequest={this.props.imagesRequest}
+                imageUploaded={this.props.imageUploaded}
               />
             );
           }

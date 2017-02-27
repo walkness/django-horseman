@@ -56,6 +56,7 @@ class ImageBlock extends Component {
             orderedImages={this.props.orderedImages}
             imagesRequest={this.props.imagesRequest}
             onSubmit={this.handleChange}
+            imageUploaded={this.props.imageUploaded}
           />
         : null }
 

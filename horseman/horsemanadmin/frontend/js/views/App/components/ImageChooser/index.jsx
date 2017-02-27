@@ -53,6 +53,17 @@ class ImageChooser extends Component {
     onSubmit(multiple ? selected : selected[0]);
   }
 
+  @autobind
+  handleUploadSuccess(data) {
+    const { imageUploaded, multiple, onSubmit } = this.props;
+    imageUploaded(data);
+    if (!multiple) {
+      this.setState({ selected: [data.pk] }, () => {
+        onSubmit(data.pk);
+      });
+    }
+  }
+
   render() {
     const { mode, selected } = this.state;
     const lastSelected = this.props.imagesById[
@@ -98,7 +109,7 @@ class ImageChooser extends Component {
               </div>
             :
               <div>
-                <ImageUploader />
+                <ImageUploader onUploadSuccess={this.handleUploadSuccess} />
               </div>
             }
           </div>

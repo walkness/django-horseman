@@ -85,6 +85,40 @@ function uploadApi(endpoint, method, data) {
   return baseApi(fullUrl, request);
 }
 
+function xhrUploadApi(endpoint, data, method = 'POST', completion = () => {}, onProgress = () => {}) {
+  const fullUrl = API_ROOT + endpoint;
+  const xhr = new XMLHttpRequest();
+
+  xhr.open(method, fullUrl, true);
+
+  xhr.withCredentials = true;
+  xhr.setRequestHeader('Accept', 'application/json');
+  xhr.setRequestHeader('X-CSRFToken', getCsrf());
+
+  if (onProgress) {
+    xhr.upload.onprogress = onProgress;
+  }
+
+  xhr.onload = function () {
+    let response;
+    let error;
+    try {
+      response = JSON.parse(this.response);
+    } catch (e) {
+      response = null;
+      error = e;
+    }
+
+    if (this.status >= 400 || error) {
+      completion({ error: error || response });
+    } else {
+      completion({ response, error: null });
+    }
+  };
+
+  xhr.send(data);
+}
+
 const queryString = (_args, defaults) => {
   const args = Object.assign({}, defaults, _args);
   return Object.keys(args).map(key => `${key}=${args[key]}`).join('&');
@@ -95,3 +129,5 @@ export const getNode = (pk, args) => callApi(`nodes/${pk}/?${queryString(args)}`
 export const updateNode = (pk, data, args) => sendApi(`nodes/${pk}/?${queryString(args)}`, 'PATCH', data);
 
 export const getImages = (args) => callApi(`images/?${queryString(args)}`);
+export const uploadImage = (data, completion, onProgress) => xhrUploadApi(
+  'images/', data, 'POST', completion, onProgress);

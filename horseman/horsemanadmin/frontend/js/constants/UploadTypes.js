@@ -1,0 +1,6 @@
+export default {
+  PENDING: 'PENDING',
+  UPLOADING: 'UPLOADING',
+  ERROR: 'ERROR',
+  SUCCESS: 'SUCCESS',
+};

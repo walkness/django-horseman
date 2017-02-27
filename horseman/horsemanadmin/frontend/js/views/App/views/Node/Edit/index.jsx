@@ -7,6 +7,7 @@ import {
   node as nodeAction,
   nodeUpdated,
   images as imagesAction,
+  imageUploaded,
 } from '../../../../../actions';
 import { updateNode } from '../../../../../services/api';
 import { Input } from '../../../components/Forms';
@@ -89,6 +90,7 @@ class EditNode extends Component {
               imagesById={this.props.imagesById}
               orderedImages={this.props.orderedImages}
               imagesRequest={this.props.imagesRequest}
+              imageUploaded={this.props.imageUploaded}
             />
           );
         }) }
@@ -116,4 +118,5 @@ export default connect(
     nodeRequest,
     nodeUpdated,
     imagesRequest,
+    imageUploaded,
   })(EditNode);

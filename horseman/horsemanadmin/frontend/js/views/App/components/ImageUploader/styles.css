@@ -1,0 +1,44 @@
+.ImageUploader {
+	padding: 1rem;
+
+	:global {
+		.dropzone {
+			width: 100%;
+			min-height: 10rem;
+			background-color: gray(90%);
+		}
+	}
+}
+
+.files {
+	list-style-type: none;
+	margin: 0;
+	padding: 0;
+}
+
+.file {
+	display: flex;
+	flex-flow: row;
+	align-items: center;
+	padding: .5rem .75rem;
+	background-color: gray(95%);
+	margin-top: 1px;
+}
+
+.file__error {
+	background-color: red;
+}
+
+.file__success {
+	background-color: green;
+}
+
+.filePreview {
+	height: 5rem;
+	width: auto;
+}
+
+.fileName {
+	padding: .5rem 1rem;
+	color: gray(40%);
+}

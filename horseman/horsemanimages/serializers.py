@@ -44,8 +44,20 @@ class ImageSerializer(serializers.ModelSerializer):
     renditions = RenditionsField(sizes=[
         ('thumbnail_150', (150, 150)),
         ('thumbnail_300', (300, 300)),
-    ])
+    ], read_only=True)
 
     class Meta:
         model = models.Image
         fields = ['pk', 'title', 'url', 'width', 'height', 'created_at', 'created_by', 'renditions']
+        read_only_fields = ['pk', 'url', 'width', 'height', 'created_at', 'created_by', 'renditions']
+        extra_kwargs = {
+            'title': {'required': False, 'allow_null': True}
+        }
+
+    def create(self, validated_data):
+        file = validated_data.pop('file')
+        instance = self.__class__.Meta.model(**validated_data)
+        instance.file_bytes = file.file
+        instance.file.save(file.name, file, save=False)
+        instance.save()
+        return instance

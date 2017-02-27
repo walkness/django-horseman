@@ -25,6 +25,7 @@ export const images = {
   success: (args, response) => action(types.IMAGES.SUCCESS, { args, response }),
   failure: (args, error) => action(types.IMAGES.FAILURE, { args, error }),
 };
+export const imageUploaded = data => action(types.IMAGE_UPLOADED, { data });
 
 export const login = {
   request: (email, password) => action(types.LOGIN.REQUEST, { email, password }),
