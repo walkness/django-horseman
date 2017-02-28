@@ -75,3 +75,9 @@ class ImageBlock(Block):
     name = 'image'
 
     id = forms.ModelChoiceField(queryset=Image.objects.all())
+
+
+class GalleryBlock(Block):
+    name = 'gallery'
+
+    images = forms.ModelMultipleChoiceField(queryset=Image.objects.all())

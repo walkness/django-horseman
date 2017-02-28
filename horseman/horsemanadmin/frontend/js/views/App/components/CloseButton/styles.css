@@ -1,0 +1,14 @@
+.button {
+	background-color: transparent;
+	border: 0;
+	font-size: 1.5rem;
+	line-height: 1;
+	font-weight: bold;
+	color: gray(30%);
+	opacity: .6;
+	cursor: pointer;
+
+	&:hover {
+		opacity: 1;
+	}
+}

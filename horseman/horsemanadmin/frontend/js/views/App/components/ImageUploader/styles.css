@@ -1,7 +1,7 @@
 .ImageUploader {
-	padding: 1rem;
 
 	:global {
+
 		.dropzone {
 			width: 100%;
 			min-height: 10rem;

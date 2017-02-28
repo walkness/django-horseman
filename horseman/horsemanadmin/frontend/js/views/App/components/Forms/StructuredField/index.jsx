@@ -52,10 +52,8 @@ class StructuredField extends Component {
   }
 
   render() {
-    const { label } = this.props;
     return (
-      <InputWrapper label={label}>
-
+      <div>
         { this.state.value.map((block, i) => {
           const blockProps = {
             key: i,
@@ -68,7 +66,7 @@ class StructuredField extends Component {
           if (block.type === 'richtext') {
             return <RichText {...blockProps} />;
           }
-          if (block.type === 'image') {
+          if (block.type === 'image' || block.type === 'gallery') {
             return (
               <Image
                 {...blockProps}
@@ -76,9 +74,11 @@ class StructuredField extends Component {
                 orderedImages={this.props.orderedImages}
                 imagesRequest={this.props.imagesRequest}
                 imageUploaded={this.props.imageUploaded}
+                multiple={block.type === 'gallery'}
               />
             );
           }
+
           return null;
         }) }
 
@@ -86,10 +86,9 @@ class StructuredField extends Component {
           blocks={this.props.fieldConfig.blocks}
           onClick={this.addNewBlock}
         />
-
-      </InputWrapper>
+      </div>
     );
   }
 }
 
-export default StructuredField;
+export default InputWrapper(StructuredField);

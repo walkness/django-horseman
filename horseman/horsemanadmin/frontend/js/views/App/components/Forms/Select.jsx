@@ -15,19 +15,15 @@ class Select extends Component {
 
   render() {
     return (
-      <InputWrapper label={this.props.label}>
+      <select value={this.props.getValue()} onChange={this.handleChange}>
 
-        <select value={this.props.getValue()} onChange={this.handleChange}>
+        { this.props.options.map(({ value, label }) => (
+          <option value={value}>{ label }</option>
+        )) }
 
-          { this.props.options.map(({ value, label }) => (
-            <option value={value}>{ label }</option>
-          )) }
-
-        </select>
-
-      </InputWrapper>
+      </select>
     );
   }
 }
 
-export default HOC(Select);
+export default HOC(InputWrapper(Select));

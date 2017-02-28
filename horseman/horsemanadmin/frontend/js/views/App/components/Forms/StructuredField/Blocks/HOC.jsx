@@ -1,13 +1,13 @@
 import React, { Component, PropTypes } from 'react';
 
+import CloseButton from '../../../CloseButton';
+
 
 const BlockWrapper = ({ children, index, deleteBlock }) => (
   <div className='block'>
 
     <div className='block-actions'>
-      <button type='button' onClick={() => deleteBlock(index)}>
-        &times;
-      </button>
+      <CloseButton onClick={() => deleteBlock(index)} title='Delete' />
     </div>
 
     { children }

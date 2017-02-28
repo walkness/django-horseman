@@ -1,0 +1,77 @@
+.wrapper {
+	padding: 1em 0;
+
+	:global {
+		& .input-label {
+			opacity: 1;
+			visibility: visible;
+			transition: opacity 300ms ease, color 300ms ease;
+		}
+	}
+}
+
+.label {
+	display: block;
+	font-weight: 600;
+	font-size: .8em;
+	color: gray(60%);
+	margin-bottom: .5em;
+}
+
+.control-wrapper {
+	input,
+	textarea {
+		width: 100%;
+		border: 1px solid transparent;
+		border-bottom-color: gray(85%);
+		padding: .25em 0;
+		transition: border-color 300ms ease;
+
+		&:focus {
+			outline: 0;
+			border-bottom-color: blue;
+		}
+	}
+}
+
+.wrapper__heading {
+	input,
+	textarea {
+		font-size: 2.5em;
+	}
+}
+
+.wrapper__required {
+
+}
+
+.wrapper__success {
+
+}
+
+.wrapper__error {
+	:global {
+		& .input-label {
+			color: red;
+		}
+
+		& input,
+		& textarea {
+			border-bottom-color: red;
+		}
+	}
+}
+
+.wrapper__empty {
+	:global {
+		& .input-label {
+			opacity: 0;
+			visibility: hidden;
+			transition: opacity 300ms ease, visibility 0s linear 300ms, color 300ms ease;
+		}
+	}
+}
+
+.slug-field {
+	font-family: monospace;
+}

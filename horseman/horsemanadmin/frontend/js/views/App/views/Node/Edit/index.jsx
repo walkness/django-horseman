@@ -37,6 +37,7 @@ class EditNode extends Component {
 
   @autobind
   handleSubmit(data) {
+    console.log(this.fieldRefs)
     const { nodes, params } = this.props;
     const nodeType = this.getNodeType();
     const nodeState = nodes[nodeType];
@@ -86,7 +87,7 @@ class EditNode extends Component {
             <Field
               config={field}
               value={node[fieldName]}
-              fieldRef={(c) => { this.fieldRefs[fieldName] = c; }}
+              wrappedComponentRef={(c) => { this.fieldRefs[fieldName] = c; }}
               imagesById={this.props.imagesById}
               orderedImages={this.props.orderedImages}
               imagesRequest={this.props.imagesRequest}

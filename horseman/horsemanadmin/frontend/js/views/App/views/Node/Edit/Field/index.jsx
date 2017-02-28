@@ -1,7 +1,7 @@
 import React, { PropTypes } from 'react';
 import titleCase from 'title-case';
 
-import { Input, RichText, StructuredField, ImageChooser } from '../../../../components/Forms';
+import { Input, RichText, StructuredField, ImageChooser, SlugField } from '../../../../components/Forms';
 
 
 const Field = ({ config, fieldRef, ...props }) => {
@@ -10,16 +10,25 @@ const Field = ({ config, fieldRef, ...props }) => {
     label: titleCase(config.verbose_name),
     ref: fieldRef,
     fieldConfig: config,
+    required: !config.blank,
+    heading: !!config.title_field,
     ...props,
   };
 
   if (
     [
       'django.db.models.fields.CharField',
-      'django.db.models.fields.SlugField',
     ].indexOf(config.type) !== -1
   ) {
     return <Input {...inputProps} />;
+  }
+
+  if (
+    [
+      'django.db.models.fields.SlugField',
+    ].indexOf(config.type) !== -1
+  ) {
+    return <SlugField {...inputProps} />;
   }
 
   if ([

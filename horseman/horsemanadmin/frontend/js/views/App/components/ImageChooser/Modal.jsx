@@ -1,19 +1,30 @@
 import React, { PropTypes } from 'react';
 
 import ImageChooser from './index';
-import Modal from '../Modal';
+import Modal, { ModalHeader, ModalBody, ModalFooter } from '../Modal';
 
 
 const ImageChooserModal = ({ modalProps, ...props }) => (
-  <Modal {...modalProps}>
+  <Modal title={`Choose Image${props.multiple ? 's' : ''}`} {...modalProps}>
 
-    <ImageChooser {...props} />
+    <ModalHeader />
+
+    <ModalBody>
+      <ImageChooser {...props} />
+    </ModalBody>
+
+    <ModalFooter />
 
   </Modal>
 );
 
 ImageChooserModal.propTypes = {
   modalProps: PropTypes.object,
+  multiple: PropTypes.bool,
+};
+
+ImageChooserModal.defaultProps = {
+  multiple: false,
 };
 
 export default ImageChooserModal;

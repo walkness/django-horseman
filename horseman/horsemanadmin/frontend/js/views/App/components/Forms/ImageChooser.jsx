@@ -5,6 +5,8 @@ import { autobind } from 'core-decorators';
 import Image from '../Image';
 import ImageChooserModal from '../ImageChooser/Modal';
 
+import InputWrapper from './InputWrapper';
+
 
 class ImageChooser extends Component {
 
@@ -55,6 +57,9 @@ class ImageChooser extends Component {
             imagesRequest={this.props.imagesRequest}
             onSubmit={this.handleChange}
             imageUploaded={this.props.imageUploaded}
+            modalProps={{
+              closeModal: () => this.setState({ showModal: false }),
+            }}
           />
         : null }
 
@@ -63,4 +68,4 @@ class ImageChooser extends Component {
   }
 }
 
-export default HOC(ImageChooser);
+export default HOC(InputWrapper(ImageChooser));

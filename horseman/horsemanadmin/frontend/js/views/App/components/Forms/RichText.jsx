@@ -41,20 +41,16 @@ class RichText extends Component {
   }
 
   render() {
-    const { className, label, ...inputProps } = this.props;
+    const { className, label, value, ...inputProps } = this.props;
 
     return (
-      <InputWrapper label={label}>
-
-        <RichTextEditor
-          className={classNames('control', className)}
-          onChange={this.handleChange}
-          value={this.state.value}
-        />
-
-      </InputWrapper>
+      <RichTextEditor
+        className={classNames('control', className)}
+        onChange={this.handleChange}
+        value={this.state.value}
+      />
     );
   }
 }
 
-export default RichText;
+export default InputWrapper(RichText);

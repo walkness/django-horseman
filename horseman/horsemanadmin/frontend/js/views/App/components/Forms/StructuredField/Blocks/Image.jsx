@@ -9,6 +9,21 @@ import ImageChooserModal from '../../../ImageChooser/Modal';
 
 class ImageBlock extends Component {
 
+  static propTypes = {
+    block: PropTypes.object.isRequired,
+    imagesById: PropTypes.object.isRequired,
+    orderedImages: PropTypes.object.isRequired,
+    imagesRequest: PropTypes.func.isRequired,
+    imageUploaded: PropTypes.func.isRequired,
+    onChange: PropTypes.func,
+    multiple: PropTypes.bool,
+  };
+
+  static defaultProps = {
+    onChange: () => {},
+    multiple: false,
+  };
+
   constructor(props, context) {
     super(props, context);
     this.state = {
@@ -17,37 +32,39 @@ class ImageBlock extends Component {
   }
 
   @autobind
-  handleChange(id) {
-    this.props.onChange(this.getBlock(id));
+  handleChange(value) {
+    this.props.onChange(this.getBlock(value));
     this.setState({ showModal: false });
   }
 
-  getBlock(id) {
+  getBlock(value) {
     const { type } = this.props.block;
-    return { type, id };
+    return { type, [this.props.multiple ? 'images' : 'id']: value };
   }
 
   getAPIValue() {
-    return this.getBlock(this.props.block.id);
+    const { multiple, block } = this.props;
+    const { id, images } = block;
+    return this.getBlock(multiple ? images : id);
   }
 
   render() {
-    const { imagesById, block } = this.props;
+    const { imagesById, block, multiple } = this.props;
     const { showModal } = this.state;
-    const { id } = block;
-    const image = imagesById[id];
+    const { id, images } = block;
     return (
       <div>
 
-        { image ?
-          <Image image={image} srcSize='thumbnail_300' />
-        : null }
+        { (multiple ? (images || []) : [id]).map((id) => {
+          const image = imagesById[id];
+          return <Image image={image} srcSize='thumbnail_300' />;
+        }) }
 
         <button
           type='button'
           onClick={() => this.setState({ showModal: !showModal })}
         >
-          Select image
+          Select image{ multiple ? 's' : '' }
         </button>
 
         { showModal ?
@@ -57,6 +74,11 @@ class ImageBlock extends Component {
             imagesRequest={this.props.imagesRequest}
             onSubmit={this.handleChange}
             imageUploaded={this.props.imageUploaded}
+            selected={multiple ? (images || []) : [id]}
+            multiple={multiple}
+            modalProps={{
+              closeModal: () => this.setState({ showModal: false }),
+            }}
           />
         : null }
 

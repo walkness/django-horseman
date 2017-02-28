@@ -15,6 +15,7 @@ class ImageChooser extends Component {
   static propTypes = {
     multiple: PropTypes.bool,
     onSubmit: PropTypes.func,
+    selected: PropTypes.arrayOf(PropTypes.string),
   };
 
   static defaultProps = {
@@ -26,7 +27,7 @@ class ImageChooser extends Component {
     super(props, context);
     this.state = {
       mode: 'library',
-      selected: [],
+      selected: props.selected || [],
     };
   }
 

@@ -24,6 +24,7 @@ class AbstractNode(models.Model):
     published = models.BooleanField(default=False)
 
     admin_fields = []
+    admin_title_field = None
     api_fields = ['pk', 'created_at', 'published_at', 'modified_at', 'slug', 'published']
 
     class Meta:

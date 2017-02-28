@@ -79,7 +79,8 @@ class NodeConfigurationSerializer(serializers.Serializer):
                 'type': '{}.{}'.format(
                     field.__module__,
                     field.__class__.__name__
-                )
+                ),
+                'title_field': field.name == cls.admin_title_field,
             }
 
             for att in [

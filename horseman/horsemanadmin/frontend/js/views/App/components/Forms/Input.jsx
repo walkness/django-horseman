@@ -26,32 +26,8 @@ class Input extends Component {
   }
 
   render() {
-    const {
-      setValidations,
-      setValue,
-      resetValue,
-      getValue,
-      hasValue,
-      getErrorMessage,
-      getErrorMessages,
-      isFormDisabled,
-      isValid,
-      isPristine,
-      isFormSubmitted,
-      isRequired,
-      showRequired,
-      showError,
-      isValidValue,
-      validationError,
-      validationErrors,
-      className,
-      label,
-      onChange,
-      value,
-      ...inputProps
-    } = this.props;
-
-    const control = (
+    const { setValue, getValue, onChange, value, className, ...inputProps } = this.props;
+    return (
       <input
         className={classNames('control', className)}
         onChange={this.handleChange}
@@ -59,17 +35,7 @@ class Input extends Component {
         {...inputProps}
       />
     );
-
-    if (inputProps.type === 'hidden') {
-      return control;
-    }
-
-    return (
-      <InputWrapper label={label}>
-        { control }
-      </InputWrapper>
-    );
   }
 }
 
-export default HOC(Input);
+export default HOC(InputWrapper(Input));

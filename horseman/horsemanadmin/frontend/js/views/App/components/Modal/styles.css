@@ -14,6 +14,8 @@
 	margin: 0 auto;
 	box-shadow: 0 1px 1px rgba(0, 0, 0, .3);
 	height: 100%;
+	display: flex;
+	flex-flow: column;
 }
 
 .backdrop {
@@ -24,4 +26,28 @@
 	right: 0;
 	bottom: 0;
 	z-index: 1040;
+}
+
+.header {
+
+}
+
+.default-header {
+	display: flex;
+	flex-flow: row;
+	justify-content: space-between;
+	padding: 1rem;
+}
+
+.header__title {
+	margin: 0;
+	padding: 0;
+}
+
+.body {
+	flex: 1 100%;
+}
+
+.footer {
+	
 }
