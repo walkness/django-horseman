@@ -5,6 +5,11 @@ import Grid from './Grid';
 
 class ImageBrowser extends Component {
 
+  static propTypes = {
+    imagesById: PropTypes.object.isRequired,
+    orderedImages: PropTypes.object.isRequired,
+  }
+
   componentWillMount() {
     this.props.imagesRequest();
   }

@@ -129,5 +129,9 @@ export const getNode = (pk, args) => callApi(`nodes/${pk}/?${queryString(args)}`
 export const updateNode = (pk, data, args) => sendApi(`nodes/${pk}/?${queryString(args)}`, 'PATCH', data);
 
 export const getImages = (args) => callApi(`images/?${queryString(args)}`);
+export const getImage = (id) => callApi(`images/${id}/`);
+export const updateImage = (id, data) => sendApi(`images/${id}/`, 'PATCH', data);
 export const uploadImage = (data, completion, onProgress) => xhrUploadApi(
   'images/', data, 'POST', completion, onProgress);
+
+export const getTimezones = () => callApi('timezones/');

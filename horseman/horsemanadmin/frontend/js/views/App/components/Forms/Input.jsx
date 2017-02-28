@@ -46,6 +46,8 @@ class Input extends Component {
       validationErrors,
       className,
       label,
+      onChange,
+      value,
       ...inputProps
     } = this.props;
 

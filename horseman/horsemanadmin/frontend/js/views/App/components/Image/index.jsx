@@ -27,7 +27,7 @@ const Image = ({ image, srcSize, alt, sizes, ...props }) => {
     if (sizes) {
       responsiveProps.sizes = Array.isArray(sizes) ? sizes.join(', ') : sizes;
     } else {
-      responsiveProps.sizes = `${src.width}w`;
+      responsiveProps.sizes = `${src.width}px`;
     }
   }
   return (

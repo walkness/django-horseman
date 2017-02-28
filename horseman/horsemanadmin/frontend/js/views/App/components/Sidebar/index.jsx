@@ -2,9 +2,11 @@ import React, { PropTypes } from 'react';
 import { Link } from 'react-router';
 import titleCase from 'title-case';
 
+import styles from './styles.css';
+
 
 const Sidebar = ({ nodes }) => (
-  <div className='sidebar'>
+  <div className='sidebar' styleName='styles.sidebar'>
 
     <ul className='nav'>
       { Object.keys(nodes).map(nodeType => {
@@ -17,6 +19,10 @@ const Sidebar = ({ nodes }) => (
           </li>
         );
       }) }
+
+      <li className='image'>
+        <Link to='/admin/images/'>Images</Link>
+      </li>
     </ul>
 
   </div>

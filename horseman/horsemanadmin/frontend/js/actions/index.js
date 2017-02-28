@@ -25,7 +25,19 @@ export const images = {
   success: (args, response) => action(types.IMAGES.SUCCESS, { args, response }),
   failure: (args, error) => action(types.IMAGES.FAILURE, { args, error }),
 };
+export const image = {
+  request: (id) => action(types.IMAGE.REQUEST, { id }),
+  success: (id, response) => action(types.IMAGE.SUCCESS, { id, response }),
+  failure: (id, error) => action(types.IMAGE.FAILURE, { id, error }),
+};
+export const imageUpdated = data => action(types.IMAGE_UPDATED, { data });
 export const imageUploaded = data => action(types.IMAGE_UPLOADED, { data });
+
+export const timezones = {
+  request: () => action(types.TIMEZONES.REQUEST, {}),
+  success: response => action(types.TIMEZONES.SUCCESS, { response }),
+  failure: error => action(types.TIMEZONES.FAILURE, { error }),
+};
 
 export const login = {
   request: (email, password) => action(types.LOGIN.REQUEST, { email, password }),

@@ -3,12 +3,16 @@ import { connect } from 'react-redux';
 
 import Sidebar from './components/Sidebar';
 
+import styles from './styles.css';
+
 
 const App = ({ children, ...props }) => (
-  <div id='app'>
+  <div id='app' styleName='styles.app'>
 
-    <main>
-      { children }
+    <main styleName='styles.main-wrapper'>
+      <div styleName='styles.main'>
+        { children }
+      </div>
     </main>
 
     <Sidebar {...props} />

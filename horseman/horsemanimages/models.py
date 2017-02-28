@@ -3,14 +3,20 @@ import uuid
 import hashlib
 from io import BytesIO
 from contextlib import contextmanager
+from datetime import datetime
 from unidecode import unidecode
 from django.db import models
 from django.utils import timezone
 from django.conf import settings as django_settings
+from django.contrib.postgres.fields import JSONField
+
+import pytz
+from timezone_field import TimeZoneField
 
 from willow.image import Image as WillowImage
 
 from horseman import settings
+from .exif import EXIF
 
 
 def get_upload_to(instance, filename):
@@ -36,12 +42,85 @@ class AbstractImage(models.Model):
     created_at = models.DateTimeField(default=timezone.now)
     created_by = models.ForeignKey(django_settings.AUTH_USER_MODEL)
 
+    captured_at = models.DateTimeField(null=True, blank=True, editable=False)
+    captured_at_tz = TimeZoneField(null=True)
+
+    exif_data = JSONField(blank=True, null=True)
+
     class Meta:
         abstract = True
 
     @property
     def url(self):
         return self.file.url
+
+    @property
+    def meta(self):
+        if not self.exif_data:
+            return None
+
+        exif = self.exif_data.get('EXIF', {})
+        image = self.exif_data.get('Image', {})
+        gps = self.exif_data.get('GPS', {})
+
+        lens_specifications = exif.get('LensSpecification', [None, None, None, None])
+        lat = gps.get('GPSLatitude', None)
+        lat_ref = gps.get('GPSLatitudeRef', None)
+        if lat and lat_ref:
+            lat *= 1 if lat_ref == 'N' else -1
+        lng = gps.get('GPSLongitude', None)
+        lng_ref = gps.get('GPSLongitudeRef', None)
+        if lng and lng_ref:
+            lng *= 1 if lng_ref == 'E' else -1
+
+        meta = {
+            'capture_time': exif.get('DateTimeOriginal', None),
+            'creation_time': image.get('DateTime', None),
+            'camera': {
+                'make': image.get('Make', None),
+                'model': image.get('Model', None),
+                'lens': exif.get('LensModel', None),
+                'lens_focal_range': lens_specifications[:2],
+                'lens_aperture': lens_specifications[2:],
+            },
+            'exposure': {
+                'shutter': exif.get('ExposureTime', None),
+                'fstop': exif.get('FNumber', None),
+                'focal_length': exif.get('FocalLength', None),
+                'iso': exif.get('ISOSpeedRatings', None),
+                'ev': exif.get('ExposureBiasValue', None),
+                'program': exif.get('ExposureProgram', None),
+            },
+            'gps': {
+                'lat': lat,
+                'lng': lng,
+                'altitude': gps.get('GPSAltitude', None),
+            },
+            'credit': {
+                'artist': image.get('Artist', None),
+                'copyright': image.get('Copyright', None),
+            },
+        }
+
+
+
+        return meta
+
+    def __init__(self, *args, **kwargs):
+        super(AbstractImage, self).__init__(*args, **kwargs)
+        self.old_file = self.file
+        self.old_hash = self.hash
+        self.exif_updated = False
+
+    def __str__(self):
+        return self.title
+
+    def save(self, *args, **kwargs):
+        if self.old_file != self.file and not self.exif_updated:
+            self.update_exif()
+        if self.captured_at and self.captured_at_tz:
+            self.captured_at = self.captured_at.replace(tzinfo=self.captured_at_tz or pytz.UTC)
+        return super(AbstractImage, self).save(*args, **kwargs)
 
     @contextmanager
     def get_willow_image(self):
@@ -59,6 +138,19 @@ class AbstractImage(models.Model):
         finally:
             if close_file:
                 image_file.close()
+
+    def get_exif(self, file=None):
+        exif = EXIF(file or self.file.file)
+        return exif.get_json()
+
+    def update_exif(self, file=None):
+        exif = self.get_exif(file)
+        if len(exif.keys()) > 0:
+            self.exif_data = exif
+            capture_time = exif.get('EXIF', {}).get('DateTimeOriginal', None)
+            if capture_time:
+                self.captured_at = datetime.strptime(capture_time, '%Y-%m-%dT%H:%M:%S')
+            self.exif_updated = True
 
     def get_file_hash(self):
         file_bytes = getattr(self, 'file_bytes', getattr(self.file._file, 'file', None))
@@ -91,7 +183,7 @@ class AbstractImage(models.Model):
 
     def get_rendition(self, filter):
         try:
-            return Rendition.objects.get_with_filter(filter)
+            return self.renditions.get_with_filter(filter)
         except Rendition.DoesNotExist:
             rendition = Rendition(image=self, **filter.rendition_fields())
 
@@ -118,6 +210,9 @@ class Filter(object):
         self.width = width
         self.height = height
         self.crop = crop
+
+    def __str__(self):
+        return '{}x{}{}'.format(self.width, self.height, '_crop' if self.crop else '')
 
     def rendition_fields(self):
         return {

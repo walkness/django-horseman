@@ -12,7 +12,7 @@ from . import serializers
 class ImageViewSet(viewsets.ModelViewSet):
     model = models.Image
     serializer_class = serializers.ImageSerializer
-    queryset = models.Image.objects.all()
+    queryset = models.Image.objects.prefetch_related('renditions').all()
 
     @parser_classes((FormParser, MultiPartParser,))
     def create(self, request, *args, **kwargs):

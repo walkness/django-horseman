@@ -1,0 +1,11 @@
+.app {
+  display: flex;
+  flex-flow: row;
+}
+
+.main-wrapper {
+	flex: 1 100%;
+}
+
+.main {
+}

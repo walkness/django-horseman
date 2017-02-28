@@ -1,9 +1,0 @@
-#app {
-  display: flex;
-  flex-flow: row;
-
-  > .sidebar {
-    order: -1;
-    flex: 0 0 15rem;
-  }
-}

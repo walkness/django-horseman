@@ -37,10 +37,26 @@ function* watchImagesRequest() {
   }
 }
 
+function* watchImageRequest() {
+  while (true) {
+    const { id } = yield take(types.IMAGE.REQUEST);
+    yield fork(callAPI, api.getImage, actions.image, [id]);
+  }
+}
+
+function* watchTimezonesRequest() {
+  while (true) {
+    yield take(types.TIMEZONES.REQUEST);
+    yield fork(callAPI, api.getTimezones, actions.timezones, []);
+  }
+}
+
 export default function* rootSaga() {
   yield [
     watchNodesRequest(),
     watchNodeRequest(),
     watchImagesRequest(),
+    watchImageRequest(),
+    watchTimezonesRequest(),
   ];
 }

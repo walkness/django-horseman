@@ -1,7 +1,7 @@
 import React, { PropTypes } from 'react';
 import titleCase from 'title-case';
 
-import { Input, RichText, StructuredField } from '../../../../components/Forms';
+import { Input, RichText, StructuredField, ImageChooser } from '../../../../components/Forms';
 
 
 const Field = ({ config, fieldRef, ...props }) => {
@@ -34,7 +34,13 @@ const Field = ({ config, fieldRef, ...props }) => {
     return <StructuredField {...inputProps} />;
   }
 
+  if ([
+    'django.db.models.fields.related.ForeignKey',
+  ].indexOf(config.type) !== -1) {
+    return <ImageChooser {...inputProps} />;
+  }
+
   return null;
-}
+};
 
 export default Field;

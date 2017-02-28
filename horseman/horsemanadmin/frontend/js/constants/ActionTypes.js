@@ -17,7 +17,11 @@ export const NODE_UPDATED = 'NODE_UPDATED';
 export const NODES_CONFIGURATION = 'NODES_CONFIGURATION';
 
 export const IMAGES = createRequestTypes('IMAGES');
+export const IMAGE = createRequestTypes('IMAGE');
+export const IMAGE_UPDATED = 'IMAGE_UPDATED';
 export const IMAGE_UPLOADED = 'IMAGE_UPLOADED';
+
+export const TIMEZONES = createRequestTypes('TIMEZONES');
 
 export const LOGIN = createRequestTypes('LOGIN');
 export const LOGOUT = createRequestTypes('LOGOUT');

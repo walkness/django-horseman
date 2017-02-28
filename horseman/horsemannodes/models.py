@@ -73,6 +73,8 @@ class Node(AbstractNode):
             get_image_ids = getattr(field, 'get_image_ids', None)
             if callable(get_image_ids):
                 ids.extend(get_image_ids(getattr(self, field.name)))
+            elif isinstance(field, models.ForeignKey) and issubclass(field.related_model, Image):
+                ids.append(getattr(self, field.column))
         return Image.objects.filter(pk__in=ids)
 
 

@@ -1,5 +1,6 @@
 import React, { PropTypes } from 'react';
 import classNames from 'classnames';
+import { Link } from 'react-router';
 
 import Image from '../../Image';
 
@@ -17,9 +18,9 @@ const Item = ({ image, getLink, onClick, selected }) => {
   let link;
   if (getLink) {
     link = (
-      <a href={getLink(image)} {...linkProps}>
+      <Link to={getLink(image)} {...linkProps}>
         { inner }
-      </a>
+      </Link>
     );
   } else if (onClick) {
     link = (

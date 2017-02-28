@@ -9,4 +9,5 @@ export default {
     byId: {},
     ordered: {},
   },
+  timezones: [],
 };

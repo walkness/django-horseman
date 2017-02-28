@@ -1,3 +1,5 @@
+from django.db.models import ForeignKey
+
 from rest_framework import serializers
 
 from horseman.horsemanimages.serializers import ImageSerializer
@@ -30,7 +32,11 @@ class NodeSerializer(serializers.ModelSerializer):
             ]
             for field in extra_model_fields:
                 model_field = single_instance.__class__._meta.get_field(field)
-                self.fields[field] = serializers.ModelField(model_field=model_field)
+                if isinstance(model_field, ForeignKey):
+                    self.fields[field] = serializers.PrimaryKeyRelatedField(
+                        queryset=model_field.related_model.objects.all())
+                else:
+                    self.fields[field] = serializers.ModelField(model_field=model_field)
 
             get_related_images = getattr(single_instance, 'get_related_images', None)
             if callable(get_related_images):
@@ -80,6 +86,10 @@ class NodeConfigurationSerializer(serializers.Serializer):
                 'name', 'verbose_name', 'verbose_name_plural', 'max_length', 'blank'
             ]:
                 field_config[field.name][att] = getattr(field, att, None)
+
+            if isinstance(field, ForeignKey):
+                field_config[field.name]['related_model'] = '{}.{}'.format(
+                    field.related_model.__module__, field.related_model.__name__)
 
             extra_config = getattr(field, 'get_extra_config', None)
             if callable(extra_config):

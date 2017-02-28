@@ -22,4 +22,18 @@ const ImageBrowserGrid = ({ ids, imagesById, getLink, onImageClick, selected }) 
   );
 };
 
+ImageBrowserGrid.propTypes = {
+  ids: PropTypes.arrayOf(PropTypes.string).isRequired,
+  imagesById: PropTypes.shape({
+    [PropTypes.string]: PropTypes.shape({
+      pk: PropTypes.string,
+    }),
+  }).isRequired,
+  selected: PropTypes.arrayOf(PropTypes.string),
+};
+
+ImageBrowserGrid.defaultProps = {
+  selected: [],
+};
+
 export default ImageBrowserGrid;
