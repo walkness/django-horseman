@@ -7,6 +7,14 @@ import { RichText, Image } from './Blocks';
 import AddBlock from './AddBlock';
 
 
+const getBlockConfig = (fieldConfig, blockType) => {
+  return ((fieldConfig && fieldConfig.blocks) || []).reduce((prev, curr) => {
+    if (curr.type === blockType) return curr;
+    return prev;
+  }, null);
+};
+
+
 class StructuredField extends Component {
 
   constructor(props, context) {
@@ -67,6 +75,20 @@ class StructuredField extends Component {
             return <RichText {...blockProps} />;
           }
           if (block.type === 'image' || block.type === 'gallery') {
+            let sizeOptions;
+            let defaultSize;
+            let minCols = 2;
+            let maxCols = 5;
+            if (block.type === 'gallery') {
+              const { fieldConfig } = this.props;
+              const blockConfig = getBlockConfig(fieldConfig, block.type);
+              sizeOptions = ((
+                blockConfig && blockConfig.fields.size && blockConfig.fields.size.size_options
+              ) || []).map(opt => ({ value: opt[0], label: opt[1] }));
+              defaultSize = (
+                (blockConfig.fields.size && blockConfig.fields.size.default)
+              ) || (sizeOptions.length > 0 ? sizeOptions[0].value : null);
+            }
             return (
               <Image
                 {...blockProps}
@@ -74,7 +96,11 @@ class StructuredField extends Component {
                 orderedImages={this.props.orderedImages}
                 imagesRequest={this.props.imagesRequest}
                 imageUploaded={this.props.imageUploaded}
-                multiple={block.type === 'gallery'}
+                gallery={block.type === 'gallery'}
+                sizeOptions={sizeOptions}
+                defaultSize={defaultSize}
+                minColumns={minCols}
+                maxColumns={maxCols}
               />
             );
           }

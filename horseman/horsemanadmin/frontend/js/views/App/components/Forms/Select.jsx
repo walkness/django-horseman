@@ -26,4 +26,6 @@ class Select extends Component {
   }
 }
 
-export default HOC(InputWrapper(Select));
+export const Unattached = InputWrapper(Select);
+
+export default HOC(Unattached);

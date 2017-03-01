@@ -40,8 +40,7 @@ class NodeSerializer(serializers.ModelSerializer):
 
             get_related_images = getattr(single_instance, 'get_related_images', None)
             if callable(get_related_images):
-                self.fields['related_images'] = ImageSerializer(
-                    source='get_related_images', many=True)
+                self.fields['related_images'] = serializers.SerializerMethodField()
 
     def get_current_model_class(self):
         model_class = self.current_model_class
@@ -59,6 +58,10 @@ class NodeSerializer(serializers.ModelSerializer):
         instance = model_class(**attrs)
         instance.full_clean()
         return attrs
+
+    def get_related_images(self, obj):
+        images, renditions = obj.get_related_images()
+        return ImageSerializer(images, many=True, extra_image_sizes=renditions).data
 
 
 class NodeConfigurationSerializer(serializers.Serializer):

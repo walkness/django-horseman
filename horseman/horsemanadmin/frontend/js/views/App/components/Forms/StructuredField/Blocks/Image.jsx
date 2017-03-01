@@ -6,6 +6,10 @@ import Block from './HOC';
 import Image from '../../../Image';
 import ImageChooserModal from '../../../ImageChooser/Modal';
 
+import { Unattached as Select } from '../../../Forms/Select';
+
+import styles from './styles.css';
+
 
 class ImageBlock extends Component {
 
@@ -17,11 +21,13 @@ class ImageBlock extends Component {
     imageUploaded: PropTypes.func.isRequired,
     onChange: PropTypes.func,
     multiple: PropTypes.bool,
+    gallery: PropTypes.bool,
   };
 
   static defaultProps = {
     onChange: () => {},
     multiple: false,
+    gallery: false,
   };
 
   constructor(props, context) {
@@ -37,28 +43,49 @@ class ImageBlock extends Component {
     this.setState({ showModal: false });
   }
 
-  getBlock(value) {
-    const { type } = this.props.block;
-    return { type, [this.props.multiple ? 'images' : 'id']: value };
+  @autobind
+  handleSizeChange(value) {
+    this.props.onChange(this.getBlock(null, value));
+  }
+
+  @autobind
+  handleColumnsChange(value) {
+    this.props.onChange(this.getBlock(null, null, value));
+  }
+
+  getBlock(value = null, size = null, columns = null) {
+    const imagesKey = this.props.multiple ? 'images' : 'id';
+    const block = Object.assign({}, this.props.block);
+    if (value) {
+      block[imagesKey] = value;
+    }
+    if (size) {
+      block.size = size;
+    }
+    if (columns) {
+      block.columns = parseInt(columns, 10);
+    }
+    return block;
   }
 
   getAPIValue() {
-    const { multiple, block } = this.props;
-    const { id, images } = block;
-    return this.getBlock(multiple ? images : id);
+    return this.getBlock();
   }
 
   render() {
-    const { imagesById, block, multiple } = this.props;
+    const { imagesById, block, gallery, defaultSize, minColumns, maxColumns } = this.props;
+    const multiple = gallery || this.props.multiple;
     const { showModal } = this.state;
-    const { id, images } = block;
+    const { id, images, size, columns } = block;
     return (
-      <div>
+      <div styleName='styles.image'>
 
-        { (multiple ? (images || []) : [id]).map((id) => {
-          const image = imagesById[id];
-          return <Image image={image} srcSize='thumbnail_300' />;
-        }) }
+        <div styleName='styles.selected-images'>
+          { (multiple ? (images || []) : [id]).map((id) => {
+            const image = imagesById[id];
+            return <Image image={image} srcSize={size || defaultSize || 'thumbnail_300'} />;
+          }) }
+        </div>
 
         <button
           type='button'
@@ -66,6 +93,31 @@ class ImageBlock extends Component {
         >
           Select image{ multiple ? 's' : '' }
         </button>
+
+        { gallery ?
+          <Select
+            name='size'
+            label='Size'
+            options={this.props.sizeOptions}
+            getValue={() => (size || defaultSize)}
+            setValue={this.handleSizeChange}
+          />
+        : null }
+
+        { gallery ?
+          <Select
+            name='columns'
+            label='Columns'
+            options={(
+              Array.from(Array((minColumns + maxColumns) - 1)).slice(minColumns).map((_, index) => {
+                const num = index + 2;
+                return { value: num, label: `${num}` };
+              })
+            )}
+            getValue={() => columns || 2}
+            setValue={this.handleColumnsChange}
+          />
+        : null }
 
         { showModal ?
           <ImageChooserModal

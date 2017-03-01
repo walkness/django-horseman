@@ -1,0 +1,41 @@
+.block {
+	text-align: center;
+	position: relative;
+}
+
+.block-actions {
+	opacity: 0;
+	visibility: hidden;
+	position: absolute;
+	right: 0;
+	top: 0;
+
+	@nest .block:hover & {
+		opacity: 1;
+		visibility: visible;
+	}
+}
+
+.image {
+	
+}
+
+.selected-images {
+	display: flex;
+	flex-flow: row;
+	flex-wrap: wrap;
+	justify-content: center;
+
+	img {
+		height: 10rem;
+		width: auto;
+
+		& + img {
+			margin-left: 1px;
+		}
+	}
+}
+
+.rich-text {
+
+}

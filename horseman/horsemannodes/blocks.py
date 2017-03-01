@@ -1,12 +1,26 @@
 import inspect
 from django import forms
 
-from .forms import RichTextFormField
+from .forms import RichTextFormField, ImageSizeField, SingleImageField, MultipleImageField
 from horseman.horsemanimages.models import Image
 
 
+def get_rendition_name(name, crop, width, height):
+    return '{}_{}x{}{}'.format(name, width, height, '_crop' if crop else '')
+
+def convert_size_to_renditions(name, size):
+    width, height = size['size']
+    renditions = [(name, (width, height, size['crop']))]
+    for width, height in size.get('extra_renditions', []):
+        renditions.append((
+            get_rendition_name(name, size.get('crop', False), width, height),
+            (width, height, size['crop']),
+        ))
+    return renditions
+
+
 class Block(object):
-    
+
     def deconstruct(self):
         path = '{}.{}'.format(self.__class__.__module__, self.__class__.__name__)
         args = []
@@ -15,18 +29,34 @@ class Block(object):
 
     def get_fields(self, field_class=forms.Field):
         return inspect.getmembers(
-            self.__class__,
+            self,
             lambda v: isinstance(v, field_class)
         )
 
     def get_image_ids(self, data):
         ids = []
+        sizes = {}
         for name, field in self.get_image_fields().items():
             id_attr = data.get(name, [])
             if not isinstance(id_attr, (list, tuple,)):
                 id_attr = [id_attr]
             ids.extend(id_attr)
-        return ids
+
+            image_size = None
+            if len(getattr(self, 'sizes', {}).keys()) == 1:
+                image_size = list(self.sizes.keys())[0]
+
+            size_field_name = getattr(field, 'size_field', None)
+            if size_field_name:
+                if size_field_name in data:
+                    image_size = data[size_field_name]
+
+            if image_size:
+                for image_id in ids:
+                    sizes[image_id] = convert_size_to_renditions(
+                        image_size, self.sizes[image_size])
+
+        return ids, sizes
 
     def get_image_fields(self):
         image_fields = {}
@@ -43,11 +73,18 @@ class Block(object):
                 'type': field.__class__.__name__,
                 'name': name,
             }
+
             for att in [
                     'help_text', 'label', 'label_suffix', 'max_length',
-                    'min_length', 'required'
+                    'min_length', 'min_value', 'max_value', 'required'
             ]:
                 fields[name][att] = getattr(field, att, None)
+
+            print(field)
+            get_extra_config = getattr(field, 'get_extra_config', None)
+            if callable(get_extra_config):
+                fields[name].update(get_extra_config())
+
         return fields
 
     def is_valid(self, data):
@@ -71,13 +108,39 @@ class RichTextBlock(Block):
     value = RichTextFormField()
 
 
-class ImageBlock(Block):
+class ImageBlockMixin(object):
+
+    def __init__(self, *args, **kwargs):
+        sizes = kwargs.pop('sizes', None)
+        size_options = kwargs.pop('size_options', None)
+        super(ImageBlockMixin, self).__init__(*args, **kwargs)
+        self.sizes = sizes
+        if sizes and size_options is None:
+            size_options = list(sizes.keys())
+        self.size_options = size_options
+        if size_options and len(size_options) > 1:
+            self.size = ImageSizeField(
+                size_options=[
+                    (opt, sizes.get(opt, {}).get('verbose_name', opt.replace('_', ' ')))
+                    for opt in size_options
+                ]
+            )
+
+    def deconstruct(self):
+        path, args, kwargs = super(ImageBlockMixin, self).deconstruct()
+        kwargs['sizes'] = self.sizes
+        kwargs['size_options'] = self.sizes
+        return path, args, kwargs
+
+
+class ImageBlock(ImageBlockMixin, Block):
     name = 'image'
 
-    id = forms.ModelChoiceField(queryset=Image.objects.all())
+    id = SingleImageField(queryset=Image.objects.all(), size_field='size')
 
 
-class GalleryBlock(Block):
+class GalleryBlock(ImageBlockMixin, Block):
     name = 'gallery'
 
-    images = forms.ModelMultipleChoiceField(queryset=Image.objects.all())
+    images = MultipleImageField(queryset=Image.objects.all(), size_field='size')
+    columns = forms.IntegerField(min_value=2, max_value=5)

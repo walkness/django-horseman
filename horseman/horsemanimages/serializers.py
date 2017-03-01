@@ -30,7 +30,10 @@ class RenditionsField(serializers.Field):
     def to_representation(self, obj):
         output = {}
         renditions = obj.all()
-        uncreated_sizes = self.sizes[0:]
+        sizes = self.sizes[0:]
+        if isinstance(self.parent, ImageSerializer):
+            sizes.extend(self.parent.extra_image_sizes.get(str(obj.instance.pk), []))
+        uncreated_sizes = sizes[0:]
         for rendition in renditions:
             i = 0
             for name, args in uncreated_sizes:
@@ -72,6 +75,10 @@ class ImageSerializer(serializers.ModelSerializer):
         extra_kwargs = {
             'title': {'required': False, 'allow_null': True}
         }
+
+    def __init__(self, *args, **kwargs):
+        self.extra_image_sizes = kwargs.pop('extra_image_sizes', {})
+        super(ImageSerializer, self).__init__(*args, **kwargs)
 
     def create(self, validated_data):
         file = validated_data.pop('file')

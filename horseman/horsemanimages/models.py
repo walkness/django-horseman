@@ -217,7 +217,7 @@ class Filter(object):
     def rendition_fields(self):
         return {
             'target_width': self.width,
-            'target_height': self.width,
+            'target_height': self.height,
             'crop': self.crop,
         }
 
@@ -235,19 +235,36 @@ class Filter(object):
 
             original_width, original_height = willow.get_size()
 
-            width, height = None, None
-            if original_width > original_height:
-                width = self.width
-                height = round(original_height * (self.width / original_width))
-            else:
-                height = self.height
-                width = round(original_width * (self.height / original_height))
-
-            if width and height:
+            if self.crop:
+                width, height = None, None
+                if original_width > original_height:
+                    height = self.height
+                    width = round(original_width * (self.height / original_height))
+                else:
+                    width = self.width
+                    height = round(original_height * (self.width / original_width))
+                    
                 willow = willow.resize((width, height))
 
-            if self.crop:
-                pass
+                if width > height:
+                    left = int((width / 2) - (self.width / 2))
+                    if left > 0:
+                        willow = willow.crop((left, 0, left + self.width, height))
+                else:
+                    top = int((height / 2) - (self.height / 2))
+                    if top > 0:
+                        willow = willow.crop((0, top, height, top + self.height))
+
+            else:
+                width, height = None, None
+                if original_width > original_height:
+                    width = self.width
+                    height = round(original_height * (self.width / original_width))
+                else:
+                    height = self.height
+                    width = round(original_width * (self.height / original_height))
+
+                willow = willow.resize((width, height))
 
             output_format = original_format
 
@@ -291,6 +308,9 @@ class AbstractRendition(models.Model):
     @property
     def url(self):
         return self.file.url
+
+    def __str__(self):
+        return '{}x{}{}'.format(self.target_width, self.target_height, '_crop' if self.crop else '')
 
     def get_upload_to(self, filename):
         folder_name = 'images/{}'.format(self.image.hash)

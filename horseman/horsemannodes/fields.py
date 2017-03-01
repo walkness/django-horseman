@@ -1,5 +1,4 @@
 from django.db.models import TextField
-from django.forms import fields, widgets
 from django.contrib.postgres.fields import JSONField
 from django.core.exceptions import ValidationError
 
@@ -51,10 +50,16 @@ class StructuredField(JSONField):
 
     def get_image_ids(self, data):
         ids = []
+        renditions = {}
         for block in data:
             block_class = self.get_block_instance_with_name(block.get('type', None))
-            ids.extend(block_class.get_image_ids(block))
-        return ids
+            new_ids, image_sizes = block_class.get_image_ids(block)
+            ids.extend(new_ids)
+            for image_id, new_sizes in image_sizes.items():
+                sizes = renditions.get(image_id, [])
+                sizes.extend(new_sizes)
+                renditions[image_id] = sizes
+        return ids, renditions
 
     def get_extra_serializer_fields(self):
         extra_fields = {

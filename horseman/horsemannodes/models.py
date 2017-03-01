@@ -70,13 +70,19 @@ class Node(AbstractNode):
 
     def get_related_images(self):
         ids = []
+        renditions = {}
         for field in self._meta.get_fields():
             get_image_ids = getattr(field, 'get_image_ids', None)
             if callable(get_image_ids):
-                ids.extend(get_image_ids(getattr(self, field.name)))
+                field_ids, field_renditions = get_image_ids(getattr(self, field.name))
+                ids.extend(field_ids)
+                for image_id, new_sizes in field_renditions.items():
+                    sizes = renditions.get(image_id, [])
+                    sizes.extend(new_sizes)
+                    renditions[image_id] = sizes
             elif isinstance(field, models.ForeignKey) and issubclass(field.related_model, Image):
                 ids.append(getattr(self, field.column))
-        return Image.objects.filter(pk__in=ids)
+        return Image.objects.prefetch_related('renditions').filter(pk__in=ids), renditions
 
 
 class NodeRevision(models.Model):
