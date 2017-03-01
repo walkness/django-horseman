@@ -1,7 +1,13 @@
 .block {
 	text-align: center;
 	position: relative;
-	padding: 2.5rem 0;
+	padding: 1rem 0;
+
+	:global {
+		& .rich-text-editor {
+			margin-top: 0;
+		}
+	}
 }
 
 .block-actions {
@@ -11,6 +17,7 @@
 	right: 0;
 	top: 0;
 	transition: opacity 300ms ease, visibility 0s linear 300ms;
+	z-index: 1010;
 
 	@nest .block:hover & {
 		transition-delay: 0;

@@ -1,4 +1,88 @@
-.sidebar {
+.sidebar-wrapper {
 	order: -1;
 	flex: 0 0 15rem;
+}
+
+.sidebar {
+	display: flex;
+	flex-flow: column;
+	justify-content: space-between;
+	position: fixed;
+	top: 0;
+	bottom: 0;
+	left: 0;
+	width: 15rem;
+	padding: 0 1rem;
+	color: gray(90%);
+	background-color: gray(30%);
+	font-size: .9rem;
+
+	a {
+		color: gray(80%);
+	}
+}
+
+.apps {
+	list-style-type: none;
+	padding: 0;
+
+	ul {
+		list-style-type: none;
+		padding: 0;
+
+		li {
+
+			> a {
+				display: block;
+				text-decoration: none;
+				padding: .75rem 1rem;
+				border: 0 solid gray(33%);
+				border-width: 1px 0;
+				transition: all 300ms ease;
+
+				&:hover {
+					background-color: gray(50%);
+					color: gray(80%);
+				}
+			}
+
+			:global a.active {
+				background-color: gray(90%);
+				color: gray(30%);
+			}
+		}
+
+		& > li {
+			margin-left: -1rem;
+			margin-right: -1rem;
+		}
+	}
+
+	& > li {
+		& + li {
+			margin-top: 2.5rem;
+		}
+	}
+}
+
+.section-header {
+	margin: 0;
+	padding: 1rem 0;
+	text-transform: uppercase;
+	font-weight: bold;
+	color: gray(60%);
+	font-size: .85em;
+}
+
+.user {
+	margin-left: -1rem;
+	margin-right: -1rem;
+	padding: .5rem 1rem 1.5rem;
+	background-color: gray(25%);
+	border-top: 1px solid gray(23%);
+
+	:global .section-header {
+		margin-top: 0;
+		padding-top: 0;
+	}
 }

@@ -5,27 +5,61 @@ import titleCase from 'title-case';
 import styles from './styles.css';
 
 
-const Sidebar = ({ nodes }) => (
-  <div className='sidebar' styleName='styles.sidebar'>
+const Sidebar = ({ nodes, currentUser, usersById, isLoggedIn }) => {
+  const apps = {};
+  Object.keys(nodes).forEach((nodeType) => {
+    const node = nodes[nodeType];
+    const appLabel = node.configuration.app_label;
+    if (!apps[appLabel]) apps[appLabel] = [];
+    apps[appLabel].push(node);
+  });
+  const currentUserObj = usersById[currentUser];
+  return (
+    <div className='sidebar' styleName='styles.sidebar-wrapper'>
 
-    <ul className='nav'>
-      { Object.keys(nodes).map(nodeType => {
-        const node = nodes[nodeType];
-        return (
-          <li key={nodeType} className='node'>
-            <Link to={`/admin/${node.configuration.app_label}/${node.configuration.model_name}/`}>
-              { titleCase(node.configuration.name_plural) }
-            </Link>
+      <div styleName='styles.sidebar'>
+
+        <ul styleName='styles.apps'>
+          { Object.keys(apps).map(appLabel => {
+            const appNodes = apps[appLabel];
+            return (
+              <li>
+                <div styleName='styles.section-header'>{ titleCase(appLabel) }</div>
+                <ul>
+                  { appNodes.map(({ configuration }) => (
+                    <li key={configuration.node_type} className='node'>
+                      <Link
+                        to={`/admin/${configuration.app_label}/${configuration.model_name}/`}
+                        activeClassName='active'
+                      >
+                        { titleCase(configuration.name_plural) }
+                      </Link>
+                    </li>
+                  )) }
+                </ul>
+              </li>
+            );
+          }) }
+
+          <li className='image'>
+            <div styleName='styles.section-header'>Images</div>
+            <ul>
+              <li><Link to='/admin/images/' activeClassName='active' onlyActiveOnIndex>Library</Link></li>
+              <li><Link to='/admin/images/upload/' activeClassName='active'>Upload</Link></li>
+            </ul>
           </li>
-        );
-      }) }
 
-      <li className='image'>
-        <Link to='/admin/images/'>Images</Link>
-      </li>
-    </ul>
+        </ul>
 
-  </div>
-);
+        <div styleName='styles.user'>
+          <div styleName='styles.section-header'>Logged In As</div>
+          { currentUserObj.email }
+        </div>
+
+      </div>
+
+    </div>
+  );
+};
 
 export default Sidebar;

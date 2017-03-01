@@ -22,6 +22,9 @@ const App = ({ children, ...props }) => (
 
 const mapStateToProps = state => ({
   nodes: state.nodes,
+  isLoggedIn: state.users.isLoggedIn,
+  currentUser: state.users.current,
+  usersById: state.users.byId,
 });
 
 export default connect(
