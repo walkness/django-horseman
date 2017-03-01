@@ -6,7 +6,10 @@ export default function imagesReducer(state = initialState.nodes, action) {
   function processImages(images) {
     const byId = {};
     const ids = images.map((image) => {
-      byId[image.pk] = Object.assign({}, state.byId[image.pk], image);
+      const existingImage = state.byId[image.pk];
+      byId[image.pk] = Object.assign({}, existingImage, image, {
+        renditions: Object.assign({}, existingImage && existingImage.renditions, image.renditions),
+      });
       return image.pk;
     });
     return { byId, ids };

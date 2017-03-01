@@ -1,6 +1,7 @@
 .block {
 	text-align: center;
 	position: relative;
+	padding: 2.5rem 0;
 }
 
 .block-actions {
@@ -9,31 +10,63 @@
 	position: absolute;
 	right: 0;
 	top: 0;
+	transition: opacity 300ms ease, visibility 0s linear 300ms;
 
 	@nest .block:hover & {
+		transition-delay: 0;
 		opacity: 1;
 		visibility: visible;
 	}
 }
 
 .image {
-	
+	display: flex;
+	flex-flow: row;
+	justify-content: space-between;
+	align-items: center;
+	border: 1px solid gray(95%);
+	padding: 1rem;
 }
 
 .selected-images {
 	display: flex;
 	flex-flow: row;
 	flex-wrap: wrap;
-	justify-content: center;
+	justify-content: flex-start;
 
 	img {
 		height: 10rem;
 		width: auto;
+		margin-top: 1px;
 
 		& + img {
 			margin-left: 1px;
 		}
 	}
+
+	&[data-columns='2'] {
+		width: 20.5rem
+	}
+
+	&[data-columns='3'] {
+		width: 30.5rem
+	}
+
+	&[data-columns='4'] {
+		width: 40.5rem
+	}
+
+	&[data-columns='5'] {
+		width: 50.5rem
+	}
+
+	&[data-columns='6'] {
+		width: 60.5rem
+	}
+}
+
+.image-controls {
+	text-align: right;
 }
 
 .rich-text {

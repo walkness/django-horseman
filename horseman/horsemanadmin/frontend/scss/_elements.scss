@@ -25,3 +25,31 @@ a,
     color: darken($color, 25%);
   }
 }
+
+.btn {
+  display: inline-block;
+  background-color: transparent;
+  border: 1px solid gray(80%);
+  padding: .75em 1em;
+  font-size: .9em;
+  color: gray(40%);
+  cursor: pointer;
+  transition: background-color 300ms ease-in, border-color 300ms ease-in, color 300ms ease-in;
+
+  &:hover {
+    background-color: gray(92.5%);
+  }
+
+  &:active,
+  &:focus {
+    outline: 0;
+  }
+
+  &:active,
+  &:focus {
+    transition: none;
+    background-color: gray(70%);
+    border-color: gray(60%);
+    color: white;
+  }
+}

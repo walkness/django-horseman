@@ -54,7 +54,8 @@ class ImageBlock extends Component {
   }
 
   getBlock(value = null, size = null, columns = null) {
-    const imagesKey = this.props.multiple ? 'images' : 'id';
+    const { multiple, gallery } = this.props;
+    const imagesKey = multiple || gallery ? 'images' : 'id';
     const block = Object.assign({}, this.props.block);
     if (value) {
       block[imagesKey] = value;
@@ -80,44 +81,50 @@ class ImageBlock extends Component {
     return (
       <div styleName='styles.image'>
 
-        <div styleName='styles.selected-images'>
+        <div styleName='styles.selected-images' data-columns={columns}>
           { (multiple ? (images || []) : [id]).map((id) => {
             const image = imagesById[id];
+            if (!image) return null;
             return <Image image={image} srcSize={size || defaultSize || 'thumbnail_300'} />;
           }) }
         </div>
 
-        <button
-          type='button'
-          onClick={() => this.setState({ showModal: !showModal })}
-        >
-          Select image{ multiple ? 's' : '' }
-        </button>
+        <div styleName='styles.image-controls'>
 
-        { gallery ?
-          <Select
-            name='size'
-            label='Size'
-            options={this.props.sizeOptions}
-            getValue={() => (size || defaultSize)}
-            setValue={this.handleSizeChange}
-          />
-        : null }
+          <button
+            type='button'
+            className='btn'
+            onClick={() => this.setState({ showModal: !showModal })}
+          >
+            Select image{ multiple ? 's' : '' }
+          </button>
 
-        { gallery ?
-          <Select
-            name='columns'
-            label='Columns'
-            options={(
-              Array.from(Array((minColumns + maxColumns) - 1)).slice(minColumns).map((_, index) => {
-                const num = index + 2;
-                return { value: num, label: `${num}` };
-              })
-            )}
-            getValue={() => columns || 2}
-            setValue={this.handleColumnsChange}
-          />
-        : null }
+          { gallery ?
+            <Select
+              name='size'
+              label='Size'
+              options={this.props.sizeOptions}
+              getValue={() => (size || defaultSize)}
+              setValue={this.handleSizeChange}
+            />
+          : null }
+
+          { gallery ?
+            <Select
+              name='columns'
+              label='Columns'
+              options={(
+                Array.from(Array((minColumns + maxColumns) - 1)).slice(minColumns).map((_, index) => {
+                  const num = index + 2;
+                  return { value: num, label: `${num}` };
+                })
+              )}
+              getValue={() => columns || 2}
+              setValue={this.handleColumnsChange}
+            />
+          : null }
+
+        </div>
 
         { showModal ?
           <ImageChooserModal

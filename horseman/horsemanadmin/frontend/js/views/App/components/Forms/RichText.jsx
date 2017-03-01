@@ -1,7 +1,7 @@
 import React, { Component, PropTypes } from 'react';
 import classNames from 'classnames';
 import { autobind } from 'core-decorators';
-import RichTextEditor from 'react-rte';
+import RichTextEditor from '../RTE/src/RichTextEditor';
 
 import InputWrapper from './InputWrapper';
 

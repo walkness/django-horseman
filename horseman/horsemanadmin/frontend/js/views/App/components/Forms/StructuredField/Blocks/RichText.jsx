@@ -1,6 +1,7 @@
 import React, { Component, PropTypes } from 'react';
-import RichTextEditor from 'react-rte';
 import { autobind } from 'core-decorators';
+
+import RichTextEditor from '../../../RTE/src/RichTextEditor';
 
 import Block from './HOC';
 

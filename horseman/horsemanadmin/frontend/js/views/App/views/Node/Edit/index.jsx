@@ -37,7 +37,6 @@ class EditNode extends Component {
 
   @autobind
   handleSubmit(data) {
-    console.log(this.fieldRefs)
     const { nodes, params } = this.props;
     const nodeType = this.getNodeType();
     const nodeState = nodes[nodeType];
