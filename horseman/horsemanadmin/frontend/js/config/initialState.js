@@ -5,6 +5,7 @@ export default {
     byId: {},
   },
   nodes: {},
+  comments: {},
   images: {
     byId: {},
     ordered: {},

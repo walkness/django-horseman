@@ -1,52 +1,59 @@
-from django.db.models import ForeignKey
+from django.db.models import ForeignKey, ManyToManyField
+from django.core.exceptions import ValidationError
 
 from rest_framework import serializers
+from rest_framework.utils import model_meta
+from rest_framework.exceptions import ValidationError as DRFValidationError
+
+from taggit_serializer.serializers import (TagListSerializerField,
+                                           TaggitSerializer)
 
 from horseman.horsemanimages.serializers import ImageSerializer
 
 from . import models
 
 
-class NodeSerializer(serializers.ModelSerializer):
-    title = serializers.SerializerMethodField()
+class RelatedNodesField(serializers.Field):
+
+    def to_representation(self, obj):
+        nodes = {}
+        for node_type, ids in obj.items():
+            node_class = models.Node.get_class_from_type(node_type)
+            serializer_class = get_node_serializer_class(node_class, node_class.api_fields)
+            serializer = serializer_class(
+                node_class.objects.filter(pk__in=ids), many=True,
+                related_images=False, related_nodes=False)
+            nodes[node_type] = serializer.data
+        return nodes
+
+
+class NodeSerializer(TaggitSerializer, serializers.ModelSerializer):
 
     class Meta:
         model = models.Node
-        fields = models.Node.api_fields + ['title']
+        fields = models.Node.api_fields
 
     def __init__(self, *args, **kwargs):
-        self.current_model_class = kwargs.pop(
-            'current_model_class', self.__class__.Meta.model)
+        include_related_images = kwargs.pop('related_images', True)
+        include_related_nodes = kwargs.pop('related_nodes', False)
+
         super(NodeSerializer, self).__init__(*args, **kwargs)
-        single_instance = self.instance
-        if isinstance(self.instance, list):
-            if len(self.instance) > 0:
-                single_instance = self.instance[0]
-            else:
-                single_instance = None
 
-        if single_instance and single_instance.__class__ is not models.Node:
-            extra_model_fields = [
-                field for field in single_instance.__class__.api_fields
-                if field not in models.Node.api_fields
-            ]
-            for field in extra_model_fields:
-                model_field = single_instance.__class__._meta.get_field(field)
-                if isinstance(model_field, ForeignKey):
-                    self.fields[field] = serializers.PrimaryKeyRelatedField(
-                        queryset=model_field.related_model.objects.all())
-                else:
-                    self.fields[field] = serializers.ModelField(model_field=model_field)
+        generic_model = self.Meta.model()
 
-            get_related_images = getattr(single_instance, 'get_related_images', None)
+        if 'title' not in generic_model.api_fields:
+            self.fields['title'] = serializers.SerializerMethodField()
+
+        if 'tags' in generic_model.api_fields:
+            self.fields['tags'] = TagListSerializerField()
+
+        if include_related_images:
+            get_related_images = getattr(generic_model, 'get_related_images', None)
             if callable(get_related_images):
                 self.fields['related_images'] = serializers.SerializerMethodField()
 
-    def get_current_model_class(self):
-        model_class = self.current_model_class
-        if self.instance:
-            model_class = self.instance.__class__
-        return model_class
+        if include_related_nodes:
+            self.fields['related_nodes'] = RelatedNodesField(source='get_related_node_ids')
 
     def get_title(self, obj):
         if hasattr(obj, 'title'):
@@ -54,9 +61,20 @@ class NodeSerializer(serializers.ModelSerializer):
         return obj.get_title()
 
     def validate(self, attrs):
-        model_class = self.get_current_model_class()
-        instance = model_class(**attrs)
-        instance.full_clean()
+        m2m_fields = {}
+        for field in self.Meta.model._meta.get_fields():
+            if field.many_to_many:
+                if field.name in attrs:
+                    m2m_fields[field.name] = attrs.pop(field.name)
+        instance = self.Meta.model(**attrs)
+        try:
+            instance.full_clean()
+        except ValidationError as e:
+            error = {}
+            for field, errors in e.error_dict.items():
+                error[field] = [err.message for err in errors]
+            raise DRFValidationError(error)
+        attrs.update(m2m_fields)
         return attrs
 
     def get_related_images(self, obj):
@@ -64,39 +82,11 @@ class NodeSerializer(serializers.ModelSerializer):
         return ImageSerializer(images, many=True, extra_image_sizes=renditions).data
 
 
-class NodeConfigurationSerializer(serializers.Serializer):
-    node_type = serializers.CharField()
-    app_label = serializers.CharField(source='_meta.app_label')
-    model_name = serializers.CharField(source='_meta.model_name')
-    name = serializers.CharField(source='_meta.verbose_name')
-    name_plural = serializers.CharField(source='_meta.verbose_name_plural')
-    num_nodes = serializers.IntegerField()
-    field_config = serializers.SerializerMethodField()
-    admin_fields = serializers.ListField()
+def get_node_serializer_class(model_class=None, serializer_fields=None):
+    class Meta:
+        model = model_class or models.Node
+        fields = serializer_fields or models.Node.api_fields
 
-    def get_field_config(self, cls):
-        field_config = {}
-        fields = cls.get_editable_fields()
-        for field in fields:
-            field_config[field.name] = {
-                'type': '{}.{}'.format(
-                    field.__module__,
-                    field.__class__.__name__
-                ),
-                'title_field': field.name == cls.admin_title_field,
-            }
-
-            for att in [
-                'name', 'verbose_name', 'verbose_name_plural', 'max_length', 'blank'
-            ]:
-                field_config[field.name][att] = getattr(field, att, None)
-
-            if isinstance(field, ForeignKey):
-                field_config[field.name]['related_model'] = '{}.{}'.format(
-                    field.related_model.__module__, field.related_model.__name__)
-
-            extra_config = getattr(field, 'get_extra_config', None)
-            if callable(extra_config):
-                field_config[field.name].update(extra_config())
-            
-        return field_config
+    return type('{}Serializer'.format(model_class.__name__), (NodeSerializer, ), {
+        'Meta': Meta,
+    })

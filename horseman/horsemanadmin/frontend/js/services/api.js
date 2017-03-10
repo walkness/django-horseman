@@ -127,11 +127,16 @@ const queryString = (_args, defaults) => {
 export const getNodes = (args) => callApi(`nodes/?${queryString(args)}`);
 export const getNode = (pk, args) => callApi(`nodes/${pk}/?${queryString(args)}`);
 export const updateNode = (pk, data, args) => sendApi(`nodes/${pk}/?${queryString(args)}`, 'PATCH', data);
+export const createNode = (data, args) => sendApi(`nodes/?${queryString(args)}`, 'POST', data);
 
 export const getImages = (args) => callApi(`images/?${queryString(args)}`);
 export const getImage = (id) => callApi(`images/${id}/`);
 export const updateImage = (id, data) => sendApi(`images/${id}/`, 'PATCH', data);
 export const uploadImage = (data, completion, onProgress) => xhrUploadApi(
   'images/', data, 'POST', completion, onProgress);
+
+export const getUsers = args => callApi(`users/?${queryString(args)}`);
+export const getUser = id => callApi(`users/${id}/`);
+export const updateUser = (id, data) => sendApi(`users/${id}/`, 'PATCH', data);
 
 export const getTimezones = () => callApi('timezones/');

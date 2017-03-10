@@ -47,6 +47,8 @@ class AbstractImage(models.Model):
 
     exif_data = JSONField(blank=True, null=True)
 
+    wp_id = models.PositiveIntegerField(blank=True, null=True, editable=False)
+
     class Meta:
         abstract = True
 
@@ -149,7 +151,9 @@ class AbstractImage(models.Model):
             self.exif_data = exif
             capture_time = exif.get('EXIF', {}).get('DateTimeOriginal', None)
             if capture_time:
-                self.captured_at = datetime.strptime(capture_time, '%Y-%m-%dT%H:%M:%S')
+                naive = datetime.strptime(capture_time, '%Y-%m-%dT%H:%M:%S')
+                aware = naive.replace(tzinfo=pytz.UTC)
+                self.captured_at = aware
             self.exif_updated = True
 
     def get_file_hash(self):

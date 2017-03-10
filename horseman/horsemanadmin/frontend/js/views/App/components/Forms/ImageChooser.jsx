@@ -11,11 +11,13 @@ import InputWrapper from './InputWrapper';
 class ImageChooser extends Component {
 
   static propTypes = {
-    onChange: PropTypes.func.isRequired,
+    onChange: PropTypes.func,
+    multiple: PropTypes.bool,
   };
 
   static defaultProps = {
     onChange: () => {},
+    multiple: false,
   };
 
   constructor(props, context) {
@@ -45,6 +47,7 @@ class ImageChooser extends Component {
 
         <button
           type='button'
+          className='btn'
           onClick={() => this.setState({ showModal: !showModal })}
         >
           Select image
@@ -60,6 +63,7 @@ class ImageChooser extends Component {
             modalProps={{
               closeModal: () => this.setState({ showModal: false }),
             }}
+            multiple={this.props.multiple}
           />
         : null }
 

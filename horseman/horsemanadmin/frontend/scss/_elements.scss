@@ -7,6 +7,7 @@ body {
   font-family: -apple-system, system-ui, BlinkMacSystemFont, Segoe UI, Roboto, Helvetica Neue, Arial, sans-serif;
   font-size: 1rem;
   font-weight: 400;
+  color: gray(30%);
 }
 
 a,
@@ -42,6 +43,7 @@ a,
   color: gray(40%);
   cursor: pointer;
   transition: background-color 300ms ease-in, border-color 300ms ease-in, color 300ms ease-in;
+  text-decoration: none;
 
   &:hover {
     background-color: gray(92.5%);

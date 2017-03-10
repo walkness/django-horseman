@@ -19,6 +19,7 @@ export const node = {
 };
 
 export const nodeUpdated = (data, nodeType) => action(types.NODE_UPDATED, { data, nodeType });
+export const nodeCreated = (data, nodeType) => action(types.NODE_CREATED, { data, nodeType });
 
 export const images = {
   request: (args) => action(types.IMAGES.REQUEST, { args }),
@@ -32,6 +33,18 @@ export const image = {
 };
 export const imageUpdated = data => action(types.IMAGE_UPDATED, { data });
 export const imageUploaded = data => action(types.IMAGE_UPLOADED, { data });
+
+export const users = {
+  request: (args) => action(types.USERS.REQUEST, { args }),
+  success: (args, response) => action(types.USERS.SUCCESS, { args, response }),
+  failure: (args, error) => action(types.USERS.FAILURE, { args, error }),
+};
+export const user = {
+  request: (id) => action(types.USER.REQUEST, { id }),
+  success: (id, response) => action(types.USER.SUCCESS, { id, response }),
+  failure: (id, error) => action(types.USER.FAILURE, { id, error }),
+};
+export const userUpdated = data => action(types.USER_UPDATED, { data });
 
 export const timezones = {
   request: () => action(types.TIMEZONES.REQUEST, {}),

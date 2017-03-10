@@ -22,14 +22,22 @@
 	input,
 	textarea {
 		width: 100%;
+		background-color: #fff;
 		border: 1px solid transparent;
 		border-bottom-color: gray(85%);
-		padding: .25em 0;
+		padding: .5em .75rem;
 		transition: border-color 300ms ease;
+		color: gray(30%);
 
 		&:focus {
 			outline: 0;
 			border-bottom-color: blue;
+		}
+	}
+
+	:global {
+		& .react-datepicker__input-container {
+			width: 100%;
 		}
 	}
 }

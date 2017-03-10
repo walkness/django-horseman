@@ -6,6 +6,8 @@ import InputWrapper from '../InputWrapper';
 import { RichText, Image } from './Blocks';
 import AddBlock from './AddBlock';
 
+import styles from './styles.css';
+
 
 const getBlockConfig = (fieldConfig, blockType) => {
   return ((fieldConfig && fieldConfig.blocks) || []).reduce((prev, curr) => {
@@ -61,7 +63,7 @@ class StructuredField extends Component {
 
   render() {
     return (
-      <div>
+      <div styleName='styles.structured-field'>
         { this.state.value.map((block, i) => {
           const blockProps = {
             key: i,

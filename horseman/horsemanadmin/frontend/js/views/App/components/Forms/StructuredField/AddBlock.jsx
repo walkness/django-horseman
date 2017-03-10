@@ -5,7 +5,7 @@ const AddBlock = ({ blocks, onClick }) => (
   <div className='add-block'>
 
     { (blocks || []).map(({ type, verbose_name }) => (
-      <button type='button' className='btn' onClick={() => onClick(type)}>
+      <button key={type} type='button' className='btn' onClick={() => onClick(type)}>
         { verbose_name }
       </button>
     )) }

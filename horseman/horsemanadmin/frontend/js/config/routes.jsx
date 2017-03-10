@@ -9,6 +9,8 @@ import Images from '../views/App/views/Images';
 import ImageLibrary from '../views/App/views/Images/Library';
 import ImageUpload from '../views/App/views/Images/Upload';
 import Image from '../views/App/views/Images/Image';
+import UserList from '../views/App/views/Users/List';
+import UserEdit from '../views/App/views/Users/Edit';
 
 export default () => (
   <Route path='admin' component={App}>
@@ -20,9 +22,15 @@ export default () => (
       <Route path=':id' component={Image} />
     </Route>
 
+    <Route path='users'>
+      <IndexRoute component={UserList} />
+      <Route path=':id' component={UserEdit} />
+    </Route>
+
     <Route path=':app'>
       <Route path=':model'>
         <IndexRoute component={NodeList} />
+        <Route path='new' component={NodeEdit} />
         <Route path=':id' component={NodeEdit} />
       </Route>
     </Route>

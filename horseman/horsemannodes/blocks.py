@@ -80,7 +80,6 @@ class Block(object):
             ]:
                 fields[name][att] = getattr(field, att, None)
 
-            print(field)
             get_extra_config = getattr(field, 'get_extra_config', None)
             if callable(get_extra_config):
                 fields[name].update(get_extra_config())

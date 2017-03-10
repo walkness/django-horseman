@@ -4,8 +4,10 @@ from django.contrib.auth.decorators import login_required
 from rest_framework.renderers import JSONRenderer
 
 from horseman.horsemannodes.models import Node
-from horseman.horsemannodes.serializers import NodeConfigurationSerializer
 from horseman.horsemanusers import get_user_serializer
+from horseman.horsemancomments.models import Comment
+
+from . import serializers
 
 
 def render(request, _init_data=None):
@@ -24,5 +26,8 @@ def render(request, _init_data=None):
 
 @login_required
 def default(request, *args, **kwargs):
-    node_configuration = NodeConfigurationSerializer(Node.get_all_node_types(), many=True).data
-    return render(request, {'nodes': node_configuration})
+    node_configuration = serializers.AdminModelConfigurationSerializer(
+        Node.get_all_types(), many=True).data
+    comment_configuration = serializers.AdminModelConfigurationSerializer(
+        Comment.get_all_types(), many=True).data
+    return render(request, {'nodes': node_configuration, 'comments': comment_configuration})

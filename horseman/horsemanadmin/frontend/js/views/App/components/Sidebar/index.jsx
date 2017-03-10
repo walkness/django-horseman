@@ -7,7 +7,13 @@ import styles from './styles.css';
 
 const Sidebar = ({ nodes, currentUser, usersById, isLoggedIn }) => {
   const apps = {};
-  Object.keys(nodes).forEach((nodeType) => {
+  Object.keys(nodes).sort((a, b) => {
+    const nodeA = nodes[a];
+    const nodeB = nodes[b];
+    if (nodeA.configuration.admin_order > nodeB.configuration.admin_order) return 1;
+    if (nodeA.configuration.admin_order < nodeB.configuration.admin_order) return -1;
+    return 0;
+  }).forEach((nodeType) => {
     const node = nodes[nodeType];
     const appLabel = node.configuration.app_label;
     if (!apps[appLabel]) apps[appLabel] = [];
@@ -23,7 +29,7 @@ const Sidebar = ({ nodes, currentUser, usersById, isLoggedIn }) => {
           { Object.keys(apps).map(appLabel => {
             const appNodes = apps[appLabel];
             return (
-              <li>
+              <li key={appLabel}>
                 <div styleName='styles.section-header'>{ titleCase(appLabel) }</div>
                 <ul>
                   { appNodes.map(({ configuration }) => (
@@ -41,7 +47,7 @@ const Sidebar = ({ nodes, currentUser, usersById, isLoggedIn }) => {
             );
           }) }
 
-          <li className='image'>
+          <li className='images'>
             <div styleName='styles.section-header'>Images</div>
             <ul>
               <li><Link to='/admin/images/' activeClassName='active' onlyActiveOnIndex>Library</Link></li>
@@ -49,11 +55,20 @@ const Sidebar = ({ nodes, currentUser, usersById, isLoggedIn }) => {
             </ul>
           </li>
 
+          <li className='settings'>
+            <div styleName='styles.section-header'>Settings</div>
+            <ul>
+              <li><Link to='/admin/users/' activeClassName='active'>Users</Link></li>
+            </ul>
+          </li>
+
         </ul>
 
         <div styleName='styles.user'>
           <div styleName='styles.section-header'>Logged In As</div>
-          { currentUserObj.email }
+          <Link to={`/admin/users/${currentUserObj.pk}/`}>
+            { currentUserObj.first_name || currentUserObj.email }
+          </Link>
         </div>
 
       </div>

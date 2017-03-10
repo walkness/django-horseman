@@ -13,13 +13,20 @@ function createRequestTypes(base) {
 export const NODES = createRequestTypes('NODES');
 export const NODE = createRequestTypes('NODE');
 export const NODE_UPDATED = 'NODE_UPDATED';
+export const NODE_CREATED = 'NODE_CREATED';
 
 export const NODES_CONFIGURATION = 'NODES_CONFIGURATION';
+
+export const COMMENTS_CONFIGURATION = 'COMMENTS_CONFIGURATION';
 
 export const IMAGES = createRequestTypes('IMAGES');
 export const IMAGE = createRequestTypes('IMAGE');
 export const IMAGE_UPDATED = 'IMAGE_UPDATED';
 export const IMAGE_UPLOADED = 'IMAGE_UPLOADED';
+
+export const USERS = createRequestTypes('USERS');
+export const USER = createRequestTypes('USER');
+export const USER_UPDATED = 'USER_UPDATED';
 
 export const TIMEZONES = createRequestTypes('TIMEZONES');
 

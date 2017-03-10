@@ -1,0 +1,33 @@
+.users {
+	
+}
+
+.users-list {
+	list-style-type: none;
+	padding: 0;
+}
+
+.user {
+
+}
+
+.column {
+
+}
+
+.name {
+	display: flex;
+	flex-flow: row;
+	align-items: center;
+
+	> a {
+		display: block;
+		margin-left: 1rem;
+		text-decoration: none;
+	}
+}
+
+.gravatar {
+	width: 3rem;
+	height: 3rem;
+}

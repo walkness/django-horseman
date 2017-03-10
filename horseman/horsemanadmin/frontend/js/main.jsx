@@ -15,8 +15,9 @@ import defaultInitialState from './config/initialState';
 import reducer from './reducers';
 import usersReducer from './reducers/UsersReducer';
 import nodesReducer from './reducers/NodesReducer';
+import commentsReducer from './reducers/CommentsReducer';
 
-import { LOGIN, NODES_CONFIGURATION } from './constants/ActionTypes';
+import { LOGIN, NODES_CONFIGURATION, COMMENTS_CONFIGURATION } from './constants/ActionTypes';
 
 import rootSaga from './sagas';
 
@@ -29,6 +30,7 @@ const initialState = JSON.parse(JSON.stringify(defaultInitialState));
 const runAction = (action) => {
   initialState.users = usersReducer(initialState.users, action);
   initialState.nodes = nodesReducer(initialState.nodes, action);
+  initialState.comments = commentsReducer(initialState.comments, action);
 };
 
 if (initData.isLoggedIn && initData.currentUser) {
@@ -37,6 +39,10 @@ if (initData.isLoggedIn && initData.currentUser) {
 
 if (initData.nodes) {
   runAction({ type: NODES_CONFIGURATION, nodes: initData.nodes });
+}
+
+if (initData.comments) {
+  runAction({ type: COMMENTS_CONFIGURATION, comments: initData.comments });
 }
 
 const sagaMiddleware = createSagaMiddleware();

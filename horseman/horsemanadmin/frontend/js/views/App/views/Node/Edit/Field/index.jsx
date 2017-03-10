@@ -1,7 +1,9 @@
 import React, { PropTypes } from 'react';
 import titleCase from 'title-case';
 
-import { Input, RichText, StructuredField, ImageChooser, SlugField } from '../../../../components/Forms';
+import { Input, RichText, StructuredField, ImageChooser, SlugField, DatePicker } from '../../../../components/Forms';
+import ForeignKey from './ForeignKey';
+import { TypedSelect } from '../../../../components/Forms';
 
 
 const Field = ({ config, fieldRef, ...props }) => {
@@ -43,10 +45,34 @@ const Field = ({ config, fieldRef, ...props }) => {
     return <StructuredField {...inputProps} />;
   }
 
+  if (
+    config.type === 'django.db.models.fields.related.ForeignKey' &&
+    config.related_model === 'horseman.horsemanimages.models.Image'
+  ) {
+    return <ImageChooser {...inputProps} />;
+  }
+
   if ([
     'django.db.models.fields.related.ForeignKey',
+    'django.db.models.fields.related.ManyToManyField',
+    'mptt.fields.TreeForeignKey',
+    'mptt.fields.TreeManyToManyField',
   ].indexOf(config.type) !== -1) {
-    return <ImageChooser {...inputProps} />;
+    return (
+      <ForeignKey
+        multiple={[
+          'django.db.models.fields.related.ManyToManyField',
+          'mptt.fields.TreeManyToManyField',
+        ].indexOf(config.type) !== -1}
+        {...inputProps}
+      />
+    );
+  }
+
+  if ([
+    'django.db.models.fields.DateField',
+  ].indexOf(config.type) !== -1) {
+    return <DatePicker {...inputProps} />;
   }
 
   return null;
