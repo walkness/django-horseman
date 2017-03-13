@@ -10,6 +10,18 @@ from horseman import settings, mixins
 from horseman.horsemanimages.models import Image
 
 
+def get_object_revision_relation_value(obj):
+    if not obj:
+        return None
+
+    val = obj.pk
+    get_revision_relation_value = getattr(
+        obj, 'get_revision_relation_value', None)
+    if callable(get_revision_relation_value):
+        val = get_revision_relation_value()
+    return val
+
+
 class NodeQuerySet(models.QuerySet):
 
     def prefetch_related_images(self):
@@ -27,6 +39,11 @@ class NodeQuerySet(models.QuerySet):
             obj.prefetched_related_images = images
         return self
 
+    def get_from_revision_relation_value(self, value):
+        if isinstance(value, (list, tuple)):
+            return self.filter(pk__in=value)
+        return self.filter(pk=value)
+
 
 class NodeManager(models.Manager):
 
@@ -35,6 +52,9 @@ class NodeManager(models.Manager):
 
     def prefetch_related_images(self):
         return self.get_queryset().prefetch_related_images()
+
+    def get_from_revision_relation_value(self, value):
+        return self.get_queryset().get_from_revision_relation_value(value)
 
 
 class AbstractNode(mixins.AdminModelMixin, models.Model):
@@ -46,10 +66,12 @@ class AbstractNode(mixins.AdminModelMixin, models.Model):
     modified_at = models.DateTimeField(default=timezone.now, editable=False)
 
     created_by = models.ForeignKey(
-        django_settings.AUTH_USER_MODEL, related_name='created_nodes')
+        django_settings.AUTH_USER_MODEL, related_name='created_nodes', editable=False)
     published_by = models.ForeignKey(
         django_settings.AUTH_USER_MODEL, related_name='published_nodes',
-        null=True, blank=True)
+        null=True, blank=True, editable=False)
+    author = models.ForeignKey(
+        django_settings.AUTH_USER_MODEL, related_name='nodes')
 
     slug = models.SlugField()
     url_path = models.TextField(editable=False)
@@ -82,6 +104,9 @@ class AbstractNode(mixins.AdminModelMixin, models.Model):
 
     def get_title(self):
         return self.slug
+
+    def get_revision_relation_value(self):
+        return str(self.pk)
 
 
 class Node(AbstractNode):
@@ -133,16 +158,64 @@ class Node(AbstractNode):
                     node_ids[node_type].extend(ids)
         return node_ids
 
+    def get_revision_fields(self):
+        base_fields = ['slug', 'author']
+        all_node_fields = Node._meta.get_fields()
+        extra_fields = [
+            field.name for field in self._meta.get_fields()
+            if field not in all_node_fields and field.editable and not field.auto_created
+        ]
+        return base_fields + extra_fields
+
+    def get_revision_content(self):
+        content = {}
+        for field_name in self.get_revision_fields():
+            field = self._meta.get_field(field_name)
+            if field.many_to_one:
+                content[field_name] = get_object_revision_relation_value(getattr(self, field_name))
+            elif field.many_to_many:
+                qs = getattr(self, field_name).all()
+                if field.__class__.__name__ == 'TaggableManager':
+                    content[field_name] = [obj.name for obj in qs]
+                else:
+                    content[field_name] = [get_object_revision_relation_value(obj) for obj in qs]
+            else:
+                content[field_name] = getattr(self, field_name)
+        return content
+
+    def create_revision(self, **kwargs):
+        return self.revisions.create(content=self.get_revision_content(), **kwargs)
+
+    def as_revision(self, revision):
+        for att, value in revision.content_as_internal_value(self.__class__).items():
+            setattr(self, att, value)
+        return self
+
 
 class NodeRevision(models.Model):
     if settings.USE_UUID_KEYS:
         id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
 
-    node = models.ForeignKey(Node)
-    user = models.ForeignKey(django_settings.AUTH_USER_MODEL)
+    node = models.ForeignKey(Node, related_name='revisions')
+    created_by = models.ForeignKey(django_settings.AUTH_USER_MODEL)
     created_at = models.DateTimeField(default=timezone.now)
+    content = JSONField()
 
-    if connection.vendor == 'postgresql':
-        content = JSONField()
-    else:
-        content = models.TextField()
+    def content_as_internal_value(self, node_class=Node):
+        if not hasattr(self, '_content_internal_value'):
+            content = {}
+            for att, raw_value in self.content.items():
+                field = node_class._meta.get_field(att)
+                value = raw_value
+                if field.is_relation and field.__class__.__name__ is not 'TaggableManager':
+                    get_from_revision_relation_value = getattr(
+                        field.related_model.objects, 'get_from_revision_relation_value', None)
+                    if callable(get_from_revision_relation_value):
+                        value = get_from_revision_relation_value(raw_value)
+                    elif field.many_to_one:
+                        value = field.related_model.objects.filter(pk=raw_value).first()
+                    elif field.many_to_many and isinstance(raw_value, list):
+                        value = field.related_model.objects.filter(pk__in=raw_value)
+                content[att] = value
+            self._content_internal_value = content
+        return self._content_internal_value

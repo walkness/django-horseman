@@ -1,0 +1,21 @@
+.form {
+	padding-bottom: 4.5rem;
+}
+
+.node-actions {
+	position: fixed;
+	bottom: 0;
+	left: 15rem;
+	right: 0;
+	height: 4.5rem;
+	background-color: gray(50%);
+	display: flex;
+	flex-flow: row;
+	padding: 1rem;
+
+	:global {
+		.btn {
+			background-color: #fff;
+		}
+	}
+}

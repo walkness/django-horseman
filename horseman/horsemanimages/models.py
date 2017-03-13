@@ -203,6 +203,9 @@ class AbstractImage(models.Model):
 
         return rendition
 
+    def get_revision_relation_value(self):
+        return str(self.pk)
+
 
 class Image(AbstractImage):
     pass
@@ -250,6 +253,8 @@ class Filter(object):
                     
                 willow = willow.resize((width, height))
 
+                print(width, height)
+
                 if width > height:
                     left = int((width / 2) - (self.width / 2))
                     if left > 0:
@@ -257,7 +262,7 @@ class Filter(object):
                 else:
                     top = int((height / 2) - (self.height / 2))
                     if top > 0:
-                        willow = willow.crop((0, top, height, top + self.height))
+                        willow = willow.crop((0, top, width, top + self.height))
 
             else:
                 width, height = None, None

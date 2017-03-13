@@ -40,9 +40,10 @@
 	flex-flow: row;
 	flex-wrap: wrap;
 	justify-content: flex-start;
+	max-width: 50%;
 
 	img {
-		height: 10rem;
+		max-height: 10rem;
 		width: auto;
 		margin-top: 1px;
 

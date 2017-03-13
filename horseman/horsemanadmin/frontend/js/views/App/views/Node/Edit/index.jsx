@@ -16,6 +16,8 @@ import { Input } from '../../../components/Forms';
 import Field from './Field';
 import { getNodeTypeFromURLComponents } from '../../../../../utils';
 
+import styles from './styles.css';
+
 
 class EditNode extends Component {
 
@@ -35,7 +37,7 @@ class EditNode extends Component {
     const { params } = props || this.props;
     const nodeType = this.getNodeType(props);
     if (nodeType) {
-      this.props.nodeRequest(params.id, { type: nodeType });
+      this.props.nodeRequest(params.id, { type: nodeType, revision: 'latest' });
     }
   }
 
@@ -46,7 +48,7 @@ class EditNode extends Component {
     const nodeState = nodes[nodeType];
     const includedFields = Object.keys(data);
     const missingValues = nodeState.configuration.admin_fields.filter(
-      fieldName => includedFields.indexOf(fieldName) === -1)
+      fieldName => includedFields.indexOf(fieldName) === -1);
     const completeData = Object.assign({}, data);
     missingValues.forEach((fieldName) => {
       if (this.fieldRefs[fieldName] && this.fieldRefs[fieldName].getAPIValue) {
@@ -91,6 +93,7 @@ class EditNode extends Component {
         <Formsy.Form
           onValidSubmit={this.handleSubmit}
           noValidate
+          styleName='styles.form'
         >
 
         { nodeState.configuration.admin_fields.map((fieldName) => {
@@ -111,9 +114,11 @@ class EditNode extends Component {
           );
         }) }
 
-        <button type='submit' className='btn'>
-          { params.id ? 'Update' : 'Save' }
-        </button>
+        <div styleName='styles.node-actions'>
+          <button type='submit' className='btn'>
+            { params.id ? 'Update' : 'Save' }
+          </button>
+        </div>
 
         </Formsy.Form>
 

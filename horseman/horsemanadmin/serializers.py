@@ -2,6 +2,8 @@ from django.db.models import ForeignKey, ManyToManyField
 
 from rest_framework import serializers
 
+from horseman.horsemannodes.models import Node
+
 
 class AdminModelConfigurationSerializer(serializers.Serializer):
     node_type = serializers.CharField(source='type')
@@ -32,7 +34,7 @@ class AdminModelConfigurationSerializer(serializers.Serializer):
                 field_config[field.name][att] = getattr(field, att, None)
 
             if isinstance(field, (ForeignKey, ManyToManyField)):
-                if issubclass(field.related_model, cls):
+                if issubclass(field.related_model, Node):
                     field_config[field.name][
                         'related_node_type'] = field.related_model.type()
                 field_config[field.name]['related_model'] = '{}.{}'.format(

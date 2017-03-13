@@ -55,6 +55,26 @@ class NodeSerializer(TaggitSerializer, serializers.ModelSerializer):
         if include_related_nodes:
             self.fields['related_nodes'] = RelatedNodesField(source='get_related_node_ids')
 
+    def update(self, instance, validated_data):
+        user = validated_data.pop('user', None)
+        publish = validated_data.pop('publish', False)
+        unpublish = validated_data.pop('unpublish', False)
+        published = (publish or instance.published) and not unpublish
+        if publish or not published:
+            validated_data['published'] = published
+            instance = super(NodeSerializer, self).update(instance, validated_data)
+        else:
+            for att in instance.get_revision_fields():
+                field = instance._meta.get_field(att)
+                if att in validated_data:
+                    value = validated_data[att]
+                    if field.many_to_many:
+                        getattr(instance, att).set(value)
+                    else:
+                        setattr(instance, att, value)
+        instance.create_revision(created_by=user)
+        return instance
+
     def get_title(self, obj):
         if hasattr(obj, 'title'):
             return obj.title
@@ -62,13 +82,16 @@ class NodeSerializer(TaggitSerializer, serializers.ModelSerializer):
 
     def validate(self, attrs):
         m2m_fields = {}
+        exclude_fields = []
         for field in self.Meta.model._meta.get_fields():
-            if field.many_to_many:
-                if field.name in attrs:
-                    m2m_fields[field.name] = attrs.pop(field.name)
+            if field.name not in attrs:
+                exclude_fields.append(field.name)
+            elif field.many_to_many:
+                exclude_fields.append(field.name)
+                m2m_fields[field.name] = attrs.pop(field.name)
         instance = self.Meta.model(**attrs)
         try:
-            instance.full_clean()
+            instance.full_clean(exclude=exclude_fields)
         except ValidationError as e:
             error = {}
             for field, errors in e.error_dict.items():
@@ -82,11 +105,34 @@ class NodeSerializer(TaggitSerializer, serializers.ModelSerializer):
         return ImageSerializer(images, many=True, extra_image_sizes=renditions).data
 
 
-def get_node_serializer_class(model_class=None, serializer_fields=None):
+class NodeWithRevisionSerializer(NodeSerializer):
+
+    def __init__(self, *args, **kwargs):
+        self.revision = kwargs.pop('revision')
+        super(NodeWithRevisionSerializer, self).__init__(*args, **kwargs)
+
+    def to_representation(self, instance):
+        instance = instance.as_revision(self.revision)
+        output = super(NodeWithRevisionSerializer, self).to_representation(instance)
+        output['revision'] = NodeRevisionSerializer(self.revision).data
+        return output
+
+
+def get_node_serializer_class(model_class=None, serializer_fields=None, revision=None):
     class Meta:
         model = model_class or models.Node
         fields = serializer_fields or models.Node.api_fields
 
-    return type('{}Serializer'.format(model_class.__name__), (NodeSerializer, ), {
-        'Meta': Meta,
-    })
+    return type(
+        '{}Serializer'.format(model_class.__name__),
+        (NodeWithRevisionSerializer if revision else NodeSerializer, ), {
+            'Meta': Meta,
+        }
+    )
+
+
+class NodeRevisionSerializer(serializers.ModelSerializer):
+
+    class Meta:
+        model = models.NodeRevision
+        fields = ['pk', 'created_by', 'created_at']

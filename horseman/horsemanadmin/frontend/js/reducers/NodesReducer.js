@@ -36,7 +36,9 @@ export default function nodesReducer(state = initialState.nodes, action) {
       if (action.args && action.args.type) {
         const nodes = action.response.results || [action.response];
         const { byId, ids, relatedNodesById } = processNodes(nodes, action.args.type);
-        const updates = { byId };
+        const updates = {
+          byId: Object.assign({}, state[action.args.type].byId, byId),
+        };
         const relatedUpdates = {};
         Object.keys(relatedNodesById).forEach((nodeType) => {
           relatedUpdates[nodeType] = Object.assign({}, state[nodeType], {
