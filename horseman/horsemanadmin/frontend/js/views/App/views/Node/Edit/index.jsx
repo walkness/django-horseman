@@ -1,4 +1,5 @@
 import React, { Component, PropTypes } from 'react';
+import { locationShape } from 'react-router/lib/PropTypes';
 import { connect } from 'react-redux';
 import Formsy from 'formsy-react';
 import { autobind } from 'core-decorators';
@@ -6,6 +7,7 @@ import { autobind } from 'core-decorators';
 import {
   nodes as nodesAction,
   node as nodeAction,
+  nodeRevisions as nodeRevisionsAction,
   nodeUpdated,
   nodeCreated,
   images as imagesAction,
@@ -16,10 +18,17 @@ import { Input } from '../../../components/Forms';
 import Field from './Field';
 import { getNodeTypeFromURLComponents } from '../../../../../utils';
 
+import RevisionsList from './RevisionsList';
+
 import styles from './styles.css';
 
 
 class EditNode extends Component {
+
+  static propTypes = {
+    params: PropTypes.object.isRequired,
+    location: locationShape.isRequired,
+  };
 
   constructor(props, context) {
     super(props, context);
@@ -31,13 +40,30 @@ class EditNode extends Component {
     if (this.props.params.id) {
       this.getNode();
     }
+    const { params } = this.props;
+    const nodeType = this.getNodeType();
+    if (nodeType) {
+      this.props.nodeRevisionsRequest(params.id, { type: nodeType });
+    }
+  }
+
+  componentWillReceiveProps(nextProps) {
+    if (
+      (this.props.params.id !== nextProps.params.id) ||
+      (this.props.location.query.revision !== nextProps.location.query.revision)
+    ) {
+      this.getNode(nextProps);
+    }
   }
 
   getNode(props) {
-    const { params } = props || this.props;
+    const { params, location } = props || this.props;
     const nodeType = this.getNodeType(props);
     if (nodeType) {
-      this.props.nodeRequest(params.id, { type: nodeType, revision: 'latest' });
+      this.props.nodeRequest(params.id, {
+        type: nodeType,
+        revision: location.query.revision || 'latest',
+      });
     }
   }
 
@@ -59,7 +85,7 @@ class EditNode extends Component {
       if (error) {
 
       } else {
-        const action = params.id ? nodeUpdated : nodeCreated;
+        const action = params.id ? this.props.nodeUpdated : this.props.nodeCreated;
         action(response, nodeType);
       }
     });
@@ -80,12 +106,16 @@ class EditNode extends Component {
   }
 
   render() {
-    const { nodes, params } = this.props;
+    const { nodes, params, location } = this.props;
     const nodeType = this.getNodeType();
     const nodeState = nodes[nodeType];
     const node = nodeState && nodeState.byId && nodeState.byId[params.id];
+    const revision = (
+      node && node.revisionsById &&
+      node.revisionsById[location.query.revision || node.latestRevision]
+    );
 
-    if (params.id && !node) return null;
+    if (params.id && !revision) return null;
 
     return (
       <div className='edit-node'>
@@ -96,29 +126,36 @@ class EditNode extends Component {
           styleName='styles.form'
         >
 
-        { nodeState.configuration.admin_fields.map((fieldName) => {
-          const field = nodeState.configuration.field_config[fieldName];
-          return (
-            <Field
-              key={fieldName}
-              config={field}
-              value={node && node[fieldName]}
-              wrappedComponentRef={(c) => { this.fieldRefs[fieldName] = c; }}
-              imagesById={this.props.imagesById}
-              orderedImages={this.props.orderedImages}
-              imagesRequest={this.props.imagesRequest}
-              imageUploaded={this.props.imageUploaded}
-              nodes={nodes}
-              nodesRequest={this.props.nodesRequest}
-            />
-          );
-        }) }
+          { nodeState.configuration.admin_fields.map((fieldName) => {
+            const field = nodeState.configuration.field_config[fieldName];
+            return (
+              <Field
+                key={fieldName}
+                config={field}
+                value={revision && revision[fieldName]}
+                wrappedComponentRef={(c) => { this.fieldRefs[fieldName] = c; }}
+                imagesById={this.props.imagesById}
+                orderedImages={this.props.orderedImages}
+                imagesRequest={this.props.imagesRequest}
+                imageUploaded={this.props.imageUploaded}
+                nodes={nodes}
+                nodesRequest={this.props.nodesRequest}
+              />
+            );
+          }) }
 
-        <div styleName='styles.node-actions'>
-          <button type='submit' className='btn'>
-            { params.id ? 'Update' : 'Save' }
-          </button>
-        </div>
+          <div styleName='styles.node-actions'>
+            <button type='submit' className='btn'>
+              { params.id ? 'Update' : 'Save' }
+            </button>
+
+            <RevisionsList
+              revisions={node && node.revisions}
+              revisionsById={node && node.revisionsById}
+              current={node && node.latestRevision}
+              usersById={this.props.usersById}
+            />
+          </div>
 
         </Formsy.Form>
 
@@ -131,16 +168,19 @@ const mapStateToProps = state => ({
   nodes: state.nodes,
   imagesById: state.images.byId,
   orderedImages: state.images.ordered,
+  usersById: state.users.byId,
 });
 
 const nodeRequest = nodeAction.request;
 const nodesRequest = nodesAction.request;
+const nodeRevisionsRequest = nodeRevisionsAction.request;
 const imagesRequest = imagesAction.request;
 
 export default connect(
   mapStateToProps, {
     nodeRequest,
     nodesRequest,
+    nodeRevisionsRequest,
     nodeUpdated,
     nodeCreated,
     imagesRequest,

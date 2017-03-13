@@ -11,6 +11,7 @@
 	background-color: gray(50%);
 	display: flex;
 	flex-flow: row;
+	justify-content: space-between;
 	padding: 1rem;
 
 	:global {
@@ -18,4 +19,37 @@
 			background-color: #fff;
 		}
 	}
+}
+
+.revisions {
+	position: relative;
+	display: flex;
+	flex-flow: row;
+	align-items: center;
+}
+
+.current-revision {
+	padding: .5em .75em;
+	color: gray(75%);
+	font-size: .8em;
+}
+
+.revisions-list {
+	list-style-type: none;
+	padding: 0;
+	margin: 0;
+	position: absolute;
+	background-color: #fff;
+	bottom: 100%;
+	right: 0;
+	margin-bottom: 1rem;
+}
+
+.revision {
+	padding: .5rem 1rem;
+	border: 1px solid gray(95%);
+	min-width: 15em;
+	display: block;
+	margin-top: -1px;
+	text-decoration: none;
 }

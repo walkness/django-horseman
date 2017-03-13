@@ -189,6 +189,7 @@ class Node(AbstractNode):
     def as_revision(self, revision):
         for att, value in revision.content_as_internal_value(self.__class__).items():
             setattr(self, att, value)
+        self.revision = revision
         return self
 
 

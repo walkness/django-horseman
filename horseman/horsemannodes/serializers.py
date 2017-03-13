@@ -55,6 +55,8 @@ class NodeSerializer(TaggitSerializer, serializers.ModelSerializer):
         if include_related_nodes:
             self.fields['related_nodes'] = RelatedNodesField(source='get_related_node_ids')
 
+        self.fields['revision'] = NodeRevisionSerializer(read_only=True)
+
     def update(self, instance, validated_data):
         user = validated_data.pop('user', None)
         publish = validated_data.pop('publish', False)
@@ -72,7 +74,8 @@ class NodeSerializer(TaggitSerializer, serializers.ModelSerializer):
                         getattr(instance, att).set(value)
                     else:
                         setattr(instance, att, value)
-        instance.create_revision(created_by=user)
+        revision = instance.create_revision(created_by=user)
+        instance.revision = revision
         return instance
 
     def get_title(self, obj):
@@ -118,14 +121,14 @@ class NodeWithRevisionSerializer(NodeSerializer):
         return output
 
 
-def get_node_serializer_class(model_class=None, serializer_fields=None, revision=None):
+def get_node_serializer_class(model_class=None, serializer_fields=None):
     class Meta:
         model = model_class or models.Node
         fields = serializer_fields or models.Node.api_fields
 
     return type(
         '{}Serializer'.format(model_class.__name__),
-        (NodeWithRevisionSerializer if revision else NodeSerializer, ), {
+        (NodeSerializer, ), {
             'Meta': Meta,
         }
     )

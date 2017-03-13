@@ -28,6 +28,12 @@ class StructuredField extends Component {
     this.blockRefs = [];
   }
 
+  componentWillReceiveProps(nextProps) {
+    if (nextProps.value && nextProps.value !== this.props.value) {
+      this.setState({ value: nextProps.value });
+    }
+  }
+
   updateBlock(index, newValue) {
     const value = this.state.value.slice(0);
     value[index] = Object.assign({}, value[index], newValue);

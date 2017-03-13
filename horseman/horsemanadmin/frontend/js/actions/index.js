@@ -18,6 +18,11 @@ export const node = {
   failure: (pk, args, error) => action(types.NODE.FAILURE, { pk, args, error }),
 };
 
+export const nodeRevisions = {
+  request: (pk, args) => action(types.NODE_REVISIONS.REQUEST, { pk, args }),
+  success: (pk, args, response) => action(types.NODE_REVISIONS.SUCCESS, { pk, args, response }),
+  failure: (pk, args, error) => action(types.NODE_REVISIONS.FAILURE, { pk, args, error }),
+};
 export const nodeUpdated = (data, nodeType) => action(types.NODE_UPDATED, { data, nodeType });
 export const nodeCreated = (data, nodeType) => action(types.NODE_CREATED, { data, nodeType });
 

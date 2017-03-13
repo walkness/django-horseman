@@ -17,14 +17,10 @@ class NodeViewSet(viewsets.ModelViewSet):
 
     def get_serializer_class(self):
         node_class = self.get_node_class()
-        revision = self.get_revision()
-        return serializers.get_node_serializer_class(node_class, node_class.api_fields, revision)
+        return serializers.get_node_serializer_class(node_class, node_class.api_fields)
 
     def get_serializer(self, *args, **kwargs):
         kwargs['related_nodes'] = self.action == 'retrieve'
-        revision = self.get_revision()
-        if revision:
-            kwargs['revision'] = revision
         return super(NodeViewSet, self).get_serializer(*args, **kwargs)
 
     def get_queryset(self):
@@ -61,6 +57,13 @@ class NodeViewSet(viewsets.ModelViewSet):
 
         return qs
 
+    def get_object(self):
+        obj = super(NodeViewSet, self).get_object()
+        revision = self.get_revision()
+        if revision:
+            obj = obj.as_revision(revision)
+        return obj
+
     def perform_create(self, serializer):
         return self.perform_update(serializer)
 
@@ -85,6 +88,8 @@ class NodeViewSet(viewsets.ModelViewSet):
                 if revision_param == 'latest':
                     self._revision_obj = models.NodeRevision.objects.filter(
                         node_id=self.kwargs['pk']).order_by('-created_at').first()
+                elif revision_param == 'active':
+                    pass
                 else:
                     self._revision_obj = models.NodeRevision.objects.filter(
                         pk=revision_param).first()
