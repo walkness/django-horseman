@@ -213,12 +213,14 @@ class NodeRevisionQuerySet(models.QuerySet):
 
     def add_latest_revision(self):
         latest = self.order_by('-created_at').defer('content').first()
-        return self.annotate(
-            is_latest=models.Case(
-                models.When(pk=latest.pk, then=True),
-                default=False, output_field=models.BooleanField()
+        if latest:
+            return self.annotate(
+                is_latest=models.Case(
+                    models.When(pk=latest.pk, then=True),
+                    default=False, output_field=models.BooleanField()
+                )
             )
-        )
+        return self
 
 
 class NodeRevision(models.Model):

@@ -1,0 +1,18 @@
+.browser {
+	max-height: 100%;
+
+	&:global(.scroll-container) {
+		height: 100%;
+		display: flex;
+		flex-flow: column;
+	}
+}
+
+.filters {
+
+}
+
+.images {
+	overflow-y: auto;
+	height: 100%;
+}

@@ -5,9 +5,9 @@ import Item from './Item';
 import styles from './styles.css';
 
 
-const ImageBrowserGrid = ({ ids, imagesById, getLink, onImageClick, selected }) => {
+const ImageBrowserGrid = ({ ids, imagesById, getLink, onImageClick, selected, contentRef }) => {
   return (
-    <div className='image-browser-grid' styleName='styles.grid'>
+    <div className='image-browser-grid' styleName='styles.grid' ref={contentRef}>
 
       { ids.map(id => (
         <Item

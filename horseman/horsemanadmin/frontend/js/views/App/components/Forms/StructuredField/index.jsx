@@ -124,6 +124,8 @@ class StructuredField extends Component {
                 defaultSize={defaultSize}
                 minColumns={minCols}
                 maxColumns={maxCols}
+                imageFilters={this.props.imageFilters}
+                handleImageFiltersChange={this.props.handleImageFiltersChange}
               />
             );
           }

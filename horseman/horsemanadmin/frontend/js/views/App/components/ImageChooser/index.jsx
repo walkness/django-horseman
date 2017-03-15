@@ -28,6 +28,7 @@ class ImageChooser extends Component {
     this.state = {
       mode: 'library',
       selected: props.selected || [],
+      filters: {},
     };
   }
 
@@ -65,6 +66,12 @@ class ImageChooser extends Component {
     }
   }
 
+  @autobind
+  handleFiltersChange(newFilters) {
+    const filters = Object.assign({}, this.state.filters, newFilters);
+    this.setState({ filters });
+  }
+
   render() {
     const { mode, selected } = this.state;
     const lastSelected = this.props.imagesById[
@@ -98,6 +105,11 @@ class ImageChooser extends Component {
                     imagesRequest={this.props.imagesRequest}
                     selected={selected}
                     onImageClick={this.handleImageSelected}
+                    filters={this.props.filters || this.state.filters}
+                    handleFiltersChange={
+                      this.props.handleFiltersChange ||
+                      this.handleFiltersChange
+                    }
                   />
                 </div>
 

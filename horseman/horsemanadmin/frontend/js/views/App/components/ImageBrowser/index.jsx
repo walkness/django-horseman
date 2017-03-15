@@ -2,10 +2,14 @@
 
 import React, { Component, PropTypes } from 'react';
 import { autobind } from 'core-decorators';
+import { isEqual } from 'lodash';
+import classNames from 'classnames';
 
 import { Input } from '../Forms/Input';
 
 import Grid from './Grid';
+
+import styles from './styles.css';
 
 
 const MODES = {
@@ -20,20 +24,26 @@ class ImageBrowser extends Component {
     imagesById: PropTypes.object.isRequired,
     orderedImages: PropTypes.object.isRequired,
     useWindowScroll: PropTypes.bool,
+    filters: PropTypes.object,
+    handleFiltersChange: PropTypes.func,
+  };
+
+  static defaultProps = {
+    filters: {},
+    handleFiltersChange: () => {},
   };
 
   constructor(props, context) {
     super(props, context);
     this.state = {
       mode: MODES.GRID,
-      search: null,
     };
     this.pastThreshold = false;
     this.scrollThreshold = 0.25;
   }
 
   componentWillMount() {
-    this.props.imagesRequest();
+    this.getImages();
   }
 
   componentDidMount() {
@@ -41,6 +51,12 @@ class ImageBrowser extends Component {
       window.addEventListener('scroll', this.handleScroll);
     }
     this._setDimensions();
+  }
+
+  componentWillReceiveProps(nextProps) {
+    if (!isEqual(nextProps.filters, this.props.filters)) {
+      this.getImages(nextProps);
+    }
   }
 
   componentDidUpdate() {
@@ -53,16 +69,81 @@ class ImageBrowser extends Component {
     }
   }
 
+  getImages(props) {
+    const { orderedImages, imagesRequest, filters } = props || this.props;
+    const node = this.getOrderedNode(props);
+    if (!(node && node.ids)) {
+      imagesRequest(filters);
+    }
+  }
+
+  getActiveFilter(props) {
+    const { filters } = props || this.props;
+    const searchLessFilters = Object.assign({}, filters);
+    delete searchLessFilters.search;
+    return (
+      Object.keys(searchLessFilters).map(key => `${key}=${filters[key]}`).join('&') ||
+      'default'
+    );
+  }
+
+  getCachedSearch(props) {
+    const { filters, orderedImages } = props || this.props;
+    const searchStr = filters.search;
+    const filterStr = this.getActiveFilter(props);
+    const filtered = orderedImages[filterStr];
+    const allCaches = Object.keys((filtered && filtered.search) || {});
+    return allCaches.reduce((prev, curr) => {
+      if (searchStr.startsWith(curr)) return curr;
+      return prev;
+    }, null);
+  }
+
+  getOrderedNode(props) {
+    const { orderedImages, filters } = props || this.props;
+    const filterStr = this.getActiveFilter(props);
+    const ordered = orderedImages[filterStr];
+    if (filters.search) {
+      const cachedSearch = this.getCachedSearch(props);
+      return (
+        ordered && ordered.search && ordered.search[cachedSearch]
+      );
+    }
+    return ordered;
+  }
+
+  getOrderedImages(props) {
+    const node = this.getOrderedNode(props);
+    return (node && node.ids) || [];
+  }
+
+  getSearchedImages(props) {
+    const { imagesById, filters } = props || this.props;
+    const ids = this.getOrderedImages(props);
+    const searchStr = filters.search;
+    if (!searchStr) return ids;
+    const re = new RegExp(`(?:^|\s)${searchStr}`, 'ig');
+    return ids.filter((id) => {
+      const image = imagesById[id];
+      return image && image.title && image.title.match(re);
+    });
+  }
+
   _setDimensions() {
     if (this.props.useWindowScroll) {
       this._containerHeight = window.innerHeight;
       this._contentHeight = document.documentElement.scrollHeight;
+    } else {
+      const containerRect = this.container.getBoundingClientRect();
+      const contentRect = this.content.getBoundingClientRect();
+      this._containerHeight = containerRect.height;
+      this._contentHeight = contentRect.height;
     }
   }
 
   @autobind
   handleScroll(e) {
-    const scrollTop = this.props.useWindowScroll ? window.scrollY : null;
+    const scrollTop = this.props.useWindowScroll ? window.scrollY : e.target.scrollTop;
     const pct = scrollTop / (this._contentHeight - this._containerHeight);
     if (pct >= (1 - this.scrollThreshold) && !this.pastThreshold) {
       this.pastThreshold = true;
@@ -74,7 +155,7 @@ class ImageBrowser extends Component {
 
   @autobind
   handleSearchInputChange(value) {
-    this.setState({ search: value });
+    this.props.handleFiltersChange({ search: value });
   }
 
   @autobind
@@ -86,31 +167,41 @@ class ImageBrowser extends Component {
   }
 
   render() {
-    const { mode, search } = this.state;
-    const { imagesById, orderedImages, selected, onImageClick } = this.props;
-    const ids = (orderedImages.default && orderedImages.default.ids) || [];
+    const { mode } = this.state;
+    const { imagesById, selected, onImageClick, filters } = this.props;
+    const ids = this.getSearchedImages();
     return (
-      <div className='image-browser'>
+      <div
+        className={classNames('image-browser', { 'scroll-container': !this.props.useWindowScroll })}
+        onScroll={this.handleScroll}
+        styleName='styles.browser'
+        ref={(c) => { this.browser = c; }}
+      >
 
-        <div>
+        <div styleName='styles.filters'>
           <Input
             name='s'
             label='Search'
-            getValue={() => search}
+            getValue={() => filters.search || null}
             setValue={this.handleSearchInputChange}
           />
         </div>
 
-        { mode === MODES.GRID ?
-          <Grid
-            ids={ids}
-            imagesById={imagesById}
-            getLink={this.props.getLink}
-            selected={selected}
-            onImageClick={onImageClick}
-            onLoadNext={this.handleLoadNext}
-          />
-        : null }
+        <div styleName='styles.images' ref={(c) => { this.container = c; }}>
+
+          { mode === MODES.GRID ?
+            <Grid
+              ids={ids}
+              imagesById={imagesById}
+              getLink={this.props.getLink}
+              selected={selected}
+              onImageClick={onImageClick}
+              onLoadNext={this.handleLoadNext}
+              contentRef={(c) => { this.content = c; }}
+            />
+          : null }
+
+        </div>
 
       </div>
     );

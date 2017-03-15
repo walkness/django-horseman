@@ -5,14 +5,18 @@ from rest_framework.response import Response
 from rest_framework.status import (
     HTTP_201_CREATED, HTTP_400_BAD_REQUEST)
 
+from horseman.mixins import SearchableMixin
+
 from . import models
 from . import serializers
 
 
-class ImageViewSet(viewsets.ModelViewSet):
+class ImageViewSet(SearchableMixin, viewsets.ModelViewSet):
     model = models.Image
     serializer_class = serializers.ImageSerializer
     queryset = models.Image.objects.prefetch_related('renditions').all()
+    search_query_param = 'search'
+    search_fields = ['title']
 
     @parser_classes((FormParser, MultiPartParser,))
     def create(self, request, *args, **kwargs):

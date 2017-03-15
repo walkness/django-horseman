@@ -36,6 +36,7 @@ class EditNode extends Component {
     super(props, context);
     this.state = {
       changed: false,
+      imageFilters: {},
     };
     this.fieldRefs = {};
   }
@@ -136,6 +137,12 @@ class EditNode extends Component {
     }
   }
 
+  @autobind
+  handleImageFiltersChange(newFilters) {
+    const imageFilters = Object.assign({}, this.state.imageFilters, newFilters);
+    this.setState({ imageFilters });
+  }
+
   render() {
     const { changed } = this.state;
     const { nodes, params, location } = this.props;
@@ -175,6 +182,8 @@ class EditNode extends Component {
                 nodes={nodes}
                 nodesRequest={this.props.nodesRequest}
                 onChange={this.handleFormChange}
+                imageFilters={this.state.imageFilters}
+                handleImageFiltersChange={this.handleImageFiltersChange}
               />
             );
           }) }

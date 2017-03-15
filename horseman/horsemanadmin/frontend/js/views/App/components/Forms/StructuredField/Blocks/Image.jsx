@@ -138,6 +138,8 @@ class ImageBlock extends Component {
             modalProps={{
               closeModal: () => this.setState({ showModal: false }),
             }}
+            filters={this.props.imageFilters}
+            handleFiltersChange={this.props.handleImageFiltersChange}
           />
         : null }
 

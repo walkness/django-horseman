@@ -5,12 +5,13 @@ from django.db.models import Q, Prefetch
 from rest_framework import viewsets
 from rest_framework.decorators import detail_route
 
+from horseman.mixins import SearchableMixin
 from horseman.horsemancomments.views import CommentViewSet
 
 from . import models, serializers
 
 
-class NodeViewSet(viewsets.ModelViewSet):
+class NodeViewSet(SearchableMixin, viewsets.ModelViewSet):
     model = models.Node
     serializer_class = serializers.NodeSerializer
     queryset = models.Node.objects.all()
@@ -26,22 +27,15 @@ class NodeViewSet(viewsets.ModelViewSet):
             kwargs['latest_revision'] = True
         return super(NodeViewSet, self).get_serializer(*args, **kwargs)
 
+    def get_search_fields(self):
+        node_class = self.get_node_class()
+        return node_class.search_fields
+
     def get_queryset(self):
         node_class = self.get_node_class()
         qs = node_class.objects.all()
 
-        search = self.request.query_params.get('s', None)
-        if search:
-            queries = []
-            for f in node_class.search_fields:
-                kwarg = {}
-                kwarg['%s__iregex' % f] = r'(?:^|\s)%s' % re.escape(search)
-                queries.append(Q(**kwarg))
-            if len(queries) > 0:
-                query = queries.pop()
-                for item in queries:
-                    query |= item
-                qs = qs.filter(query)
+        qs = self.search_queryset(qs)
 
         prefetch_fields = []
         for field in node_class._meta.get_fields():

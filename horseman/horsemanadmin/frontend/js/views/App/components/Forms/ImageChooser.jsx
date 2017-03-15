@@ -64,6 +64,8 @@ class ImageChooser extends Component {
               closeModal: () => this.setState({ showModal: false }),
             }}
             multiple={this.props.multiple}
+            filters={this.props.imageFilters}
+            handleFiltersChange={this.props.handleImageFiltersChange}
           />
         : null }
 

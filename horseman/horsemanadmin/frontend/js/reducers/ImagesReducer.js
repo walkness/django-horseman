@@ -47,24 +47,48 @@ export default function imagesReducer(state = initialState.nodes, action) {
       const orderArgs = Object.assign({}, action.args);
       delete orderArgs.limit;
       delete orderArgs.offset;
+      delete orderArgs.search;
       const order = queryString(orderArgs) || 'default';
-      const oldIds = ((state.ordered[order] && state.ordered[order].ids) || []).slice(0);
-      let allIds = [...ids];
-      if (
-        (action.args && action.args.offset) ===
-        (state.ordered[order] && state.ordered[order].next && state.ordered[order].next.offset)
-      ) {
-        allIds = [...oldIds, ...ids];
+      const orderState = state.ordered[order];
+      const orderUpdates = Object.assign({}, orderState);
+      const next = action.response.next && getPaginationParamsFromURI(action.response.next);
+      const previous = action.response.previous && getPaginationParamsFromURI(
+        action.response.previous);
+
+      const isNextPage = existing => (
+          (action.args && action.args.offset) ===
+          (existing && existing.next && existing.next.offset)
+      );
+
+      if (action.args && action.args.search) {
+        const search = (orderState && orderState.search) || {};
+        const oldIds = (
+          (search[action.args.search] && search[action.args.search].ids) || []
+        ).slice(0);
+        if (!orderUpdates.search) orderUpdates.search = {};
+        if (!orderUpdates.search[action.args.search]) {
+          orderUpdates.search[action.args.search] = {};
+        }
+        orderUpdates.search[action.args.search].ids = [...ids];
+        orderUpdates.search[action.args.search].next = next;
+        orderUpdates.search[action.args.search].previous = previous;
+        if (isNextPage(search[action.args.search])) {
+          orderUpdates.search[action.args.search].ids = [...oldIds, ...ids];
+        }
+      } else {
+        const oldIds = ((orderState && orderState.ids) || []).slice(0);
+        orderUpdates.ids = [...ids];
+        orderUpdates.next = next;
+        orderUpdates.previous = previous;
+        if (isNextPage(orderState)) {
+          orderUpdates.ids = [...oldIds, ...ids];
+        }
       }
+
       return Object.assign({}, state, {
         byId: Object.assign({}, state.byId, byId),
         ordered: Object.assign({}, state.ordered, {
-          [order]: {
-            ids: allIds,
-            next: action.response.next && getPaginationParamsFromURI(action.response.next),
-            previous: action.response.previous && getPaginationParamsFromURI(
-              action.response.previous),
-          },
+          [order]: orderUpdates,
         }),
       });
     }

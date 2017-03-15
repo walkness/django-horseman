@@ -1,3 +1,6 @@
+import re
+
+from django.db.models import Q
 from django.apps import apps
 
 
@@ -27,3 +30,31 @@ class AdminModelMixin(object):
     def get_class_from_type(cls, node_type):
         app_label, model_name = node_type.split('.')
         return apps.get_model(app_label=app_label, model_name=model_name)
+
+
+class SearchableMixin(object):
+    search_query_param = 's'
+    search_fields = []
+
+    def get_search_fields(self):
+        return self.search_fields
+
+    def search_queryset(self, qs):
+        search = self.request.query_params.get(self.search_query_param, None)
+        if search:
+            queries = []
+            for f in self.get_search_fields():
+                kwarg = {}
+                kwarg['%s__iregex' % f] = r'(?:^|\s)%s' % re.escape(search)
+                queries.append(Q(**kwarg))
+            if len(queries) > 0:
+                query = queries.pop()
+                for item in queries:
+                    query |= item
+                qs = qs.filter(query)
+        return qs
+
+    def get_queryset(self):
+        qs = super(SearchableMixin, self).get_queryset()
+        qs = self.search_queryset(qs)
+        return qs
