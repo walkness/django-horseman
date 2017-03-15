@@ -28,7 +28,7 @@ class NodeList extends Component {
     const nodeType = this.getNodeType(props);
     if (nodeType) {
       this.props.nodesRequest({ type: nodeType });
-    }    
+    }
   }
 
   getNodeType(props) {
@@ -87,7 +87,7 @@ class NodeList extends Component {
                   <FormattedMessage
                     id='nodes.list.date'
                     values={{ date: new Date(node.modified_at) }}
-                    defaultMessage='{date, date, long} at {date, time, long}'
+                    defaultMessage='{date, date, long} at {date, time, short}'
                   >
                     { (formatted) => <time dateTime={node.modified_at}>{ formatted }</time> }
                   </FormattedMessage>

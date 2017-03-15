@@ -16,7 +16,51 @@
 
 	:global {
 		.btn {
-			background-color: #fff;
+			background-color: gray(90%);
+
+			&:disabled {
+				background-color: gray(80%);
+			}
+		}
+	}
+}
+
+.action-buttons {
+	display: flex;
+	flex-flow: row;
+	align-items: center;
+	position: relative;
+	min-width: 10rem;
+
+	:global {
+		.dropdown {
+			position: static;
+			height: 100%;
+		}
+
+		.dropdown-toggle {
+			height: 100%;
+		}
+
+		.btn {
+			text-align: left;
+		}
+	}
+}
+
+.primary-action {
+	flex: 1;
+}
+
+.extra-actions-menu {
+	top: inherit;
+	bottom: 100%;
+	width: 100%;
+
+	li {
+		:global .btn {
+			display: block;
+			width: 100%;
 		}
 	}
 }
@@ -26,6 +70,12 @@
 	display: flex;
 	flex-flow: row;
 	align-items: center;
+
+	:global {
+		.dropdown {
+			position: static;
+		}
+	}
 }
 
 .current-revision {
@@ -35,14 +85,12 @@
 }
 
 .revisions-list {
-	list-style-type: none;
-	padding: 0;
-	margin: 0;
-	position: absolute;
 	background-color: #fff;
+	top: inherit;
+	left: inherit;
 	bottom: 100%;
 	right: 0;
-	margin-bottom: 1rem;
+	margin-bottom: 1rem !important;
 }
 
 .revision {
@@ -52,4 +100,30 @@
 	display: block;
 	margin-top: -1px;
 	text-decoration: none;
+	display: flex;
+	flex-flow: row;
+	align-items: center;
+	font-size: .9em;
+	white-space: nowrap;
+
+	img {
+		margin-top: -.5rem;
+		margin-bottom: -.5rem;
+		margin-left: -1rem;
+		margin-right: .5rem;
+		height: 2.5em;
+	}
+
+	&:global(.active) {
+		background-color: gray(80%);
+	}
+}
+
+.tag {
+	display: inline-block;
+	border: 1px solid gray(60%);
+	border-radius: .25em;
+	padding: .25em .5em;
+	font-size: .8em;
+	margin-left: .5rem;
 }

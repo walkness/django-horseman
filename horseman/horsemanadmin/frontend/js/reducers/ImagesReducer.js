@@ -1,6 +1,9 @@
 import * as types from '../constants/ActionTypes';
 import initialState from '../config/initialState';
 
+import { getPaginationParamsFromURI } from '../utils';
+import { queryString } from '../services/api';
+
 
 export default function imagesReducer(state = initialState.nodes, action) {
   function processImages(images) {
@@ -41,10 +44,27 @@ export default function imagesReducer(state = initialState.nodes, action) {
 
     case types.IMAGES.SUCCESS: {
       const { byId, ids } = processImages(action.response.results);
+      const orderArgs = Object.assign({}, action.args);
+      delete orderArgs.limit;
+      delete orderArgs.offset;
+      const order = queryString(orderArgs) || 'default';
+      const oldIds = ((state.ordered[order] && state.ordered[order].ids) || []).slice(0);
+      let allIds = [...ids];
+      if (
+        (action.args && action.args.offset) ===
+        (state.ordered[order] && state.ordered[order].next && state.ordered[order].next.offset)
+      ) {
+        allIds = [...oldIds, ...ids];
+      }
       return Object.assign({}, state, {
         byId: Object.assign({}, state.byId, byId),
         ordered: Object.assign({}, state.ordered, {
-          default: ids,
+          [order]: {
+            ids: allIds,
+            next: action.response.next && getPaginationParamsFromURI(action.response.next),
+            previous: action.response.previous && getPaginationParamsFromURI(
+              action.response.previous),
+          },
         }),
       });
     }

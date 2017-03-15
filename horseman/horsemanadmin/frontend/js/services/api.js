@@ -22,18 +22,9 @@ function baseApi(fullUrl, request) {
       if (!response.ok) {
         return Promise.reject(json);
       }
-
-      let pagination = {};
-      const linkHeader = response.headers.get('link');
-      if (linkHeader) {
-        pagination = getPageFromLink(linkHeader);
-      }
-      const countHeader = response.headers.get('x-total-count');
-      pagination.count = countHeader && parseInt(countHeader, 10);
-
-      return { json, pagination };
+      return { json };
     }).then(
-      ({ json, pagination }) => ({ response: json, pagination }),
+      ({ json }) => ({ response: json }),
       error => ({ error: error || 'no error message' }),
     );
 }
@@ -119,7 +110,7 @@ function xhrUploadApi(endpoint, data, method = 'POST', completion = () => {}, on
   xhr.send(data);
 }
 
-const queryString = (_args, defaults) => {
+export const queryString = (_args, defaults) => {
   const args = Object.assign({}, defaults, _args);
   return Object.keys(args).map(key => `${key}=${args[key]}`).join('&');
 };

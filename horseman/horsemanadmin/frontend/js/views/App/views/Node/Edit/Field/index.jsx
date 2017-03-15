@@ -1,9 +1,8 @@
 import React, { PropTypes } from 'react';
 import titleCase from 'title-case';
 
-import { Input, RichText, StructuredField, ImageChooser, SlugField, DatePicker } from '../../../../components/Forms';
+import { Input, RichText, StructuredField, ImageChooser, SlugField, DatePicker, TextArea } from '../../../../components/Forms';
 import ForeignKey from './ForeignKey';
-import { TypedSelect } from '../../../../components/Forms';
 
 
 const Field = ({ config, fieldRef, ...props }) => {
@@ -37,6 +36,12 @@ const Field = ({ config, fieldRef, ...props }) => {
     'horseman.horsemannodes.fields.RichTextField',
   ].indexOf(config.type) !== -1) {
     return <RichText {...inputProps} />;
+  }
+
+  if ([
+    'django.db.models.fields.TextField',
+  ].indexOf(config.type) !== -1) {
+    return <TextArea {...inputProps} />;
   }
 
   if ([

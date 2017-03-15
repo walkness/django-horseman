@@ -61,4 +61,9 @@ a,
     border-color: gray(60%);
     color: white;
   }
+
+  &:disabled {
+    cursor: not-allowed;
+    background-color: gray(40%);
+  }
 }

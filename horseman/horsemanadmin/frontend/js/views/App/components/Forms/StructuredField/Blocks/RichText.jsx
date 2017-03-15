@@ -8,9 +8,23 @@ import Block from './HOC';
 
 class RichTextBlock extends Component {
 
+  constructor(props, context) {
+    super(props, context);
+    this.state = {
+      value: RichTextEditor.createValueFromString(props.block.value || '', 'html'),
+    };
+  }
+
+  componentWillReceiveProps(nextProps) {
+    if (this.props.block.value !== nextProps.block.value) {
+      this.setState({ value: RichTextEditor.createValueFromString(nextProps.block.value || '', 'html') });
+    }
+  }
+
   @autobind
   handleChange(value) {
-    this.props.onChange(this.getBlock(value));
+    this.setState({ value });
+    this.props.onChange(value, false);
   }
 
   getBlock(value) {
@@ -19,18 +33,13 @@ class RichTextBlock extends Component {
   }
 
   getAPIValue() {
-    return this.getBlock(this.props.block.value.toString('html'));
+    return this.getBlock(this.state.value.toString('html'));
   }
 
   render() {
-    const { value } = this.props.block;
     return (
       <RichTextEditor
-        value={(
-          !(value instanceof RichTextEditor.EditorValue) ?
-          RichTextEditor.createValueFromString(value || '', 'html') :
-          value
-        )}
+        value={this.state.value}
         onChange={this.handleChange}
       />
     );

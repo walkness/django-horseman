@@ -9,6 +9,7 @@ from taggit_serializer.serializers import (TagListSerializerField,
                                            TaggitSerializer)
 
 from horseman.horsemanimages.serializers import ImageSerializer
+from horseman.horsemanusers import get_user_serializer
 
 from . import models
 
@@ -36,6 +37,8 @@ class NodeSerializer(TaggitSerializer, serializers.ModelSerializer):
     def __init__(self, *args, **kwargs):
         include_related_images = kwargs.pop('related_images', True)
         include_related_nodes = kwargs.pop('related_nodes', False)
+        include_active_revision = kwargs.pop('active_revision', False)
+        include_latest_revision = kwargs.pop('latest_revision', False)
 
         super(NodeSerializer, self).__init__(*args, **kwargs)
 
@@ -45,7 +48,7 @@ class NodeSerializer(TaggitSerializer, serializers.ModelSerializer):
             self.fields['title'] = serializers.SerializerMethodField()
 
         if 'tags' in generic_model.api_fields:
-            self.fields['tags'] = TagListSerializerField()
+            self.fields['tags'] = TagListSerializerField(required=False)
 
         if include_related_images:
             get_related_images = getattr(generic_model, 'get_related_images', None)
@@ -55,7 +58,27 @@ class NodeSerializer(TaggitSerializer, serializers.ModelSerializer):
         if include_related_nodes:
             self.fields['related_nodes'] = RelatedNodesField(source='get_related_node_ids')
 
+        if include_active_revision:
+            self.fields['active_revision'] = NodeRevisionSerializer(read_only=True)
+
+        if include_latest_revision:
+            self.fields['latest_revision'] = NodeRevisionSerializer(read_only=True)
+
         self.fields['revision'] = NodeRevisionSerializer(read_only=True)
+
+    def create(self, validated_data):
+        user = validated_data.pop('user', None)
+        publish = validated_data.pop('publish', False)
+        unpublish = validated_data.pop('unpublish', False)
+        author = validated_data.pop('author', None)
+        validated_data['author'] = author if author else user
+        validated_data['created_by'] = user
+        if publish:
+            validated_data['published'] = True
+        instance = super(NodeSerializer, self).create(validated_data)
+        revision = instance.create_revision(created_by=user, active=publish)
+        instance.revision = revision
+        return instance
 
     def update(self, instance, validated_data):
         user = validated_data.pop('user', None)
@@ -74,7 +97,7 @@ class NodeSerializer(TaggitSerializer, serializers.ModelSerializer):
                         getattr(instance, att).set(value)
                     else:
                         setattr(instance, att, value)
-        revision = instance.create_revision(created_by=user)
+        revision = instance.create_revision(created_by=user, active=publish)
         instance.revision = revision
         return instance
 
@@ -135,7 +158,9 @@ def get_node_serializer_class(model_class=None, serializer_fields=None):
 
 
 class NodeRevisionSerializer(serializers.ModelSerializer):
+    created_by = get_user_serializer()(read_only=True)
+    is_latest = serializers.BooleanField(read_only=True)
 
     class Meta:
         model = models.NodeRevision
-        fields = ['pk', 'created_by', 'created_at']
+        fields = ['pk', 'created_by', 'created_at', 'active', 'is_latest']

@@ -20,7 +20,10 @@ class NodeViewSet(viewsets.ModelViewSet):
         return serializers.get_node_serializer_class(node_class, node_class.api_fields)
 
     def get_serializer(self, *args, **kwargs):
-        kwargs['related_nodes'] = self.action == 'retrieve'
+        if self.action == 'retrieve':
+            kwargs['related_nodes'] = True
+            kwargs['active_revision'] = True
+            kwargs['latest_revision'] = True
         return super(NodeViewSet, self).get_serializer(*args, **kwargs)
 
     def get_queryset(self):
@@ -85,14 +88,14 @@ class NodeViewSet(viewsets.ModelViewSet):
             self._revision_obj = None
             revision_param = self.request.query_params.get('revision', None)
             if revision_param:
+                qs = models.NodeRevision.objects.select_related('created_by')
                 if revision_param == 'latest':
-                    self._revision_obj = models.NodeRevision.objects.filter(
-                        node_id=self.kwargs['pk']).order_by('-created_at').first()
+                    self._revision_obj = qs.filter(node_id=self.kwargs['pk']).order_by(
+                        '-created_at').first()
                 elif revision_param == 'active':
                     pass
                 else:
-                    self._revision_obj = models.NodeRevision.objects.filter(
-                        pk=revision_param).first()
+                    self._revision_obj = qs.filter(pk=revision_param).first()
         return self._revision_obj
 
     @detail_route(methods=['GET'])
@@ -107,7 +110,8 @@ class NodeViewSet(viewsets.ModelViewSet):
 class NodeRevisionViewSet(viewsets.ModelViewSet):
     model = models.NodeRevision
     serializer_class = serializers.NodeRevisionSerializer
-    queryset = models.NodeRevision.objects.all()
+    queryset = models.NodeRevision.objects.select_related(
+        'created_by').order_by('created_at').all()
 
     def get_queryset(self):
         qs = self.queryset
@@ -115,5 +119,7 @@ class NodeRevisionViewSet(viewsets.ModelViewSet):
         node_pk = self.kwargs.get('node_pk', None)
         if node_pk:
             qs = qs.filter(node_id=node_pk)
+
+        qs = qs.add_latest_revision()
 
         return qs

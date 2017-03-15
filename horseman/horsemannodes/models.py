@@ -1,10 +1,13 @@
 import uuid
+import datetime
 
 from django.db import models, connection
 from django.conf import settings as django_settings
 from django.apps import apps
 from django.utils import timezone
 from django.contrib.postgres.fields import JSONField
+
+from exclusivebooleanfield.fields import ExclusiveBooleanField
 
 from horseman import settings, mixins
 from horseman.horsemanimages.models import Image
@@ -102,6 +105,10 @@ class AbstractNode(mixins.AdminModelMixin, models.Model):
     def title_display(self):
         return self.slug
 
+    @property
+    def description(self):
+        return None
+
     def get_title(self):
         return self.slug
 
@@ -117,6 +124,12 @@ class Node(AbstractNode):
             for obj in node_type.objects.all():
                 obj.url_path = obj.get_url_path()
                 obj.save(update_fields=['url_path'])
+
+    def active_revision(self):
+        return self.revisions.filter(active=True).defer('content').first()
+
+    def latest_revision(self):
+        return self.revisions.order_by('-created_at').defer('content').first()
 
     def get_related_image_ids(self):
         ids = []
@@ -180,7 +193,10 @@ class Node(AbstractNode):
                 else:
                     content[field_name] = [get_object_revision_relation_value(obj) for obj in qs]
             else:
-                content[field_name] = getattr(self, field_name)
+                attr = getattr(self, field_name)
+                if isinstance(attr, (datetime.date, datetime.datetime, datetime.time)):
+                    attr = attr.isoformat()
+                content[field_name] = attr
         return content
 
     def create_revision(self, **kwargs):
@@ -193,6 +209,18 @@ class Node(AbstractNode):
         return self
 
 
+class NodeRevisionQuerySet(models.QuerySet):
+
+    def add_latest_revision(self):
+        latest = self.order_by('-created_at').defer('content').first()
+        return self.annotate(
+            is_latest=models.Case(
+                models.When(pk=latest.pk, then=True),
+                default=False, output_field=models.BooleanField()
+            )
+        )
+
+
 class NodeRevision(models.Model):
     if settings.USE_UUID_KEYS:
         id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
@@ -200,7 +228,12 @@ class NodeRevision(models.Model):
     node = models.ForeignKey(Node, related_name='revisions')
     created_by = models.ForeignKey(django_settings.AUTH_USER_MODEL)
     created_at = models.DateTimeField(default=timezone.now)
+    active = ExclusiveBooleanField(default=False, on='node')
     content = JSONField()
+
+    wp_id = models.PositiveIntegerField(blank=True, null=True, editable=False)
+
+    objects = NodeRevisionQuerySet.as_manager()
 
     def content_as_internal_value(self, node_class=Node):
         if not hasattr(self, '_content_internal_value'):

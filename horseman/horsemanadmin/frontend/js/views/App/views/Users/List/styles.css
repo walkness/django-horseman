@@ -22,7 +22,7 @@
 
 	> a {
 		display: block;
-		margin-left: 1rem;
+		margin-left: .5rem;
 		text-decoration: none;
 	}
 }
@@ -30,4 +30,9 @@
 .gravatar {
 	width: 3rem;
 	height: 3rem;
+
+	img {
+		width: 100%;
+		height: auto;
+	}
 }

@@ -6,7 +6,7 @@ import { autobind } from 'core-decorators';
 import InputWrapper from './InputWrapper';
 
 
-class _Input extends Component {
+class TextArea extends Component {
 
   static propTypes = {
     type: PropTypes.string,
@@ -28,7 +28,7 @@ class _Input extends Component {
   render() {
     const { setValue, getValue, onChange, value, className, ...inputProps } = this.props;
     return (
-      <input
+      <textarea
         className={classNames('control', className)}
         onChange={this.handleChange}
         value={getValue()}
@@ -38,6 +38,4 @@ class _Input extends Component {
   }
 }
 
-export const Input = InputWrapper(_Input);
-
-export default HOC(Input);
+export default HOC(InputWrapper(TextArea));

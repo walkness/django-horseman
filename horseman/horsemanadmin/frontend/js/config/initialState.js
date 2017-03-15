@@ -5,6 +5,9 @@ export default {
     byId: {},
   },
   nodes: {},
+  nodeRevisions: {
+    byId: {},
+  },
   comments: {},
   images: {
     byId: {},

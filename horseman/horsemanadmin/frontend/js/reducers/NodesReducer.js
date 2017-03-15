@@ -3,10 +3,37 @@ import initialState from '../config/initialState';
 
 
 export default function nodesReducer(state = initialState.nodes, action) {
-  function processNodes(nodes, type, latestRevision = false) {
+  function processNodes(nodes, type, latestRevision = false, activeRevision = false) {
     const byId = {};
     const relatedNodesById = {};
     const ids = nodes.map((node) => {
+      const revisionsById = {};
+      const existingState = state[type].byId && state[type].byId[node.pk];
+
+      function processRevision(revision, nodeAsRevision) {
+        return Object.assign(
+          {}, (
+            existingState &&
+            existingState.revisionsById &&
+            existingState.revisionsById[node.revision.pk]
+          ),
+          revisionsById[revision.pk],
+          nodeAsRevision, {
+            revision: Object.assign(
+              {}, (
+                existingState &&
+                existingState.revisionsById &&
+                existingState.revisionsById[node.revision.pk] &&
+                existingState.revisionsById[node.revision.pk].revision
+              ),
+              revision, {
+                created_by: revision.created_by.pk || revision.created_by,
+              },
+            ),
+          },
+        );
+      }
+
       Object.keys(node.related_nodes || {}).forEach((relatedNodeType) => {
         const relatedNodes = node.related_nodes[relatedNodeType];
         const processedNodes = processNodes(relatedNodes, relatedNodeType);
@@ -19,20 +46,28 @@ export default function nodesReducer(state = initialState.nodes, action) {
         }
       });
 
-      const existingState = state[type].byId && state[type].byId[node.pk];
       if (node.revision) {
-        byId[node.pk] = Object.assign({}, existingState, {
-          revisionsById: Object.assign({}, existingState && existingState.revisionsById, {
-            [node.revision.pk]: Object.assign(
-              {},
-              existingState && existingState.revisionsById && existingState.revisionsById[node.revision.pk],
-              node,
-            ),
-          }),
-        }, latestRevision && { latestRevision: node.revision.pk });
-      } else {
-        byId[node.pk] = Object.assign({}, existingState, node);
+        revisionsById[node.revision.pk] = processRevision(node.revision, node);
       }
+      if (node.latest_revision) {
+        revisionsById[node.latest_revision.pk] = processRevision(node.latest_revision);
+      }
+      if (node.active_revision) {
+        revisionsById[node.active_revision.pk] = processRevision(node.active_revision);
+      }
+
+      byId[node.pk] = Object.assign({}, existingState, !node.revision && node, {
+        revisionsById: Object.assign(
+          {}, existingState && existingState.revisionsById, revisionsById),
+        latest_revision: (
+          (node.latest_revision && (node.latest_revision.pk || node.latest_revision)) ||
+          (latestRevision && node.revision && node.revision.pk)
+        ) || null,
+        active_revision: (
+          (node.active_revision && (node.active_revision.pk || node.active_revision)) ||
+          (activeRevision && node.revision && node.revision.pk)
+        ) || null,
+      });
       return node.pk;
     });
     return { byId, ids, relatedNodesById };
@@ -90,6 +125,20 @@ export default function nodesReducer(state = initialState.nodes, action) {
 
     case types.NODE_UPDATED: {
       const { byId } = processNodes([action.data], action.nodeType, true);
+      byId[action.data.pk].revisions = [
+        ...(state[action.nodeType].byId[action.data.pk].revisions || []),
+        action.data.revision.pk,
+      ];
+      byId[action.data.pk].latest_revision = action.data.revision.pk;
+      if (action.data.revision.active) {
+        byId[action.data.pk].active_revision = action.data.revision.pk;
+        const revisionsById = byId[action.data.pk].revisionsById;
+        Object.keys(revisionsById).forEach((id) => {
+          if (revisionsById[id] && revisionsById[id].revision) {
+            revisionsById[id].revision.active = id === action.data.revision.pk;
+          }
+        });
+      }
       return Object.assign({}, state, {
         [action.nodeType]: Object.assign({}, state[action.nodeType], {
           byId: Object.assign({}, state[action.nodeType].byId, byId),
@@ -116,8 +165,11 @@ export default function nodesReducer(state = initialState.nodes, action) {
       const ids = action.response.results.map((revision) => {
         byId[revision.pk] = Object.assign(
           {},
-          existingNode && existingNode.revisionsById && existingNode.revisionsById[revision.pk],
-          { revision },
+          existingNode && existingNode.revisionsById && existingNode.revisionsById[revision.pk], {
+            revision: Object.assign({}, revision, {
+              created_by: revision.created_by.pk || revision.created_by,
+            }),
+          },
         );
         return revision.pk;
       });

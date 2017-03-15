@@ -17,6 +17,7 @@ class ImageLibrary extends Component {
           imagesById={imagesById}
           imagesRequest={this.props.imagesRequest}
           getLink={image => `/admin/images/${image.pk}/`}
+          useWindowScroll
         />
 
       </div>

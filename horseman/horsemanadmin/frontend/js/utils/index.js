@@ -11,3 +11,33 @@ export const getNodeTypeFromURLComponents = (nodes, appLabel, modelName) => {
     return prev;
   }, null);
 };
+
+export const parseQueryString = (queryString) => {
+  const assoc = {};
+  const decode = s => decodeURIComponent(s.replace(/\+/g, ' '));
+  const keyValues = queryString.split('&');
+
+  keyValues.forEach((param) => {
+    const keyValue = param.split('=');
+    if (keyValue.length > 0) {
+      const key = decode(keyValue[0]);
+      if (key.length === 1) {
+        assoc[key] = true;
+      } else {
+        assoc[key] = decode(keyValue[1]);
+      }
+    }
+  });
+
+  return assoc;
+};
+
+
+export const getPaginationParamsFromURI = (uri) => {
+  const components = uri.split('?');
+  if (components.length === 2) {
+    const params = parseQueryString(components[1]);
+    return { limit: parseInt(params.limit, 10), offset: parseInt(params.offset, 10) };
+  }
+  return { next: null, prev: null };
+};

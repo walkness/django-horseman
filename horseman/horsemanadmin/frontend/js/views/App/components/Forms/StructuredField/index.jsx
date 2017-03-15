@@ -19,6 +19,10 @@ const getBlockConfig = (fieldConfig, blockType) => {
 
 class StructuredField extends Component {
 
+  static propTypes = {
+    onChange: PropTypes.func,
+  };
+
   constructor(props, context) {
     super(props, context);
     this.state = {
@@ -34,10 +38,15 @@ class StructuredField extends Component {
     }
   }
 
-  updateBlock(index, newValue) {
-    const value = this.state.value.slice(0);
-    value[index] = Object.assign({}, value[index], newValue);
-    this.setState({ value });
+  updateBlock(index, newValue, updateState) {
+    if (updateState) {
+      const value = this.state.value.slice(0);
+      value[index] = Object.assign({}, value[index], newValue);
+      this.setState({ value });
+    }
+    if (this.props.onChange) {
+      this.props.onChange();
+    }
   }
 
   @autobind
@@ -49,6 +58,9 @@ class StructuredField extends Component {
       value.push({ type });
     }
     this.setState({ value });
+    if (this.props.onChange) {
+      this.props.onChange(value);
+    }
   }
 
   @autobind
@@ -56,6 +68,9 @@ class StructuredField extends Component {
     const value = this.state.value.slice(0);
     value.splice(index, 1);
     this.setState({ value });
+    if (this.props.onChange) {
+      this.props.onChange(value);
+    }
   }
 
   getAPIValue() {
@@ -74,7 +89,7 @@ class StructuredField extends Component {
           const blockProps = {
             key: i,
             index: i,
-            onChange: v => this.updateBlock(i, v),
+            onChange: (v, update) => this.updateBlock(i, v, update),
             deleteBlock: this.deleteBlock,
             ref: c => { this.blockRefs[i] = c; },
             block,
