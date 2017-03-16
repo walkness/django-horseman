@@ -12,6 +12,7 @@ from django.contrib.postgres.fields import JSONField
 
 import pytz
 from timezone_field import TimeZoneField
+from tzwhere import tzwhere
 
 from willow.image import Image as WillowImage
 
@@ -52,6 +53,12 @@ class AbstractImage(models.Model):
     class Meta:
         abstract = True
 
+    @classmethod
+    def get_tzwhere(cls):
+        if not getattr(cls, '_tzwhere', None):
+            cls._tzwhere = tzwhere.tzwhere()
+        return cls._tzwhere
+
     @property
     def url(self):
         return self.file.url
@@ -63,17 +70,8 @@ class AbstractImage(models.Model):
 
         exif = self.exif_data.get('EXIF', {})
         image = self.exif_data.get('Image', {})
-        gps = self.exif_data.get('GPS', {})
 
         lens_specifications = exif.get('LensSpecification', [None, None, None, None])
-        lat = gps.get('GPSLatitude', None)
-        lat_ref = gps.get('GPSLatitudeRef', None)
-        if lat and lat_ref:
-            lat *= 1 if lat_ref == 'N' else -1
-        lng = gps.get('GPSLongitude', None)
-        lng_ref = gps.get('GPSLongitudeRef', None)
-        if lng and lng_ref:
-            lng *= 1 if lng_ref == 'E' else -1
 
         meta = {
             'capture_time': exif.get('DateTimeOriginal', None),
@@ -93,26 +91,41 @@ class AbstractImage(models.Model):
                 'ev': exif.get('ExposureBiasValue', None),
                 'program': exif.get('ExposureProgram', None),
             },
-            'gps': {
-                'lat': lat,
-                'lng': lng,
-                'altitude': gps.get('GPSAltitude', None),
-            },
+            'gps': self.gps_data,
             'credit': {
                 'artist': image.get('Artist', None),
                 'copyright': image.get('Copyright', None),
             },
         }
 
-
-
         return meta
+
+    @property
+    def gps_data(self):
+        gps = self.exif_data.get('GPS', {})
+        if not gps:
+            return None
+        lat = gps.get('GPSLatitude', None)
+        lat_ref = gps.get('GPSLatitudeRef', None)
+        if lat and lat_ref:
+            lat *= 1 if lat_ref == 'N' else -1
+        lng = gps.get('GPSLongitude', None)
+        lng_ref = gps.get('GPSLongitudeRef', None)
+        if lng and lng_ref:
+            lng *= 1 if lng_ref == 'E' else -1
+        return {
+            'lat': lat,
+            'lng': lng,
+            'altitude': gps.get('GPSAltitude', None),
+        }
+
 
     def __init__(self, *args, **kwargs):
         super(AbstractImage, self).__init__(*args, **kwargs)
         self.old_file = self.file
         self.old_hash = self.hash
         self.exif_updated = False
+        self.old_captured_at_tz = self.captured_at_tz
 
     def __str__(self):
         return self.title
@@ -120,8 +133,14 @@ class AbstractImage(models.Model):
     def save(self, *args, **kwargs):
         if self.old_file != self.file and not self.exif_updated:
             self.update_exif()
-        if self.captured_at and self.captured_at_tz:
-            self.captured_at = self.captured_at.replace(tzinfo=self.captured_at_tz or pytz.UTC)
+        if (
+            self.captured_at and
+            self.captured_at_tz and
+            self.captured_at_tz != self.old_captured_at_tz
+        ):
+            naive = self.captured_at.replace(tzinfo=None)
+            aware = self.captured_at_tz.localize(naive)
+            self.captured_at = aware
         return super(AbstractImage, self).save(*args, **kwargs)
 
     @contextmanager
@@ -152,9 +171,30 @@ class AbstractImage(models.Model):
             capture_time = exif.get('EXIF', {}).get('DateTimeOriginal', None)
             if capture_time:
                 naive = datetime.strptime(capture_time, '%Y-%m-%dT%H:%M:%S')
-                aware = naive.replace(tzinfo=pytz.UTC)
-                self.captured_at = aware
+                if naive:
+                    tz = pytz.UTC
+                    if self.captured_at_tz:
+                        tz = self.captured_at_tz
+                    else:
+                        tz = self.update_tz_from_gps(tz)
+
+                    aware = tz.localize(naive)
+                    self.captured_at = aware
             self.exif_updated = True
+
+    def update_tz_from_gps(self, default=None):
+        tz = default
+        gps = self.gps_data
+        if gps:
+            lat = gps.get('lat', None)
+            lng = gps.get('lng', None)
+            if lat and lng:
+                where = self.__class__.get_tzwhere()
+                tzName = where.tzNameAt(lat, lng)
+                if tzName:
+                    tz = pytz.timezone(tzName)
+                    self.captured_at_tz = tz
+        return tz
 
     def get_file_hash(self):
         file_bytes = getattr(self, 'file_bytes', getattr(self.file._file, 'file', None))

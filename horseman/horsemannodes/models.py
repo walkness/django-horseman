@@ -91,11 +91,20 @@ class AbstractNode(mixins.AdminModelMixin, models.Model):
     class Meta:
         abstract = True
 
+    def __init__(self, *args, **kwargs):
+        super(AbstractNode, self).__init__(*args, **kwargs)
+        self._old_published = self.published
+
     def __str__(self):
         return self.slug
 
     def save(self, *args, **kwargs):
         self.url_path = self.get_url_path()
+        if self.published:
+            if self._old_published != self.published and not self.published_at:
+                self.published_at = timezone.now()
+        else:
+            self.published_at = None
         super(AbstractNode, self).save(*args, **kwargs)
 
     def get_url_path(self):

@@ -1,8 +1,6 @@
-from django.db.models import ForeignKey, ManyToManyField
 from django.core.exceptions import ValidationError
 
 from rest_framework import serializers
-from rest_framework.utils import model_meta
 from rest_framework.exceptions import ValidationError as DRFValidationError
 
 from taggit_serializer.serializers import (TagListSerializerField,

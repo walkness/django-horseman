@@ -22,12 +22,14 @@ class ImageBlock extends Component {
     onChange: PropTypes.func,
     multiple: PropTypes.bool,
     gallery: PropTypes.bool,
+    defaultColumns: PropTypes.number,
   };
 
   static defaultProps = {
     onChange: () => {},
     multiple: false,
     gallery: false,
+    defaultColumns: 2,
   };
 
   constructor(props, context) {
@@ -54,18 +56,14 @@ class ImageBlock extends Component {
   }
 
   getBlock(value = null, size = null, columns = null) {
-    const { multiple, gallery } = this.props;
+    const { multiple, gallery, defaultSize, defaultColumns } = this.props;
     const imagesKey = multiple || gallery ? 'images' : 'id';
     const block = Object.assign({}, this.props.block);
-    if (value) {
-      block[imagesKey] = value;
-    }
-    if (size) {
-      block.size = size;
-    }
-    if (columns) {
-      block.columns = parseInt(columns, 10);
-    }
+    if (value) block[imagesKey] = value;
+    if (size) block.size = size;
+    if (columns) block.columns = parseInt(columns, 10);
+    if (!block.size) block.size = defaultSize;
+    if (!block.columns) block.columns = defaultColumns;
     return block;
   }
 
@@ -119,7 +117,7 @@ class ImageBlock extends Component {
                   return { value: num, label: `${num}` };
                 })
               )}
-              getValue={() => columns || 2}
+              getValue={() => columns || this.props.defaultColumns}
               setValue={this.handleColumnsChange}
             />
           : null }

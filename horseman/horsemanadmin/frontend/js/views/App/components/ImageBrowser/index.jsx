@@ -8,6 +8,7 @@ import classNames from 'classnames';
 import { Input } from '../Forms/Input';
 
 import Grid from './Grid';
+import Filters from './Filters';
 
 import styles from './styles.css';
 
@@ -72,7 +73,7 @@ class ImageBrowser extends Component {
   getImages(props) {
     const { orderedImages, imagesRequest, filters } = props || this.props;
     const node = this.getOrderedNode(props);
-    if (!(node && node.ids)) {
+    if (!(node && node.ids) || (node && node.needsUpdate)) {
       imagesRequest(filters);
     }
   }
@@ -160,9 +161,9 @@ class ImageBrowser extends Component {
 
   @autobind
   handleLoadNext() {
-    const ordered = this.props.orderedImages.default;
+    const ordered = this.getOrderedNode();
     if (ordered.next && !ordered.loading) {
-      this.props.imagesRequest(Object.assign({}, ordered.next));
+      this.props.imagesRequest(Object.assign({}, this.props.filters, ordered.next));
     }
   }
 
@@ -185,6 +186,7 @@ class ImageBrowser extends Component {
             getValue={() => filters.search || null}
             setValue={this.handleSearchInputChange}
           />
+          <Filters filters={this.props.filters} handleFiltersChange={this.props.handleFiltersChange} />
         </div>
 
         <div styleName='styles.images' ref={(c) => { this.container = c; }}>

@@ -38,7 +38,7 @@ class StructuredField extends Component {
     }
   }
 
-  updateBlock(index, newValue, updateState) {
+  updateBlock(index, newValue, updateState = true) {
     if (updateState) {
       const value = this.state.value.slice(0);
       value[index] = Object.assign({}, value[index], newValue);

@@ -31,7 +31,7 @@ class _Input extends Component {
       <input
         className={classNames('control', className)}
         onChange={this.handleChange}
-        value={getValue()}
+        value={getValue() || ''}
         {...inputProps}
       />
     );

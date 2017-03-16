@@ -86,7 +86,7 @@ class ImageSerializer(serializers.ModelSerializer):
             fname_wo_ext, ext = os.path.splitext(os.path.basename(file.name))
             validated_data['title'] = fname_wo_ext
         instance = self.__class__.Meta.model(**validated_data)
-        instance.file_bytes = file.file.getvalue()
+        instance.file_bytes = file.file
         instance.file.save(file.name, file, save=False)
         instance.update_exif(file)
         instance.save()

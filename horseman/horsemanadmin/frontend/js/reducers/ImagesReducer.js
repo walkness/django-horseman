@@ -101,10 +101,30 @@ export default function imagesReducer(state = initialState.nodes, action) {
 
     case types.IMAGE_UPLOADED: {
       const { byId, ids } = processImages([action.data]);
+      const ordered = {};
+      Object.keys(state.ordered).forEach((filterStr) => {
+        const filteredState = state.ordered[filterStr];
+        let search;
+        if (filteredState.search) {
+          search = {};
+          Object.keys(filteredState.search).map((searchStr) => {
+            search[searchStr] = Object.assign({}, filteredState.search[searchStr], {
+              needsUpdate: true,
+            });
+          });
+        }
+        ordered[filterStr] = Object.assign({}, filteredState, {
+          needsUpdate: true,
+        }, search && { search });
+      });
+      const getNode = (filterStr) => {
+        const node = state.ordered[filterStr];
+        return Object.assign({}, node, ordered[filterStr], { ids: [...ids, ...((node && node.ids) || [])] });
+      };
       return Object.assign({}, state, {
         byId: Object.assign({}, state.byId, byId),
-        ordered: Object.assign({}, state.ordered, {
-          default: [...ids, ...((state.ordered && state.ordered.default) || [])],
+        ordered: Object.assign({}, ordered, {
+          default: getNode('default'),
         }),
       });
     }

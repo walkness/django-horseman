@@ -11,6 +11,14 @@ from horseman.horsemancomments.views import CommentViewSet
 from . import models, serializers
 
 
+def convert_bool(value):
+    if isinstance(value, bool):
+        return value
+    if isinstance(value, str):
+        return value.lower() in ['true', 't', '1', 'yes', 'y']
+    return None
+
+
 class NodeViewSet(SearchableMixin, viewsets.ModelViewSet):
     model = models.Node
     serializer_class = serializers.NodeSerializer
@@ -66,10 +74,10 @@ class NodeViewSet(SearchableMixin, viewsets.ModelViewSet):
 
     def perform_update(self, serializer):
         publish_param = self.request.query_params.get('publish', False)
-        publish = publish_param
-        if isinstance(publish_param, str):
-            publish = publish_param.lower() in ['true', 't', '1', 'yes', 'y']
-        return serializer.save(user=self.request.user, publish=publish)
+        unpublish_param = self.request.query_params.get('unpublish', False)
+        publish = convert_bool(publish_param)
+        unpublish = convert_bool(unpublish_param)
+        return serializer.save(user=self.request.user, publish=publish, unpublish=unpublish)
 
     def get_node_class(self):
         node_type = self.request.query_params.get('type', None)

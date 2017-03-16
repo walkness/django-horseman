@@ -5,18 +5,32 @@ from rest_framework.response import Response
 from rest_framework.status import (
     HTTP_201_CREATED, HTTP_400_BAD_REQUEST)
 
+from django_filters import rest_framework as filters, DateFilter
+
 from horseman.mixins import SearchableMixin
 
 from . import models
 from . import serializers
 
 
+class ImageFilter(filters.FilterSet):
+    uploaded_before = DateFilter(name='created_at', lookup_expr='lte')
+    uploaded_after = DateFilter(name='created_at', lookup_expr='gte')
+    captured_before = DateFilter(name='captured_at', lookup_expr='lte')
+    captured_after = DateFilter(name='captured_at', lookup_expr='gte')
+
+    class Meta:
+        model = models.Image
+        fields = ['uploaded_before', 'uploaded_after', 'captured_before', 'captured_after']
+
+
 class ImageViewSet(SearchableMixin, viewsets.ModelViewSet):
     model = models.Image
     serializer_class = serializers.ImageSerializer
-    queryset = models.Image.objects.prefetch_related('renditions').all()
+    queryset = models.Image.objects.prefetch_related('renditions').order_by('-created_at').all()
     search_query_param = 'search'
     search_fields = ['title']
+    filter_class = ImageFilter
 
     @parser_classes((FormParser, MultiPartParser,))
     def create(self, request, *args, **kwargs):

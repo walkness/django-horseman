@@ -1,0 +1,8 @@
+.date-range {
+	display: flex;
+	flex-flow: row;
+
+	:global(.input-wrapper) {
+		width: 50%;
+	}
+}
