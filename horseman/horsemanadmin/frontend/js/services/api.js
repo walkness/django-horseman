@@ -131,4 +131,9 @@ export const getUsers = args => callApi(`users/?${queryString(args)}`);
 export const getUser = id => callApi(`users/${id}/`);
 export const updateUser = (id, data) => sendApi(`users/${id}/`, 'PATCH', data);
 
+export const login = (username, password) => sendApi('auth/', 'POST', { username, password });
+export const logout = () => sendApi('auth/', 'DELETE', {});
+export const changePassword = data => sendApi('auth/password/change/', 'PUT', data);
+export const resetPassword = data => sendApi('auth/password/reset/', 'POST', data);
+
 export const getTimezones = () => callApi('timezones/');

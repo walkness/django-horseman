@@ -11,6 +11,7 @@ import ImageUpload from '../views/App/views/Images/Upload';
 import Image from '../views/App/views/Images/Image';
 import UserList from '../views/App/views/Users/List';
 import UserEdit from '../views/App/views/Users/Edit';
+import Login from '../views/App/views/Login';
 
 export default () => (
   <Route path='admin' component={App}>
@@ -26,6 +27,8 @@ export default () => (
       <IndexRoute component={UserList} />
       <Route path=':id' component={UserEdit} />
     </Route>
+
+    <Route path='login' component={Login} unauthed />
 
     <Route path=':app'>
       <Route path=':model'>

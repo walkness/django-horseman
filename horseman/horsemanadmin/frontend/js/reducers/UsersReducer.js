@@ -72,6 +72,12 @@ export default function usersReducer(state = initialState.users, action) {
         isLoggedIn: true,
       });
 
+    case types.LOGOUT.SUCCESS:
+      return Object.assign({}, state, {
+        current: null,
+        isLoggedIn: false,
+      });
+
     default:
       return state;
   }

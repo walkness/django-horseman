@@ -9,6 +9,7 @@ import { Input } from '../Forms/Input';
 
 import Grid from './Grid';
 import Filters from './Filters';
+import Ordering from './Ordering';
 
 import styles from './styles.css';
 
@@ -27,17 +28,23 @@ class ImageBrowser extends Component {
     useWindowScroll: PropTypes.bool,
     filters: PropTypes.object,
     handleFiltersChange: PropTypes.func,
+    defaultOrder: PropTypes.string,
   };
 
   static defaultProps = {
     filters: {},
     handleFiltersChange: () => {},
+    defaultOrder: '-created_at',
   };
 
   constructor(props, context) {
     super(props, context);
+    const filtersWithoutSearchAndOrder = Object.assign({}, props.filters);
+    delete filtersWithoutSearchAndOrder.search;
+    delete filtersWithoutSearchAndOrder.ordering;
     this.state = {
       mode: MODES.GRID,
+      showFilters: !!Object.keys(filtersWithoutSearchAndOrder).length,
     };
     this.pastThreshold = false;
     this.scrollThreshold = 0.25;
@@ -71,19 +78,19 @@ class ImageBrowser extends Component {
   }
 
   getImages(props) {
-    const { orderedImages, imagesRequest, filters } = props || this.props;
+    const { imagesRequest, filters, defaultOrder } = props || this.props;
     const node = this.getOrderedNode(props);
     if (!(node && node.ids) || (node && node.needsUpdate)) {
-      imagesRequest(filters);
+      imagesRequest(Object.assign({}, { ordering: defaultOrder }, filters));
     }
   }
 
   getActiveFilter(props) {
-    const { filters } = props || this.props;
-    const searchLessFilters = Object.assign({}, filters);
+    const { filters, defaultOrder } = props || this.props;
+    const searchLessFilters = Object.assign({}, { ordering: defaultOrder }, filters);
     delete searchLessFilters.search;
     return (
-      Object.keys(searchLessFilters).map(key => `${key}=${filters[key]}`).join('&') ||
+      Object.keys(searchLessFilters).map(key => `${key}=${searchLessFilters[key]}`).join('&') ||
       'default'
     );
   }
@@ -168,8 +175,8 @@ class ImageBrowser extends Component {
   }
 
   render() {
-    const { mode } = this.state;
-    const { imagesById, selected, onImageClick, filters } = this.props;
+    const { mode, showFilters } = this.state;
+    const { imagesById, selected, onImageClick, filters, handleFiltersChange } = this.props;
     const ids = this.getSearchedImages();
     return (
       <div
@@ -186,7 +193,17 @@ class ImageBrowser extends Component {
             getValue={() => filters.search || null}
             setValue={this.handleSearchInputChange}
           />
-          <Filters filters={this.props.filters} handleFiltersChange={this.props.handleFiltersChange} />
+          <Ordering
+            ordering={filters.ordering}
+            onChange={ordering => handleFiltersChange({ ordering })}
+            defaultOrder='-created_at'
+          />
+          <Filters
+            filters={filters}
+            handleFiltersChange={handleFiltersChange}
+            display={showFilters}
+            toggleDisplay={() => this.setState({ showFilters: !showFilters })}
+          />
         </div>
 
         <div styleName='styles.images' ref={(c) => { this.container = c; }}>

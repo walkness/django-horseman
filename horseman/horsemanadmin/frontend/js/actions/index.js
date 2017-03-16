@@ -58,9 +58,9 @@ export const timezones = {
 };
 
 export const login = {
-  request: (email, password) => action(types.LOGIN.REQUEST, { email, password }),
-  success: (email, password, response) => action(types.LOGIN.SUCCESS, { email, password, response }), // eslint-disable-line max-len
-  failure: (email, password, error) => action(types.LOGIN.FAILURE, { email, password, error }),
+  request: (username, password) => action(types.LOGIN.REQUEST, { username, password }),
+  success: (username, password, response) => action(types.LOGIN.SUCCESS, { username, password, response }), // eslint-disable-line max-len
+  failure: (username, password, error) => action(types.LOGIN.FAILURE, { username, password, error }),
 };
 
 export const logout = {

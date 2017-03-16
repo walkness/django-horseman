@@ -5,7 +5,7 @@ import titleCase from 'title-case';
 import styles from './styles.css';
 
 
-const Sidebar = ({ nodes, currentUser, usersById, isLoggedIn }) => {
+const Sidebar = ({ nodes, currentUser, usersById, isLoggedIn, logoutRequest }) => {
   const apps = {};
   Object.keys(nodes).sort((a, b) => {
     const nodeA = nodes[a];
@@ -20,6 +20,12 @@ const Sidebar = ({ nodes, currentUser, usersById, isLoggedIn }) => {
     apps[appLabel].push(node);
   });
   const currentUserObj = usersById[currentUser];
+
+  const handleLogoutClick = (e) => {
+    e.preventDefault();
+    logoutRequest();
+  };
+
   return (
     <div className='sidebar' styleName='styles.sidebar-wrapper'>
 
@@ -69,6 +75,9 @@ const Sidebar = ({ nodes, currentUser, usersById, isLoggedIn }) => {
           <Link to={`/admin/users/${currentUserObj.pk}/`}>
             { currentUserObj.first_name || currentUserObj.email }
           </Link>
+          <div styleName='styles.logout'>
+            <a href='/admin/logout/' onClick={handleLogoutClick}>Logout</a>
+          </div>
         </div>
 
       </div>

@@ -1,0 +1,27 @@
+:global(html.login) {
+	height: 100%;
+
+	body {
+		background-color: gray(90%);
+		height: 100%;
+
+		:global(#root) {
+			height: 100%;
+		}
+	}
+}
+
+.main {
+	display: flex;
+	flex-flow: column;
+	min-height: 100%;
+	align-items: center;
+	justify-content: space-around;
+}
+
+.container {
+	max-width: 25rem;
+	width: 100%;
+	padding: 1rem;
+}
+

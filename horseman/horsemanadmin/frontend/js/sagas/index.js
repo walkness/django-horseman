@@ -65,6 +65,20 @@ function* watchUserRequest() {
   }
 }
 
+function* watchLogin() {
+  while (true) {
+    const { username, password } = yield take(types.LOGIN.REQUEST);
+    yield fork(callAPI, api.login, actions.login, [username, password]);
+  }
+}
+
+function* watchLogout() {
+  while (true) {
+    yield take(types.LOGOUT.REQUEST);
+    yield fork(callAPI, api.logout, actions.logout, []);
+  }
+}
+
 function* watchTimezonesRequest() {
   while (true) {
     yield take(types.TIMEZONES.REQUEST);
@@ -81,6 +95,8 @@ export default function* rootSaga() {
     watchImageRequest(),
     watchUsersRequest(),
     watchUserRequest(),
+    watchLogin(),
+    watchLogout(),
     watchTimezonesRequest(),
   ];
 }

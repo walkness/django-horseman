@@ -81,12 +81,20 @@
 	background-color: gray(25%);
 	border-top: 1px solid gray(23%);
 
-	:global .section-header {
-		margin-top: 0;
-		padding-top: 0;
+	.section-header {
+		padding-bottom: .5rem;
 	}
 
 	> a {
 		text-decoration: none;
+	}
+}
+
+.logout {
+	font-size: .8em;
+	padding-top: 1rem;
+
+	a {
+		color: gray(60%);
 	}
 }

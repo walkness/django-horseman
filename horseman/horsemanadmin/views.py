@@ -24,10 +24,18 @@ def render(request, _init_data=None):
     )
 
 
-@login_required
-def default(request, *args, **kwargs):
+def base(request):
     node_configuration = serializers.AdminModelConfigurationSerializer(
         Node.get_all_types(), many=True).data
     comment_configuration = serializers.AdminModelConfigurationSerializer(
         Comment.get_all_types(), many=True).data
     return render(request, {'nodes': node_configuration, 'comments': comment_configuration})
+
+
+@login_required
+def default(request, *args, **kwargs):
+    return base(request)
+
+
+def login(request):
+    return base(request)

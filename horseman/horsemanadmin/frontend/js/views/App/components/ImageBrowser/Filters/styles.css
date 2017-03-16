@@ -1,8 +1,20 @@
+.filters {
+
+}
+
 .date-range {
 	display: flex;
 	flex-flow: row;
 
 	:global(.input-wrapper) {
 		width: 50%;
+
+		&:global:first-child {
+			padding-right: 1rem;
+		}
+
+		&:global:last-child {
+			padding-left: 1rem;
+		}
 	}
 }
