@@ -7,6 +7,8 @@ from django.utils import timezone
 
 import markdown
 from mptt.models import MPTTModel, TreeForeignKey
+from mptt.managers import TreeManager
+from mptt.querysets import TreeQuerySet
 from markupfield.fields import MarkupField
 
 from horseman.mixins import AdminModelMixin
@@ -32,10 +34,22 @@ MARKUP_CHOICES = (
 )
 
 
+class CommentQuerySet(models.QuerySet):
+    
+    def public(self):
+        return self.filter(approved=True)
+
+
+class CommentManager(TreeManager.from_queryset(CommentQuerySet)):
+    pass    
+
+
 class BaseComment(AdminModelMixin, MPTTModel):
     id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
     parent = TreeForeignKey(
         'self', null=True, blank=True, related_name='children', db_index=True)
+
+    default_manager = CommentManager()
 
     class Meta:
         abstract = True
@@ -59,6 +73,8 @@ class Comment(BaseComment):
     ]
     admin_fields = ['body', 'approved']
     admin_order = 0
+
+    objects = CommentManager()
 
     @property
     def author(self):

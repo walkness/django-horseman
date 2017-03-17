@@ -47,6 +47,9 @@ class NodeQuerySet(models.QuerySet):
             return self.filter(pk__in=value)
         return self.filter(pk=value)
 
+    def published(self):
+        return self.filter(published=True)
+
 
 class NodeManager(models.Manager):
 
@@ -58,6 +61,9 @@ class NodeManager(models.Manager):
 
     def get_from_revision_relation_value(self, value):
         return self.get_queryset().get_from_revision_relation_value(value)
+
+    def published(self):
+        return self.get_queryset().published()
 
 
 class AbstractNode(mixins.AdminModelMixin, models.Model):

@@ -1,3 +1,4 @@
+from django.utils import timezone
 from django.core.exceptions import ValidationError
 
 from rest_framework import serializers
@@ -85,6 +86,7 @@ class NodeSerializer(TaggitSerializer, serializers.ModelSerializer):
         published = (publish or instance.published) and not unpublish
         if publish or not published:
             validated_data['published'] = published
+            validated_data['modified_at'] = timezone.now()
             instance = super(NodeSerializer, self).update(instance, validated_data)
         else:
             for att in instance.get_revision_fields():

@@ -176,13 +176,13 @@ class AbstractImage(models.Model):
                     if self.captured_at_tz:
                         tz = self.captured_at_tz
                     else:
-                        tz = self.update_tz_from_gps(tz)
+                        tz = self.update_captured_at_tz_from_gps(tz)
 
                     aware = tz.localize(naive)
                     self.captured_at = aware
             self.exif_updated = True
 
-    def update_tz_from_gps(self, default=None):
+    def update_captured_at_tz_from_gps(self, default=None):
         tz = default
         gps = self.gps_data
         if gps:
