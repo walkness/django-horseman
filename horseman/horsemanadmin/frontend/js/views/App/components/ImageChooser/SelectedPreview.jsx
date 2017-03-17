@@ -1,7 +1,11 @@
 import React, { PropTypes } from 'react';
-import { FormattedMessage } from 'react-intl';
 
 import Image from '../Image';
+
+import Exposure from '../ImageDetails/Exposure';
+import GPS from '../ImageDetails/GPS';
+import DateTime from '../ImageDetails/DateTime';
+import Row from '../ImageDetails/Row';
 
 import styles from './styles.css';
 
@@ -17,13 +21,22 @@ const SelectedPreview = ({ image }) => (
 
     <h3>{ image.title }</h3>
 
-    <FormattedMessage
-      id='imageChooser.preview.date'
-      values={{ date: new Date(image.created_at) }}
-      defaultMessage='{date, date, long} at {date, time, long}'
-    >
-      { (formatted) => <time dateTime={image.created_at}>{ formatted }</time> }
-    </FormattedMessage>
+    <Row label='Captured at'>
+      <DateTime
+        value={image.captured_at}
+        timezone={image.captured_at_tz}
+        defaultTimezone='UTC'
+        displayTimezone={!!image.captured_at_tz}
+      />
+    </Row>
+
+    <Row label='Uploaded at'>
+      <DateTime value={image.created_at} />
+    </Row>
+
+    <Exposure image={image} />
+
+    <GPS image={image} />
 
   </div>
 );

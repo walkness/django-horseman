@@ -74,6 +74,7 @@ function InputWrapper(WrappedComponent) {
         highlightSuccess,
         highlightError,
         heading,
+        large,
         wrapperClassName,
         ...wrappedComponentProps
       } = this.props;
@@ -84,11 +85,12 @@ function InputWrapper(WrappedComponent) {
         <div
           className={classNames(
             'input-wrapper', wrapperClassName, {
-              [styles.wrapper__required]: isRequired(),
-              [styles.wrapper__success]: highlightSuccess && !pristine && valid,
-              [styles.wrapper__error]: highlightError && !pristine && !valid,
-              [styles.wrapper__empty]: !hasValue(),
-              [styles.wrapper__heading]: heading,
+              required: isRequired(),
+              success: highlightSuccess && !pristine && valid,
+              error: highlightError && !pristine && !valid,
+              empty: !hasValue(),
+              heading,
+              large,
             },
           )}
           styleName='styles.wrapper'

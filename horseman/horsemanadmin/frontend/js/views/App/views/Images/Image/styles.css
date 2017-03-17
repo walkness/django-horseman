@@ -1,0 +1,28 @@
+.root {
+	display: flex;
+	flex-flow: row;
+}
+
+.main {
+	padding-right: 1rem;
+}
+
+.sidebar {
+	flex: 1 0 21rem;
+	padding-left: 1rem;
+}
+
+.image {
+	width: 100%;
+
+	img {
+		max-width: 100%;
+		height: auto;
+	}
+}
+
+.submit {
+	display: block;
+	width: 100%;
+	margin-top: 2rem;
+}

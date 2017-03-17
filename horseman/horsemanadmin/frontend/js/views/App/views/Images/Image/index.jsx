@@ -10,8 +10,15 @@ import {
 } from '../../../../../actions';
 import { updateImage } from '../../../../../services/api';
 
-import { Input, Select } from '../../../components/Forms';
+import { Input, TimezoneSelect } from '../../../components/Forms';
 import { default as Img } from '../../../components/Image';
+
+import Exposure from '../../../components/ImageDetails/Exposure';
+import GPS from '../../../components/ImageDetails/GPS';
+import DateTime from '../../../components/ImageDetails/DateTime';
+import Row from '../../../components/ImageDetails/Row';
+
+import styles from './styles.css';
 
 
 class Image extends Component {
@@ -57,45 +64,58 @@ class Image extends Component {
     if (!image) return null;
 
     return (
-      <div>
+      <Formsy.Form
+        onValidSubmit={this.handleSubmit}
+        noValidate
+        styleName='root'
+      >
 
-        <Formsy.Form
-          onValidSubmit={this.handleSubmit}
-          noValidate
-        >
+        <main styleName='main'>
 
           <Input
             name='title'
             value={image.title}
             label='Title'
             required
+            heading
           />
 
-          <Select
-            name='captured_at_tz'
-            value={image.captured_at_tz}
-            options={[
-              { value: null, label: 'None' },
-              ...this.props.timezones.map(timezone => ({
-                value: timezone,
-                label: timezone.replace(/_/g, ' ').replace(/\//g, ' / '),
-              })),
-            ]}
-            label='Timezone'
-          />
-
-          <div>
-            <Img
-              image={image}
-              srcSize='thumbnail_300'
-            />
+          <div styleName='image'>
+            <Img image={image} />
           </div>
 
-          <button>Update</button>
+        </main>
 
-        </Formsy.Form>
+        <aside styleName='sidebar'>
 
-      </div>
+          <Row label='Captured at'>
+            <DateTime
+              value={image.captured_at}
+              timezone={image.captured_at_tz}
+              defaultTimezone='UTC'
+              displayTimezone={!!image.captured_at_tz}
+            />
+
+            <TimezoneSelect
+              name='captured_at_tz'
+              value={image.captured_at_tz}
+              timezones={this.props.timezones}
+            />
+          </Row>
+
+          <Row label='Uploaded at'>
+            <DateTime value={image.created_at} />
+          </Row>
+
+          <Exposure image={image} />
+
+          <GPS image={image} />
+
+          <button className='btn' styleName='submit'>Update</button>
+
+        </aside>
+
+      </Formsy.Form>
     );
   }
 }
