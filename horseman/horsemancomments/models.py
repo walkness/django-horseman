@@ -34,7 +34,7 @@ MARKUP_CHOICES = (
 )
 
 
-class CommentQuerySet(models.QuerySet):
+class CommentQuerySet(TreeQuerySet):
     
     def public(self):
         return self.filter(approved=True)

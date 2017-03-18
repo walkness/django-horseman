@@ -51,19 +51,8 @@ class NodeQuerySet(models.QuerySet):
         return self.filter(published=True)
 
 
-class NodeManager(models.Manager):
-
-    def get_queryset(self):
-        return NodeQuerySet(self.model, using=self._db)
-
-    def prefetch_related_images(self):
-        return self.get_queryset().prefetch_related_images()
-
-    def get_from_revision_relation_value(self, value):
-        return self.get_queryset().get_from_revision_relation_value(value)
-
-    def published(self):
-        return self.get_queryset().published()
+class NodeManager(models.Manager.from_queryset(NodeQuerySet)):
+    pass
 
 
 class AbstractNode(mixins.AdminModelMixin, models.Model):
