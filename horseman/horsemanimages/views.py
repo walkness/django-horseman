@@ -26,7 +26,7 @@ class ImageFilter(filters.FilterSet):
 
 class ImageViewSet(SearchableMixin, viewsets.ModelViewSet):
     model = models.Image
-    serializer_class = serializers.ImageSerializer
+    serializer_class = serializers.AdminImageSerializer
     queryset = models.Image.objects.prefetch_related('renditions').order_by('-created_at').all()
     search_query_param = 'search'
     search_fields = ['title']

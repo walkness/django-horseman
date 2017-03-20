@@ -30,11 +30,13 @@ class NodeQuerySet(models.QuerySet):
     def prefetch_related_images(self):
         all_ids = []
         all_renditions = {}
+        print(self.all())
         for obj in self:
             ids, renditions = obj.get_related_image_ids()
             all_ids.extend(ids)
             if renditions:
                 all_renditions[obj.pk] = renditions
+        all_ids = list(set(all_ids))
         images = {}
         for image in Image.objects.prefetch_related('renditions').filter(pk__in=all_ids):
             images[image.pk] = image
@@ -112,6 +114,10 @@ class AbstractNode(mixins.AdminModelMixin, models.Model):
     @property
     def description(self):
         return None
+
+    @property
+    def full_url(self):
+        return getattr(django_settings, 'SITE_URL', '') + self.url_path
 
     def get_title(self):
         return self.slug

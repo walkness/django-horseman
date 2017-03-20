@@ -18,7 +18,7 @@ class RenditionSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = models.Rendition
-        fields = ['url', 'width', 'height', 'crop']
+        fields = ['url', 'width', 'height', 'crop', 'mime_type']
 
 
 class RenditionsField(serializers.Field):
@@ -56,22 +56,17 @@ class RenditionsField(serializers.Field):
 
 
 class ImageSerializer(serializers.ModelSerializer):
-    renditions = RenditionsField(sizes=[
-        ('thumbnail_150', (150, 150)),
-        ('thumbnail_300', (300, 300)),
-        ('thumbnail_600', (600, 600)),
-        ('thumbnail_1200', (1200, 1200)),
-    ], read_only=True)
+    renditions = RenditionsField()
     captured_at_tz = TimezoneField(required=False, allow_null=True)
 
     class Meta:
         model = models.Image
         fields = [
-            'pk', 'title', 'url', 'width', 'height', 'created_at', 'created_by', 'captured_at',
-            'captured_at_tz', 'renditions', 'meta']
+            'pk', 'title', 'url', 'mime_type', 'width', 'height', 'created_at', 'created_by',
+            'captured_at', 'captured_at_tz', 'renditions', 'meta']
         read_only_fields = [
-            'pk', 'url', 'width', 'height', 'created_at', 'created_by', 'captured_at', 'renditions',
-            'meta']
+            'pk', 'url', 'width', 'height', 'mime_type', 'created_at', 'created_by', 'captured_at',
+            'renditions', 'meta']
         extra_kwargs = {
             'title': {'required': False, 'allow_null': True}
         }
@@ -91,3 +86,12 @@ class ImageSerializer(serializers.ModelSerializer):
         instance.update_exif(file)
         instance.save()
         return instance
+
+
+class AdminImageSerializer(ImageSerializer):
+    renditions = RenditionsField(sizes=[
+        ('thumbnail_150', (150, 150)),
+        ('thumbnail_300', (300, 300)),
+        ('thumbnail_600', (600, 600)),
+        ('thumbnail_1200', (1200, 1200)),
+    ], read_only=True)

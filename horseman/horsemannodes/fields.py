@@ -1,8 +1,11 @@
-from django.db.models import TextField
+from django.db.models import TextField, ForeignKey, SET_NULL
 from django.contrib.postgres.fields import JSONField
 from django.core.exceptions import ValidationError
 
 from rest_framework.serializers import ListField
+
+from horseman.horsemanimages import convert_size_to_renditions
+from horseman.horsemanimages.models import Image
 
 
 class RichTextField(TextField):
@@ -79,3 +82,37 @@ class StructuredField(JSONField):
             })
 
         return {'blocks': blocks}
+
+
+class SingleImageField(ForeignKey):
+    image_model_class = Image
+
+    def __init__(self, *args, **kwargs):
+        self.sizes = kwargs.pop('sizes', None)
+        kwargs['to'] = '{}.{}'.format(
+            self.image_model_class._meta.app_label,
+            self.image_model_class.__name__
+        )
+        super(SingleImageField, self).__init__(*args, **kwargs)
+
+    def deconstruct(self):
+        name, path, args, kwargs = super(SingleImageField, self).deconstruct()
+        kwargs['to'] = '{}.{}'.format(
+            self.image_model_class._meta.app_label,
+            self.image_model_class.__name__
+        )
+        kwargs['sizes'] = self.sizes
+        return name, path, args, kwargs
+
+    def get_renditions(self):
+        renditions = []
+        for name, size in (self.sizes or {}).items():
+            renditions.extend(convert_size_to_renditions(name, size))
+        return renditions
+
+    def get_image_ids(self, data):
+        image_id = data
+        if isinstance(data, self.image_model_class):
+            image_id = data.pk
+        renditions = {str(image_id): self.get_renditions()}
+        return [image_id], renditions

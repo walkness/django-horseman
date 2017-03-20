@@ -7,7 +7,7 @@ from rest_framework.exceptions import ValidationError as DRFValidationError
 from taggit_serializer.serializers import (TagListSerializerField,
                                            TaggitSerializer)
 
-from horseman.horsemanimages.serializers import ImageSerializer
+from horseman.horsemanimages.serializers import AdminImageSerializer
 from horseman.horsemanusers import get_user_serializer
 
 from . import models
@@ -128,7 +128,7 @@ class NodeSerializer(TaggitSerializer, serializers.ModelSerializer):
 
     def get_related_images(self, obj):
         images, renditions = obj.get_related_images()
-        return ImageSerializer(images, many=True, extra_image_sizes=renditions).data
+        return AdminImageSerializer(images, many=True, extra_image_sizes=renditions).data
 
 
 class NodeWithRevisionSerializer(NodeSerializer):

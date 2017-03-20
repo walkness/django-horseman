@@ -46,6 +46,7 @@ class NodeViewSet(SearchableMixin, viewsets.ModelViewSet):
         qs = self.search_queryset(qs)
 
         prefetch_fields = []
+        select_related_fields = []
         for field in node_class._meta.get_fields():
             if field.many_to_many and not field.auto_created:
                 if field.__class__.__name__ == 'TaggableManager':
@@ -54,8 +55,12 @@ class NodeViewSet(SearchableMixin, viewsets.ModelViewSet):
                     prefetch_fields.append(Prefetch(
                         field.name,
                         queryset=field.related_model.objects.select_related('node_ptr')))
+            elif field.many_to_one and not field.auto_created:
+                select_related_fields.append(field.name)
         if len(prefetch_fields) > 0:
             qs = qs.prefetch_related(*prefetch_fields)
+        if len(select_related_fields) > 0:
+            qs = qs.select_related(*select_related_fields)
 
         if hasattr(qs, 'prefetch_related_images'):
             qs = qs.prefetch_related_images()

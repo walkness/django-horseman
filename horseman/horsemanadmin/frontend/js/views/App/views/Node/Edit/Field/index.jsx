@@ -51,8 +51,10 @@ const Field = ({ config, fieldRef, ...props }) => {
   }
 
   if (
-    config.type === 'django.db.models.fields.related.ForeignKey' &&
-    config.related_model === 'horseman.horsemanimages.models.Image'
+    (
+      config.type === 'django.db.models.fields.related.ForeignKey' &&
+      config.related_model === 'horseman.horsemanimages.models.Image'
+    ) || config.type === 'horseman.horsemannodes.fields.SingleImageField'
   ) {
     return <ImageChooser {...inputProps} />;
   }

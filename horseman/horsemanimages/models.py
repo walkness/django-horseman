@@ -1,6 +1,7 @@
 import os.path
 import uuid
 import hashlib
+import mimetypes
 from io import BytesIO
 from contextlib import contextmanager
 from datetime import datetime
@@ -27,6 +28,12 @@ def get_rendition_upload_to(instance, filename):
     return instance.get_upload_to(filename)
 
 
+def get_mime_type_from_file(file):
+    fname = os.path.basename(file.name)
+    mime, encoding = mimetypes.guess_type(fname)
+    return mime
+
+
 class AbstractImage(models.Model):
     if settings.USE_UUID_KEYS:
         id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
@@ -39,6 +46,8 @@ class AbstractImage(models.Model):
     height = models.PositiveIntegerField(editable=False)
 
     hash = models.CharField(max_length=32, editable=False)
+
+    mime_type = models.CharField(max_length=50, blank=True)
 
     created_at = models.DateTimeField(default=timezone.now)
     created_by = models.ForeignKey(django_settings.AUTH_USER_MODEL)
@@ -141,6 +150,8 @@ class AbstractImage(models.Model):
             naive = self.captured_at.replace(tzinfo=None)
             aware = self.captured_at_tz.localize(naive)
             self.captured_at = aware
+        if (self.old_file != self.file or not self.mime_type) and self.file:
+            self.mime_type = get_mime_type_from_file(self.file) or ''
         return super(AbstractImage, self).save(*args, **kwargs)
 
     @contextmanager
@@ -283,26 +294,21 @@ class Filter(object):
             original_width, original_height = willow.get_size()
 
             if self.crop:
-                width, height = None, None
-                if original_width > original_height:
-                    height = self.height
-                    width = round(original_width * (self.height / original_height))
-                else:
-                    width = self.width
-                    height = round(original_height * (self.width / original_width))
-                    
-                willow = willow.resize((width, height))
+                original_aspect = original_width / original_height
+                crop_aspect = self.width / self.height
 
-                print(width, height)
+                if original_aspect < crop_aspect:
+                    # Image is wider than original, crop top and bottom
+                    target_height = round(original_width / crop_aspect)
+                    top = round((original_height / 2) - (target_height / 2))
+                    willow = willow.crop((0, top, original_width, top + target_height))
+                elif original_aspect > crop_aspect:
+                    # Image is taller than original, crop left and right
+                    target_width = round(original_height * crop_aspect)
+                    left = round((original_width / 2) - (target_width / 2))
+                    willow = willow.crop((left, 0, left + target_width, original_height))
 
-                if width > height:
-                    left = int((width / 2) - (self.width / 2))
-                    if left > 0:
-                        willow = willow.crop((left, 0, left + self.width, height))
-                else:
-                    top = int((height / 2) - (self.height / 2))
-                    if top > 0:
-                        willow = willow.crop((0, top, width, top + self.height))
+                willow = willow.resize((self.width, self.height))
 
             else:
                 width, height = None, None
@@ -347,6 +353,8 @@ class AbstractRendition(models.Model):
     width = models.PositiveIntegerField(editable=False)
     height = models.PositiveIntegerField(editable=False)
 
+    mime_type = models.CharField(max_length=50, blank=True)
+
     created_at = models.DateTimeField(default=timezone.now)
 
     objects = RenditionQuerySet.as_manager()
@@ -360,6 +368,11 @@ class AbstractRendition(models.Model):
 
     def __str__(self):
         return '{}x{}{}'.format(self.target_width, self.target_height, '_crop' if self.crop else '')
+
+    def save(self, *args, **kwargs):
+        if not self.mime_type and self.file:
+            self.mime_type = get_mime_type_from_file(self.file) or ''
+        return super(AbstractRendition, self).save(*args, **kwargs)
 
     def get_upload_to(self, filename):
         folder_name = 'images/{}'.format(self.image.hash)

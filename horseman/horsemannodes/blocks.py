@@ -2,21 +2,8 @@ import inspect
 from django import forms
 
 from .forms import RichTextFormField, ImageSizeField, SingleImageField, MultipleImageField
+from horseman.horsemanimages import convert_size_to_renditions
 from horseman.horsemanimages.models import Image
-
-
-def get_rendition_name(name, crop, width, height):
-    return '{}_{}x{}{}'.format(name, width, height, '_crop' if crop else '')
-
-def convert_size_to_renditions(name, size):
-    width, height = size['size']
-    renditions = [(name, (width, height, size['crop']))]
-    for width, height in size.get('extra_renditions', []):
-        renditions.append((
-            get_rendition_name(name, size.get('crop', False), width, height),
-            (width, height, size['crop']),
-        ))
-    return renditions
 
 
 class Block(object):
