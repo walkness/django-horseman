@@ -8,13 +8,13 @@ import config from './base.config.babel';
 
 // Use webpack dev server
 config.entry = [
-  'webpack-dev-server/client?http://0.0.0.0:3000',
+  'webpack-dev-server/client?http://0.0.0.0:3010',
   'webpack/hot/only-dev-server',
   path.resolve(__dirname, '../js/main'),
 ];
 
 // Tell django to use this URL to load packages and not use STATIC_URL + bundle_name
-config.output.publicPath = `//${os.hostname()}:3000/bundles/`;
+config.output.publicPath = `//${os.hostname()}:3010/bundles/`;
 
 config.plugins = config.plugins.concat([
 
