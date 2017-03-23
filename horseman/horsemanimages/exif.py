@@ -36,7 +36,7 @@ class EXIF(object):
 
     def get_raw_exif(self):
         file_ = self.get_file()
-        return exifread.process_file(file)
+        return exifread.process_file(file_)
 
     def process_exif(self, raw_exif):
         processed = {}
