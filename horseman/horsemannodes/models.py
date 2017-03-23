@@ -52,6 +52,12 @@ class NodeQuerySet(models.QuerySet):
     def published(self):
         return self.filter(published=True)
 
+    def publish(self, user=None):
+        return self.update(published=True, published_by=user, published_at=timezone.now())
+
+    def unpublish(self):
+        return self.update(published=False, published_by=None, published_at=None)
+
 
 class NodeManager(models.Manager.from_queryset(NodeQuerySet)):
     pass
@@ -93,7 +99,7 @@ class AbstractNode(mixins.AdminModelMixin, models.Model):
         self._old_published = self.published
 
     def __str__(self):
-        return self.slug
+        return self.title_display
 
     def save(self, *args, **kwargs):
         self.url_path = self.get_url_path()
@@ -109,7 +115,9 @@ class AbstractNode(mixins.AdminModelMixin, models.Model):
 
     @property
     def title_display(self):
-        return self.slug
+        if hasattr(self, 'title'):
+            return self.title
+        return self.get_title()
 
     @property
     def description(self):

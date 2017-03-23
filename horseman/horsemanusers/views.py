@@ -4,6 +4,7 @@ from rest_framework import viewsets, generics
 from rest_framework.views import APIView
 from rest_framework.permissions import AllowAny
 from rest_framework.response import Response
+from rest_framework.exceptions import NotAuthenticated
 
 from . import get_user_serializer, serializers
 from .authentication import LoginViewAuthentication
@@ -13,6 +14,15 @@ class UserViewSet(viewsets.ModelViewSet):
     model = get_user_model()
     serializer_class = get_user_serializer()
     queryset = get_user_model().objects.all()
+
+    def get_object(self):
+        if self.kwargs['pk'] == '__current':
+            if not self.request.user.is_authenticated():
+                raise NotAuthenticated()
+            obj = self.request.user
+            self.check_object_permissions(self.request, obj)
+            return obj
+        return super(UserViewSet, self).get_object()
 
 
 class AuthView(APIView):
