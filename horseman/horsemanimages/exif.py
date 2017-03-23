@@ -41,10 +41,7 @@ class EXIF(object):
         if not file_:
             return None
 
-        try:
-            file_.seek(0)
-        except ValueError:
-            return None
+        file_.seek(0)
 
         return file_
 
@@ -69,6 +66,8 @@ class EXIF(object):
 
     def get_json(self):
         raw_exif = self.get_raw_exif()
+        if not raw_exif:
+            return None
         return self.process_exif(raw_exif)
 
 
