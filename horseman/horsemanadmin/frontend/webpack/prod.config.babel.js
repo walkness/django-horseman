@@ -3,10 +3,11 @@
 import path from 'path';
 import webpack from 'webpack';
 import ExtractTextPlugin from 'extract-text-webpack-plugin';
+import BundleTracker from 'webpack-bundle-tracker';
 
-import config from './webpack.base.config.babel';
+import config from './base.config.babel';
 
-config.output.path = path.resolve(__dirname, '../dist/client/');
+config.output.path = path.resolve(__dirname, '../dist/');
 config.output.publicPath = '/static/';
 config.output.libraryTarget = 'umd';
 
@@ -22,9 +23,6 @@ config.plugins = config.plugins.concat([
     },
   }),
 
-  // keeps hashes consistent between compilations
-  new webpack.optimize.OccurenceOrderPlugin(),
-
   // minifies code
   new webpack.optimize.UglifyJsPlugin({
     output: {
@@ -35,24 +33,81 @@ config.plugins = config.plugins.concat([
     },
   }),
 
-  new ExtractTextPlugin('styles/[name]-[hash].css'),
+  new ExtractTextPlugin({
+    filename: 'styles/[name]-[hash].css',
+    allChunks: true,
+  }),
+
+  new BundleTracker({ filename: './webpack-stats.prod.json' }),
 ]);
 
 const cssNano = {
   discardComments: { removeAll: true },
 };
 
-config.module.loaders.push(
+config.module.rules.push(
   {
     test: /js\/.*\.(js|jsx)$/,
-    exclude: /node_modules|\.tmp|vendor/,
-    loaders: ['babel'],
+    exclude: /node_modules/,
+    loader: 'babel-loader',
+    query: {
+      plugins: [
+        ['babel-plugin-react-css-modules', {
+          context: config.context,
+          filetypes: {
+            '.scss': 'postcss-scss',
+          },
+          webpackHotModuleReloading: true,
+        }],
+      ],
+    },
   },
   {
     test: /\.scss$/,
-    exclude: /node_modules|\.tmp|vendor/,
-    loader: ExtractTextPlugin.extract('style-loader', `css-loader?${JSON.stringify(cssNano)}!postcss-loader!sass-loader`), // eslint-disable-line max-len
-  }
+    include: path.resolve(config.context, './js/'),
+    use: ExtractTextPlugin.extract({
+      use: [
+        `css-loader?${JSON.stringify(cssNano)}&modules&importLoaders=2&localIdentName=[path]___[name]__[local]___[hash:base64:5]`,
+        'postcss-loader',
+        'sass-loader',
+      ],
+      fallback: 'style-loader',
+    }),
+  },
+  {
+    test: /\.scss$/,
+    exclude: path.resolve(config.context, './js/'),
+    use: ExtractTextPlugin.extract({
+      use: [
+        `css-loader?${JSON.stringify(cssNano)}&importLoaders=2`,
+        'postcss-loader',
+        'sass-loader',
+      ],
+      fallback: 'style-loader',
+    }),
+  },
+  {
+    test: /\.css$/,
+    include: path.resolve(config.context, './js/'),
+    use: ExtractTextPlugin.extract({
+      use: [
+        `css-loader?${JSON.stringify(cssNano)}&modules&importLoaders=2&localIdentName=[path]___[name]__[local]___[hash:base64:5]`,
+        'postcss-loader',
+      ],
+      fallback: 'style-loader',
+    }),
+  },
+  {
+    test: /\.css$/,
+    exclude: path.resolve(config.context, './js/'),
+    use: ExtractTextPlugin.extract({
+      use: [
+        `css-loader?${JSON.stringify(cssNano)}&importLoaders=2`,
+        'postcss-loader',
+      ],
+      fallback: 'style-loader',
+    }),
+  },
 );
 
 export default config;

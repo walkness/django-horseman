@@ -2,7 +2,6 @@
 
 import path from 'path';
 import webpack from 'webpack';
-import autoprefixer from 'autoprefixer';
 
 const context = path.resolve(__dirname, '../');
 
@@ -10,12 +9,12 @@ export default {
   context,
 
   entry: {
-    main: path.resolve(__dirname, '../js/index.jsx'),
+    main: path.resolve(__dirname, '../js/main.jsx'),
   },
 
   output: {
     path: path.resolve(__dirname, '../bundles/'),
-    filename: 'js/[name].js',
+    filename: 'js/[name]-[hash].js',
   },
 
   module: {

@@ -1,11 +1,11 @@
-{% load static %}<!DOCTYPE html>
+{% load static %}{% load render_bundle from webpack_loader %}<!DOCTYPE html>
 <html>
 	<head>
 		<meta name="viewport" content="width=device-width, initial-scale=1">
 
 		<meta name="robots" content="noindex">
 
-	    
+		{% render_bundle 'main' 'css' %}	    
 	</head>
 
 	<body role="document">
@@ -13,6 +13,6 @@
 	{% if init_data %}
 	    <script>window.__INIT__ = {{ init_data|safe }};</script>
 	{% endif %}
-	    <script type="text/javascript" src="//localhost:3010/bundles/js/main.js"></script>
+	    {% render_bundle 'main' 'js' %}
 	</body>
 </html>

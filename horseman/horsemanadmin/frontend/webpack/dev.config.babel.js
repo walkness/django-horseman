@@ -3,6 +3,7 @@
 import os from 'os';
 import path from 'path';
 import webpack from 'webpack';
+import BundleTracker from 'webpack-bundle-tracker';
 
 import config from './base.config.babel';
 
@@ -27,6 +28,8 @@ config.plugins = config.plugins.concat([
       RENDER_SERVER_PORT: 9009,
     },
   }),
+
+  new BundleTracker({ filename: './webpack-stats.json' }),
 ]);
 
 config.module.rules.push(
