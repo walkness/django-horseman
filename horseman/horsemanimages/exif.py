@@ -24,11 +24,16 @@ class EXIF(object):
         self.file = file
 
     def get_file(self):
+        if not self.file:
+            return None
+        if self.file.closed:
+            self.file.open('rb')
         self.file.seek(0)
         return self.file
 
     def get_raw_exif(self):
-        return exifread.process_file(self.get_file())
+        file_ = self.get_file()
+        return exifread.process_file(file)
 
     def process_exif(self, raw_exif):
         processed = {}
