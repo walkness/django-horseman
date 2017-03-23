@@ -26,9 +26,12 @@ class EXIF(object):
     def get_file(self):
         if not self.file:
             return None
-        if self.file.closed:
+        if self.file.closed and hasattr(self.file, 'open'):
             self.file.open('rb')
-        self.file.seek(0)
+        try:
+            self.file.seek(0)
+        except ValueError:
+            pass
         return self.file
 
     def get_raw_exif(self):
