@@ -5,7 +5,7 @@ import titleCase from 'title-case';
 import styles from './styles.css';
 
 
-const Sidebar = ({ nodes, currentUser, usersById, isLoggedIn, logoutRequest }) => {
+const Sidebar = ({ nodes, currentUser, usersById, isLoggedIn, logoutRequest, adminBase }) => {
   const apps = {};
   Object.keys(nodes).sort((a, b) => {
     const nodeA = nodes[a];
@@ -41,7 +41,7 @@ const Sidebar = ({ nodes, currentUser, usersById, isLoggedIn, logoutRequest }) =
                   { appNodes.map(({ configuration }) => (
                     <li key={configuration.node_type} className='node'>
                       <Link
-                        to={`/admin/${configuration.app_label}/${configuration.model_name}/`}
+                        to={`${adminBase}${configuration.app_label}/${configuration.model_name}/`}
                         activeClassName='active'
                       >
                         { titleCase(configuration.name_plural) }
@@ -56,15 +56,15 @@ const Sidebar = ({ nodes, currentUser, usersById, isLoggedIn, logoutRequest }) =
           <li className='images'>
             <div styleName='styles.section-header'>Images</div>
             <ul>
-              <li><Link to='/admin/images/' activeClassName='active' onlyActiveOnIndex>Library</Link></li>
-              <li><Link to='/admin/images/upload/' activeClassName='active'>Upload</Link></li>
+              <li><Link to={`${adminBase}images/`} activeClassName='active' onlyActiveOnIndex>Library</Link></li>
+              <li><Link to={`${adminBase}images/upload/`} activeClassName='active'>Upload</Link></li>
             </ul>
           </li>
 
           <li className='settings'>
             <div styleName='styles.section-header'>Settings</div>
             <ul>
-              <li><Link to='/admin/users/' activeClassName='active'>Users</Link></li>
+              <li><Link to={`${adminBase}users/`} activeClassName='active'>Users</Link></li>
             </ul>
           </li>
 
@@ -72,11 +72,11 @@ const Sidebar = ({ nodes, currentUser, usersById, isLoggedIn, logoutRequest }) =
 
         <div styleName='styles.user'>
           <div styleName='styles.section-header'>Logged In As</div>
-          <Link to={`/admin/users/${currentUserObj.pk}/`}>
+          <Link to={`${adminBase}users/${currentUserObj.pk}/`}>
             { currentUserObj.first_name || currentUserObj.email }
           </Link>
           <div styleName='styles.logout'>
-            <a href='/admin/logout/' onClick={handleLogoutClick}>Logout</a>
+            <a href={`${adminBase}logout/`} onClick={handleLogoutClick}>Logout</a>
           </div>
         </div>
 

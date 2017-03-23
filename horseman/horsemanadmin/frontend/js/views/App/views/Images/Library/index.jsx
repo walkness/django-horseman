@@ -50,7 +50,7 @@ class ImageLibrary extends Component {
           orderedImages={orderedImages}
           imagesById={imagesById}
           imagesRequest={this.props.imagesRequest}
-          getLink={image => `/admin/images/${image.pk}/`}
+          getLink={image => `${this.props.adminBase}images/${image.pk}/`}
           filters={this.getFilters()}
           handleFiltersChange={this.handleFiltersChange}
           useWindowScroll
@@ -64,6 +64,7 @@ class ImageLibrary extends Component {
 const mapStateToProps = state => ({
   orderedImages: state.images.ordered,
   imagesById: state.images.byId,
+  adminBase: state.config.adminURLBase,
 });
 
 const imagesRequest = imagesAction.request;

@@ -1,9 +1,19 @@
 /* eslint-disable import/prefer-default-export */
-/* globals document fetch FormData */
+/* globals document fetch FormData XMLHttpRequest */
 
 import 'isomorphic-fetch';
 
-const API_ROOT = '/api/v1/';
+import store from '../store';
+
+const API_ROOT = 'api/v1/';
+
+const getAPIRoot = () => {
+  const adminRoot = store.getState().config.adminURLBase;
+  if (adminRoot) return `${adminRoot}${API_ROOT}`;
+  return API_ROOT;
+};
+
+const getAPIURL = endpoint => getAPIRoot() + endpoint;
 
 export const getCsrf = () => {
   const value = `; ${document.cookie}`;
@@ -30,7 +40,7 @@ function baseApi(fullUrl, request) {
 }
 
 function callApi(endpoint) {
-  const fullUrl = API_ROOT + endpoint;
+  const fullUrl = getAPIURL(endpoint);
 
   const request = {
     credentials: 'same-origin',
@@ -46,7 +56,7 @@ function callUrl(fullUrl) {
 }
 
 export function sendApi(endpoint, method, data = {}) {
-  const fullUrl = API_ROOT + endpoint;
+  const fullUrl = getAPIURL(endpoint);
 
   const request = {
     credentials: 'same-origin',
@@ -62,7 +72,7 @@ export function sendApi(endpoint, method, data = {}) {
 }
 
 function uploadApi(endpoint, method, data) {
-  const fullUrl = API_ROOT + endpoint;
+  const fullUrl = getAPIURL(endpoint);
 
   const request = {
     credentials: 'same-origin',
@@ -77,7 +87,7 @@ function uploadApi(endpoint, method, data) {
 }
 
 function xhrUploadApi(endpoint, data, method = 'POST', completion = () => {}, onProgress = () => {}) {
-  const fullUrl = API_ROOT + endpoint;
+  const fullUrl = getAPIURL(endpoint);
   const xhr = new XMLHttpRequest();
 
   xhr.open(method, fullUrl, true);

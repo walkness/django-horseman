@@ -33,3 +33,5 @@ export const TIMEZONES = createRequestTypes('TIMEZONES');
 
 export const LOGIN = createRequestTypes('LOGIN');
 export const LOGOUT = createRequestTypes('LOGOUT');
+
+export const UPDATE_CONFIG = 'UPDATE_CONFIG';

@@ -23,7 +23,7 @@ class App extends Component {
 
   componentWillReceiveProps(nextProps) {
     if (!nextProps.isLoggedIn && nextProps.isLoggedIn !== this.props.isLoggedIn) {
-      this.context.router.push('/admin/login/');
+      this.context.router.push(`${this.props.adminBase}login/`);
     }
   }
 
@@ -62,6 +62,7 @@ const mapStateToProps = state => ({
   isLoggedIn: state.users.isLoggedIn,
   currentUser: state.users.current,
   usersById: state.users.byId,
+  adminBase: state.config.adminURLBase,
 });
 
 const logoutRequest = logoutAction.request;

@@ -6,6 +6,7 @@ import nodeRevisions from './NodeRevisionsReducer';
 import comments from './CommentsReducer';
 import images from './ImagesReducer';
 import timezones from './TimezonesReducer';
+import config from './ConfigReducer';
 
 export default combineReducers({
   users,
@@ -14,4 +15,5 @@ export default combineReducers({
   comments,
   images,
   timezones,
+  config,
 });

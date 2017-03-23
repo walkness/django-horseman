@@ -1,5 +1,6 @@
 from django.shortcuts import render as base_render
 from django.contrib.auth.decorators import login_required
+from django.urls import reverse
 
 from rest_framework.renderers import JSONRenderer
 
@@ -11,7 +12,13 @@ from . import serializers
 
 
 def render(request, _init_data=None):
-    init_data = {'isLoggedIn': False, 'currentUser': None}
+    init_data = {
+        'isLoggedIn': False,
+        'currentUser': None,
+        'config': {
+            'adminURLBase': reverse('horsemanadmin:home'),
+        },
+    }
     if request.user.is_authenticated():
         init_data['isLoggedIn'] = True
         init_data['currentUser'] = get_user_serializer()(request.user).data

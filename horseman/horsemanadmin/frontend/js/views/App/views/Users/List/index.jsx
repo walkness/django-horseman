@@ -16,6 +16,7 @@ class UserList extends Component {
       [PropTypes.string]: PropTypes.arrayOf(PropTypes.string),
     }).isRequired,
     currentUser: PropTypes.string,
+    adminBase: PropTypes.string.isRequired,
   };
 
   componentWillMount() {
@@ -40,7 +41,7 @@ class UserList extends Component {
                     <img src={user.gravatar} role='presentation' />
                   </div>
 
-                  <Link to={`/admin/users/${user.pk}/`}>
+                  <Link to={`${this.props.adminBase}users/${user.pk}/`}>
                     { user.first_name || user.email }
                   </Link>
 
@@ -60,6 +61,7 @@ const mapStateToProps = state => ({
   usersById: state.users.byId,
   orderedUsers: state.users.ordered,
   currentUser: state.users.current,
+  adminBase: state.config.adminURLBase,
 });
 
 const usersRequest = usersAction.request;

@@ -30,7 +30,6 @@ class NodeQuerySet(models.QuerySet):
     def prefetch_related_images(self):
         all_ids = []
         all_renditions = {}
-        print(self.all())
         for obj in self:
             ids, renditions = obj.get_related_image_ids()
             all_ids.extend(ids)

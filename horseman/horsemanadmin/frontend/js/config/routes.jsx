@@ -13,8 +13,8 @@ import UserList from '../views/App/views/Users/List';
 import UserEdit from '../views/App/views/Users/Edit';
 import Login from '../views/App/views/Login';
 
-export default () => (
-  <Route path='admin' component={App}>
+export default (adminBase) => (
+  <Route path={adminBase} component={App}>
     <IndexRoute component={Home} />
 
     <Route path='images' component={Images}>

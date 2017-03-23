@@ -1,14 +1,14 @@
 /* globals window document */
 
 import React, { PropTypes } from 'react';
-import { Router, RouterContext, browserHistory } from 'react-router';
+import { Router, browserHistory } from 'react-router';
 import { Provider } from 'react-redux';
 import { IntlProvider } from 'react-intl';
 
 import getRoutes from './config/routes';
 
 
-const Root = ({ store }) => (
+const Root = ({ store, adminBase }) => (
   <Provider store={store}>
 
     <IntlProvider
@@ -43,7 +43,7 @@ const Root = ({ store }) => (
 
       <Router
         history={browserHistory}
-        routes={getRoutes()}
+        routes={getRoutes(adminBase)}
       />
 
     </IntlProvider>
@@ -53,6 +53,7 @@ const Root = ({ store }) => (
 
 Root.propTypes = {
   store: PropTypes.object.isRequired,
+  adminBase: PropTypes.string,
 };
 
 export default Root;

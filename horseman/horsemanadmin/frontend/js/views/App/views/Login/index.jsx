@@ -20,6 +20,7 @@ class Login extends Component {
     loggingIn: PropTypes.bool,
     loginRequest: PropTypes.func.isRequired,
     location: locationShape.isRequired,
+    adminBase: PropTypes.string.isRequired,
   };
 
   static defaultProps = {
@@ -41,7 +42,7 @@ class Login extends Component {
 
   componentWillReceiveProps(nextProps) {
     if (nextProps.isLoggedIn && !this.props.isLoggedIn) {
-      this.context.router.push(this.props.location.query.next || '/admin/');
+      this.context.router.push(this.props.location.query.next || this.props.adminBase);
     }
     if (nextProps.error) {
       // const { fields, other } = processServerError(nextProps.error, ['email', 'password']);
@@ -126,6 +127,7 @@ const mapStateToProps = state => ({
   isLoggedIn: state.users.isLoggedIn,
   loggingIn: state.users.loggingIn,
   error: state.users.loginError,
+  adminBase: state.config.adminURLBase,
 });
 
 const loginRequest = login.request;

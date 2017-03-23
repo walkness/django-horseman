@@ -14,4 +14,7 @@ export default {
     ordered: {},
   },
   timezones: [],
+  config: {
+    adminURLBase: '/',
+  },
 };
