@@ -4,6 +4,7 @@ import path from 'path';
 import webpack from 'webpack';
 import ExtractTextPlugin from 'extract-text-webpack-plugin';
 import BundleTracker from 'webpack-bundle-tracker';
+import CleanWebpackPlugin from 'clean-webpack-plugin';
 
 import config from './base.config.babel';
 
@@ -13,6 +14,7 @@ config.output.libraryTarget = 'umd';
 
 // Add HotModuleReplacementPlugin and BundleTracker plugins
 config.plugins = config.plugins.concat([
+  new CleanWebpackPlugin(path.resolve(__dirname, '../dist/'), { root: config.context }),
 
   // removes a lot of debugging code in React
   new webpack.DefinePlugin({
@@ -38,7 +40,10 @@ config.plugins = config.plugins.concat([
     allChunks: true,
   }),
 
-  new BundleTracker({ filename: './webpack-stats.prod.json' }),
+  new BundleTracker({
+    path: path.resolve(__dirname, '../dist/'),
+    filename: 'webpack-stats.json',
+  }),
 ]);
 
 const cssNano = {
