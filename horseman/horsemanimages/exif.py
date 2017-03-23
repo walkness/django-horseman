@@ -24,20 +24,34 @@ class EXIF(object):
     def __init__(self, file):
         self.file = file
 
-    def get_file(self):
+    def get_file_bytes(self):
         if not self.file:
             return None
-        if not isinstance(self.file, BytesIO) and self.file.closed:
-            if hasattr(self.file, 'open'):
-                self.file.open('rb')
+
+        if isinstance(self.file, BytesIO):
+            return self.file
+
+        if self.file.closed and hasattr(self.file, 'open'):
+            self.file.open('rb')
+        self.file.seek(0)
+        return BytesIO(self.file.read())
+
+    def get_file(self):
+        file_ = self.get_file_bytes()
+        if not file_:
+            return None
+
         try:
-            self.file.seek(0)
+            file_.seek(0)
         except ValueError:
             return None
-        return self.file
+
+        return file_
 
     def get_raw_exif(self):
         file_ = self.get_file()
+        if not file_:
+            return None
         return exifread.process_file(file_)
 
     def process_exif(self, raw_exif):
