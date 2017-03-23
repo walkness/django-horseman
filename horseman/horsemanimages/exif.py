@@ -1,5 +1,6 @@
 import exifread
 import fractions
+from io import BytesIO
 from datetime import datetime
 import pytz
 
@@ -26,12 +27,13 @@ class EXIF(object):
     def get_file(self):
         if not self.file:
             return None
-        if self.file.closed and hasattr(self.file, 'open'):
-            self.file.open('rb')
+        if not isinstance(self.file, BytesIO) and self.file.closed:
+            if hasattr(self.file, 'open'):
+                self.file.open('rb')
         try:
             self.file.seek(0)
         except ValueError:
-            pass
+            return None
         return self.file
 
     def get_raw_exif(self):
