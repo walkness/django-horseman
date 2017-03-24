@@ -78,7 +78,7 @@ class AbstractNode(mixins.AdminModelMixin, models.Model):
     author = models.ForeignKey(
         django_settings.AUTH_USER_MODEL, related_name='nodes')
 
-    slug = models.SlugField()
+    slug = models.SlugField(max_length=255)
     url_path = models.TextField(editable=False)
 
     published = models.BooleanField(default=False)
