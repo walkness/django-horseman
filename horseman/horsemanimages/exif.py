@@ -3,6 +3,7 @@ import fractions
 from io import BytesIO
 from datetime import datetime
 import pytz
+import json
 
 
 def all_subclasses(cls):
@@ -61,7 +62,13 @@ class EXIF(object):
                 if processed.get(field_group, None) is None:
                     processed[field_group] = {}
                 value = EXIFFieldValue.init(raw_value, field_group, field_name, raw_exif)
-                processed[field_group][field_name] = value.get_json_value()
+                json_value = value.get_json_value()
+                try:
+                    json.dumps(json_value)
+                except TypeError:
+                    pass
+                else:
+                    processed[field_group][field_name] = json_value
         return processed
 
     def get_json(self):
