@@ -11,6 +11,7 @@ from exclusivebooleanfield.fields import ExclusiveBooleanField
 
 from horseman import settings, mixins
 from horseman.horsemanimages.models import Image
+from horseman.horsemanimages.tasks import create_image_rendition
 
 
 def get_object_revision_relation_value(obj):
@@ -224,6 +225,18 @@ class Node(AbstractNode):
             setattr(self, att, value)
         self.revision = revision
         return self
+
+    def create_renditions(self, handle_create_rendition=None, async_renditions=False):
+        images, renditions = self.get_related_images()
+        for image in images:
+            sizes = renditions.get(str(image.pk), [])[0:]
+            sizes_args = [size[1] for size in sizes]
+            handler = None
+            if callable(handle_create_rendition):
+                handler = handle_create_rendition
+            elif async_renditions:
+                handler = create_image_rendition.delay
+            image.ensure_sizes(sizes_args, handle_create_rendition=handler)
 
 
 class NodeRevisionQuerySet(models.QuerySet):

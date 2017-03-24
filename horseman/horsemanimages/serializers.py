@@ -97,9 +97,4 @@ class ImageSerializer(serializers.ModelSerializer):
 
 
 class AdminImageSerializer(ImageSerializer):
-    renditions = RenditionsField(sizes=[
-        ('thumbnail_150', (150, 150)),
-        ('thumbnail_300', (300, 300)),
-        ('thumbnail_600', (600, 600)),
-        ('thumbnail_1200', (1200, 1200)),
-    ], read_only=True)
+    renditions = RenditionsField(models.Image.admin_sizes, read_only=True)

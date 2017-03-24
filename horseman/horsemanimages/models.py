@@ -59,6 +59,13 @@ class AbstractImage(models.Model):
 
     wp_id = models.PositiveIntegerField(blank=True, null=True, editable=False)
 
+    admin_sizes = [
+        ('thumbnail_150', (150, 150)),
+        ('thumbnail_300', (300, 300)),
+        ('thumbnail_600', (600, 600)),
+        ('thumbnail_1200', (1200, 1200)),
+    ]
+
     class Meta:
         abstract = True
 
@@ -261,6 +268,25 @@ class AbstractImage(models.Model):
         rendition.save()
 
         return rendition
+
+    def ensure_sizes(self, sizes_args, handle_create_rendition=None):
+        uncreated_sizes = sizes_args[0:]
+        for rendition in self.renditions.all():
+            i = 0
+            for args in uncreated_sizes:
+                if rendition.equals_size(*args):
+                    del uncreated_sizes[i]
+                i += 1
+
+        for args in uncreated_sizes:
+            kwargs = {}
+            if callable(handle_create_rendition):
+                kwargs['handle_create_rendition'] = handle_create_rendition
+            self.get_size(*args, **kwargs)
+
+    def ensure_admin_sizes(self, handle_create_rendition=None):
+        sizes_args = [rendition[1] for rendition in getattr(Image, 'admin_sizes', [])]
+        self.ensure_sizes(sizes_args, handle_create_rendition=handle_create_rendition)
 
     def get_revision_relation_value(self):
         return str(self.pk)
