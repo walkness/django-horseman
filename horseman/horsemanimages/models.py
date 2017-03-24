@@ -177,7 +177,7 @@ class AbstractImage(models.Model):
 
     def update_exif(self, file=None):
         exif = self.get_exif(file)
-        if len(exif.keys()) > 0:
+        if exif and len(exif.keys()) > 0:
             self.exif_data = exif
             capture_time = exif.get('EXIF', {}).get('DateTimeOriginal', None)
             if capture_time:

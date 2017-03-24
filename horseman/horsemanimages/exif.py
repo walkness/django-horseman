@@ -109,7 +109,10 @@ class RatioAsDecimal(EXIFFieldValue):
 
     def get_json_value(self):
         if isinstance(self.raw_value.values, (list, tuple)):
-            values = [float(FractionFromRatio(v)) for v in self.raw_value.values]
+            values = []
+            for v in self.raw_value.values:
+                if v and v.den:
+                    values.append(float(FractionFromRatio(v)))
             if len(values) == 1:
                 return values[0]
             return values
@@ -123,8 +126,13 @@ class EXIFGPSCoords(EXIFFieldValue):
     )
 
     def get_json_value(self):
-        values = [FractionFromRatio(v) for v in self.raw_value.values]
-        return float(values[0]) + ((float(values[1]) + (float(values[2]) / 60)) / 60)
+        values = []
+        for v in self.raw_value.values:
+            if v and v.den:
+                values.append(FractionFromRatio(v))
+        if len(values) == 3:
+            return float(values[0]) + ((float(values[1]) + (float(values[2]) / 60)) / 60)
+        return None
 
 
 class EXIFDateTime(EXIFFieldValue):
