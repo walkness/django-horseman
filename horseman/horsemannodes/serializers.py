@@ -128,7 +128,10 @@ class NodeSerializer(TaggitSerializer, serializers.ModelSerializer):
 
     def get_related_images(self, obj):
         images, renditions = obj.get_related_images()
-        return AdminImageSerializer(images, many=True, extra_image_sizes=renditions).data
+        return AdminImageSerializer(
+            images, many=True, extra_image_sizes=renditions,
+            async_renditions=getattr(self, 'async_renditions', False)
+        ).data
 
 
 class NodeWithRevisionSerializer(NodeSerializer):

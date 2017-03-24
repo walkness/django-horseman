@@ -58,3 +58,12 @@ class SearchableMixin(object):
         qs = super(SearchableMixin, self).get_queryset()
         qs = self.search_queryset(qs)
         return qs
+
+
+class BoolQueryParamMixin(object):
+
+    def get_query_param_bool(self, name, default=False):
+        raw = self.request.query_params.get(name, default)
+        if isinstance(raw, bool):
+            return raw
+        return raw.lower() in ['yes', 'y', 'true', 't', '1']

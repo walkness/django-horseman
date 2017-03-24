@@ -2,7 +2,7 @@ import os.path
 from rest_framework import serializers
 import pytz
 
-from . import models
+from . import models, tasks
 
 
 class TimezoneField(serializers.Field):
@@ -45,10 +45,16 @@ class RenditionsField(serializers.Field):
             return output
 
         for name, args in uncreated_sizes:
-            rendition = obj.instance.get_size(*args)
+            rendition = self.get_size(obj, *args)
             output[name] = RenditionSerializer(rendition).data
 
         return output
+
+    def get_size(self, obj, *args):
+        kwargs = {}
+        if getattr(self, 'async_renditions', False):
+            kwargs['handle_create_rendition'] = tasks.create_image_rendition.delay
+        return obj.instance.get_size(*args, **kwargs)
 
     def to_internal_value(self, data):
         print(data)
@@ -73,7 +79,9 @@ class ImageSerializer(serializers.ModelSerializer):
 
     def __init__(self, *args, **kwargs):
         self.extra_image_sizes = kwargs.pop('extra_image_sizes', {})
+        self.async_renditions = kwargs.pop('async_renditions', False)
         super(ImageSerializer, self).__init__(*args, **kwargs)
+        self.fields['renditions'].async_renditions = self.async_renditions
 
     def create(self, validated_data):
         file = validated_data.pop('file')

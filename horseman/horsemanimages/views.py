@@ -7,7 +7,7 @@ from rest_framework.status import (
 
 from django_filters import rest_framework as filters, DateFilter
 
-from horseman.mixins import SearchableMixin
+from horseman.mixins import SearchableMixin, BoolQueryParamMixin
 
 from . import models
 from . import serializers
@@ -24,13 +24,18 @@ class ImageFilter(filters.FilterSet):
         fields = ['uploaded_before', 'uploaded_after', 'captured_before', 'captured_after']
 
 
-class ImageViewSet(SearchableMixin, viewsets.ModelViewSet):
+class ImageViewSet(BoolQueryParamMixin, SearchableMixin, viewsets.ModelViewSet):
     model = models.Image
     serializer_class = serializers.AdminImageSerializer
     queryset = models.Image.objects.prefetch_related('renditions').order_by('-created_at').all()
     search_query_param = 'search'
     search_fields = ['title']
     filter_class = ImageFilter
+
+    def get_serializer(self, *args, **kwargs):
+        if self.get_query_param_bool('async_renditions'):
+            kwargs['async_renditions'] = True
+        return super(ImageViewSet, self).get_serializer(*args, **kwargs)
 
     @parser_classes((FormParser, MultiPartParser,))
     def create(self, request, *args, **kwargs):

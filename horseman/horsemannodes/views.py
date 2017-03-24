@@ -5,7 +5,7 @@ from django.db.models import Q, Prefetch
 from rest_framework import viewsets
 from rest_framework.decorators import detail_route
 
-from horseman.mixins import SearchableMixin
+from horseman.mixins import SearchableMixin, BoolQueryParamMixin
 from horseman.horsemancomments.views import CommentViewSet
 
 from . import models, serializers
@@ -19,7 +19,7 @@ def convert_bool(value):
     return None
 
 
-class NodeViewSet(SearchableMixin, viewsets.ModelViewSet):
+class NodeViewSet(BoolQueryParamMixin, SearchableMixin, viewsets.ModelViewSet):
     model = models.Node
     serializer_class = serializers.NodeSerializer
     queryset = models.Node.objects.all()
@@ -33,6 +33,8 @@ class NodeViewSet(SearchableMixin, viewsets.ModelViewSet):
             kwargs['related_nodes'] = True
             kwargs['active_revision'] = True
             kwargs['latest_revision'] = True
+        if self.get_query_param_bool('async_renditions'):
+            kwargs['async_renditions'] = True
         return super(NodeViewSet, self).get_serializer(*args, **kwargs)
 
     def get_search_fields(self):

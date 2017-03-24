@@ -233,21 +233,29 @@ class AbstractImage(models.Model):
 
         return full_path
 
-    def get_size(self, width, height, crop=False):
-        return self.get_rendition(Filter(width, height, crop))
+    def get_size(self, width, height, crop=False, handle_create_rendition=None):
+        return self.get_rendition(
+            Filter(width, height, crop),
+            handle_create_rendition=handle_create_rendition,
+        )
 
-    def get_rendition(self, filter):
+    def get_rendition(self, filter_, handle_create_rendition=None):
         try:
-            return self.renditions.get_with_filter(filter)
+            return self.renditions.get_with_filter(filter_)
         except Rendition.DoesNotExist:
-            rendition = Rendition(image=self, **filter.rendition_fields())
+            if callable(handle_create_rendition):
+                return handle_create_rendition(self.pk, filter_.__dict__())
+            return self.create_rendition(filter_)
+
+    def create_rendition(self, filter_):
+        rendition = Rendition(image=self, **filter_.rendition_fields())
 
         base_filename = os.path.basename(self.file.name)
         base_filename_wo_ext, ext = os.path.splitext(base_filename)
 
-        filename = '{}-{}{}'.format(base_filename_wo_ext, filter.get_filename_extension(), ext)
+        filename = '{}-{}{}'.format(base_filename_wo_ext, filter_.get_filename_extension(), ext)
         
-        generated_image = filter.run(self, BytesIO())
+        generated_image = filter_.run(self, BytesIO())
         rendition.file.save(filename, generated_image.f, save=False)
 
         rendition.save()
@@ -271,6 +279,13 @@ class Filter(object):
 
     def __str__(self):
         return '{}x{}{}'.format(self.width, self.height, '_crop' if self.crop else '')
+
+    def __dict__(self):
+        return {
+            'width': self.width,
+            'height': self.height,
+            'crop': self.crop,
+        }
 
     def rendition_fields(self):
         return {
