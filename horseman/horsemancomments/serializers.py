@@ -10,7 +10,6 @@ from . import models
 class MarkupField(serializers.Field):
 
     def to_representation(self, obj):
-        print(obj)
         return {att:getattr(obj, att) for att in ['raw', 'rendered', 'markup_type']}
 
     def to_internal_value(self, value):

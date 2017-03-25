@@ -10,7 +10,7 @@ from . import models, serializers
 class CommentViewSet(viewsets.ModelViewSet):
     model = models.Comment
     serializer_class = serializers.CommentSerializer
-    queryset = models.Comment.objects.all()
+    queryset = models.Comment.objects.select_related('user').all()
 
     def get_serializer_class(self):
         comment_class = self.get_comment_class()
@@ -18,7 +18,7 @@ class CommentViewSet(viewsets.ModelViewSet):
 
     def get_queryset(self):
         comment_class = self.get_comment_class()
-        qs = comment_class.objects.all()
+        qs = comment_class.objects.select_related('user').all()
 
         obj_pk = self.kwargs.get('obj_pk', None)
         if obj_pk:
