@@ -80,7 +80,7 @@ class Comment(BaseComment):
     url = models.URLField(blank=True, null=True)
     ip_address = models.GenericIPAddressField(blank=True, null=True, editable=False)
     user_agent = models.TextField(blank=True, null=True, editable=False)
-    name = models.CharField(max_length=50, blank=True, null=True)
+    name = models.CharField(max_length=100, blank=True, null=True)
     body = MarkupField(markup_type='markdown', markup_choices=MARKUP_CHOICES)
     approved = models.BooleanField(default=False)
     approved_at = models.DateTimeField(null=True, blank=True, editable=False)
