@@ -17,7 +17,7 @@ from horseman.mixins import AdminModelMixin
 
 
 def linkify_callback(attrs, new=False):
-    href = attrs['href']
+    href = attrs.get('href', '')
     if not href.startswith('mailto:') and not href.startswith('tel:'):
         attrs['target'] = '_blank'
     return attrs
