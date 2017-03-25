@@ -56,10 +56,6 @@ class RenditionsField(serializers.Field):
             kwargs['handle_create_rendition'] = tasks.create_image_rendition.delay
         return obj.instance.get_size(*args, **kwargs)
 
-    def to_internal_value(self, data):
-        print(data)
-        return data
-
 
 class ImageSerializer(serializers.ModelSerializer):
     renditions = RenditionsField()
@@ -97,4 +93,4 @@ class ImageSerializer(serializers.ModelSerializer):
 
 
 class AdminImageSerializer(ImageSerializer):
-    renditions = RenditionsField(models.Image.admin_sizes, read_only=True)
+    renditions = RenditionsField(models.Image.admin_sizes)

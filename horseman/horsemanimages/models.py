@@ -374,8 +374,8 @@ class Filter(object):
 
 class RenditionQuerySet(models.QuerySet):
 
-    def get_with_filter(self, filter):
-        return self.get(**filter.rendition_fields())
+    def get_with_filter(self, filter_):
+        return self.get(**filter_.rendition_fields())
 
 
 class AbstractRendition(models.Model):
@@ -402,6 +402,7 @@ class AbstractRendition(models.Model):
 
     class Meta:
         abstract = True
+        unique_together = ('image', 'target_width', 'target_height', 'crop')
 
     @property
     def url(self):
