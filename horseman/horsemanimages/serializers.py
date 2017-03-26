@@ -35,14 +35,17 @@ class RenditionsField(serializers.Field):
         sizes = self.sizes[0:]
         if isinstance(self.parent, ImageSerializer):
             sizes.extend(self.parent.extra_image_sizes.get(str(obj.instance.pk), []))
-        uncreated_sizes = sizes[0:]
-        for rendition in renditions:
-            i = 0
-            for name, args in uncreated_sizes:
-                if rendition.equals_size(*args):
-                    output[name] = RenditionSerializer(rendition).data
-                    del uncreated_sizes[i]
-                i += 1
+        uncreated_sizes = []
+        for name, args in sizes:
+            rendition = None
+            for _rendition in renditions:
+                if _rendition.equals_size(*args):
+                    rendition = _rendition
+            if rendition:
+                output[name] = RenditionSerializer(rendition).data
+            else:
+                uncreated_sizes.append((name, args))
+
         if len(uncreated_sizes) == 0:
             return output
 

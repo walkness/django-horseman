@@ -65,8 +65,8 @@ class NodeViewSet(BoolQueryParamMixin, SearchableMixin, viewsets.ModelViewSet):
         if len(select_related_fields) > 0:
             qs = qs.select_related(*select_related_fields)
 
-        if hasattr(qs, 'prefetch_related_images'):
-            qs = qs.prefetch_related_images()
+        # if hasattr(qs, 'prefetch_related_images'):
+        #     qs = qs.prefetch_related_images()
 
         return qs
 
