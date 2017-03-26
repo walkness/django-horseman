@@ -252,6 +252,12 @@ class NodeRevisionQuerySet(models.QuerySet):
             )
         return self
 
+    def latest(self):
+        return self.order_by('-created_at').first()
+
+    def active(self):
+        return self.get(active=True)
+
 
 class NodeRevision(models.Model):
     if settings.USE_UUID_KEYS:
@@ -266,6 +272,9 @@ class NodeRevision(models.Model):
     wp_id = models.PositiveIntegerField(blank=True, null=True, editable=False)
 
     objects = NodeRevisionQuerySet.as_manager()
+
+    def __str__(self):
+        return self.created_at.isoformat()
 
     def content_as_internal_value(self, node_class=Node):
         if not hasattr(self, '_content_internal_value'):

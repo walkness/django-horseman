@@ -1,6 +1,7 @@
 from django.shortcuts import render as base_render
 from django.contrib.auth.decorators import login_required
 from django.urls import reverse
+from django.conf import settings
 
 from rest_framework.renderers import JSONRenderer
 
@@ -17,6 +18,8 @@ def render(request, _init_data=None):
         'currentUser': None,
         'config': {
             'adminURLBase': reverse('horsemanadmin:home'),
+            'siteURL': settings.SITE_URL,
+            'previewSiteURL': getattr(settings, 'PREVIEW_SITE_URL', settings.SITE_URL),
         },
     }
     if request.user.is_authenticated():

@@ -46,6 +46,13 @@
 			text-align: left;
 		}
 	}
+
+	& > a {
+		display: block;
+		color: gray(75%);
+		font-size: .8em;
+		padding: .5em .75em;
+	}
 }
 
 .primary-action {

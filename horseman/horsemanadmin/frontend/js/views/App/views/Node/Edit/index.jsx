@@ -153,6 +153,7 @@ class EditNode extends Component {
       node && node.revisionsById &&
       node.revisionsById[location.query.revision || node.latest_revision]
     );
+    const currentRevision = location.query.revision || (node && node.latest_revision);
 
     if (params.id && !(revision && revision.pk)) return null;
 
@@ -216,12 +217,19 @@ class EditNode extends Component {
                   </button></li>
                 </DropdownMenu>
               </Dropdown>
+
+              <a
+                href={`${this.props.previewSiteURL}/?preview=${currentRevision}`}
+                target='_blank'
+              >
+                Preview
+              </a>
             </div>
 
             <RevisionsList
               revisions={node && node.revisions}
               revisionsById={node && node.revisionsById}
-              current={location.query.revision || (node && node.latest_revision)}
+              current={currentRevision}
               latest={node && node.latest_revision}
               usersById={this.props.usersById}
             />
@@ -239,6 +247,7 @@ const mapStateToProps = state => ({
   imagesById: state.images.byId,
   orderedImages: state.images.ordered,
   usersById: state.users.byId,
+  previewSiteURL: state.config.previewSiteURL,
 });
 
 const nodeRequest = nodeAction.request;
