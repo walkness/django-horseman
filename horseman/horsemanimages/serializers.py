@@ -24,7 +24,9 @@ class RenditionSerializer(serializers.ModelSerializer):
 class RenditionsField(serializers.Field):
 
     def __init__(self, *args, **kwargs):
-        self.sizes = kwargs.pop('sizes', [])
+        self.sizes = []
+        if len(args) > 0:
+            self.sizes = args[0]
         super(RenditionsField, self).__init__(*args, **kwargs)
 
     def to_representation(self, obj):
