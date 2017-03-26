@@ -23,6 +23,7 @@ class NodeViewSet(BoolQueryParamMixin, SearchableMixin, viewsets.ModelViewSet):
     model = models.Node
     serializer_class = serializers.NodeSerializer
     queryset = models.Node.objects.all()
+    ordering = ['-created_at']
 
     def get_serializer_class(self):
         node_class = self.get_node_class()
