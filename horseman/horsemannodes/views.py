@@ -31,6 +31,7 @@ class NodeViewSet(BoolQueryParamMixin, SearchableMixin, viewsets.ModelViewSet):
 
     def get_serializer(self, *args, **kwargs):
         if self.action == 'retrieve':
+            kwargs['related_images'] = True
             kwargs['related_nodes'] = True
             kwargs['active_revision'] = True
             kwargs['latest_revision'] = True
@@ -64,9 +65,6 @@ class NodeViewSet(BoolQueryParamMixin, SearchableMixin, viewsets.ModelViewSet):
             qs = qs.prefetch_related(*prefetch_fields)
         if len(select_related_fields) > 0:
             qs = qs.select_related(*select_related_fields)
-
-        # if hasattr(qs, 'prefetch_related_images'):
-        #     qs = qs.prefetch_related_images()
 
         return qs
 

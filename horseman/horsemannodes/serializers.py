@@ -34,7 +34,7 @@ class NodeSerializer(TaggitSerializer, serializers.ModelSerializer):
         fields = models.Node.api_fields
 
     def __init__(self, *args, **kwargs):
-        include_related_images = kwargs.pop('related_images', True)
+        include_related_images = kwargs.pop('related_images', False)
         include_related_nodes = kwargs.pop('related_nodes', False)
         include_active_revision = kwargs.pop('active_revision', False)
         include_latest_revision = kwargs.pop('latest_revision', False)
