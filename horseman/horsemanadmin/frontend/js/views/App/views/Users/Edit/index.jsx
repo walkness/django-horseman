@@ -6,7 +6,7 @@ import { autobind } from 'core-decorators';
 import { user as userAction, userUpdated } from '../../../../../actions';
 import { updateUser } from '../../../../../services/api';
 
-import { Input } from '../../../components/Forms';
+import { Input, Select } from '../../../components/Forms';
 
 
 class UserEdit extends Component {
@@ -54,6 +54,18 @@ class UserEdit extends Component {
         >
 
           <Input
+            type='email'
+            name='email'
+            label='Email'
+            value={user.email}
+            validations='isEmail'
+            validationErrors={{
+              isEmail: 'Please enter a valid email.',
+            }}
+            required
+          />
+
+          <Input
             name='first_name'
             label='First name'
             value={user.first_name}
@@ -66,14 +78,23 @@ class UserEdit extends Component {
           />
 
           <Input
-            name='email'
-            label='Email'
-            value={user.email}
-            validations='isEmail'
-            validationErrors={{
-              isEmail: 'Please enter a valid email.',
-            }}
-            required
+            name='nickname'
+            label='Nickname'
+            value={user.nickname}
+          />
+
+          <Select
+            name='display_as'
+            label='Display publicly as'
+            value={user.display_as}
+            options={[
+              { value: 'nickname', label: 'Nickname' },
+              { value: 'username', label: 'Username' },
+              { value: 'first_name', label: 'First name' },
+              { value: 'last_name', label: 'Last name' },
+              { value: 'first_last', label: 'First/Last' },
+              { value: 'last_first', label: 'Last/First' },
+            ]}
           />
 
           <button className='btn'>

@@ -35,7 +35,10 @@ class UserSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = get_user_model()
-        fields = ['pk', 'username', 'email', 'first_name', 'last_name', 'gravatar']
+        fields = [
+            'pk', 'username', 'email', 'first_name', 'last_name', 'nickname', 'display_as',
+            'gravatar'
+        ]
 
 
 class PasswordResetSerializer(serializers.ModelSerializer):
