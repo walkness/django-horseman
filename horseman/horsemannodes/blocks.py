@@ -49,7 +49,7 @@ class Block(object):
         image_fields = {}
         for name, field in self.get_fields(forms.ModelChoiceField):
             queryset = getattr(field, 'queryset', None)
-            if queryset and issubclass(queryset.model, Image):
+            if queryset is not None and issubclass(queryset.model, Image):
                 image_fields[name] = field
         return image_fields
 

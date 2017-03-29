@@ -13,7 +13,6 @@ from django.contrib.postgres.fields import JSONField
 
 import pytz
 from timezone_field import TimeZoneField
-from tzwhere import tzwhere
 
 from willow.image import Image as WillowImage
 
@@ -72,6 +71,7 @@ class AbstractImage(models.Model):
     @classmethod
     def get_tzwhere(cls):
         if not getattr(cls, '_tzwhere', None):
+            from tzwhere import tzwhere
             cls._tzwhere = tzwhere.tzwhere()
         return cls._tzwhere
 
