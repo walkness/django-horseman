@@ -41,11 +41,12 @@ class SearchableMixin(object):
 
     def search_queryset(self, qs):
         search = self.request.query_params.get(self.search_query_param, None)
+        print(search)
         if search:
             queries = []
             for f in self.get_search_fields():
                 kwarg = {}
-                kwarg['%s__iregex' % f] = r'(?:^|\s)%s' % re.escape(search)
+                kwarg['%s__iregex' % f] = r'(?:^|\s|>)%s' % re.escape(search)
                 queries.append(Q(**kwarg))
             if len(queries) > 0:
                 query = queries.pop()
