@@ -18,3 +18,7 @@ class NodeAdmin(admin.ModelAdmin):
 
     def unpublish(self, request, queryset):
         queryset.unpublish()
+
+    def save_related(self, request, form, formsets, change):
+        super(NodeAdmin, self).save_related(request, form, formsets, change)
+        form.instance.send_save_finished()

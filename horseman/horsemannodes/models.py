@@ -13,6 +13,8 @@ from horseman import settings, mixins
 from horseman.horsemanimages.models import Image
 from horseman.horsemanimages.tasks import create_image_rendition
 
+from .signals import node_save_finished
+
 
 def get_object_revision_relation_value(obj):
     if not obj:
@@ -110,6 +112,9 @@ class AbstractNode(mixins.AdminModelMixin, models.Model):
             self.published_at = None
         super(AbstractNode, self).save(*args, **kwargs)
 
+    def send_save_finished(self):
+        node_save_finished.send(sender=self.__class__, instance=self)
+
     def get_url_path(self):
         raise NotImplementedError
 
@@ -132,6 +137,18 @@ class AbstractNode(mixins.AdminModelMixin, models.Model):
 
     def get_revision_relation_value(self):
         return str(self.pk)
+
+    def get_cached_paths(self):
+        yield self.url_path
+
+    def on_changed(self, old, changed_fields):
+        pass
+
+    def on_m2m_removed(self, field, pk_set):
+        pass
+
+    def on_m2m_added(self, field, pk_set):
+        pass
 
 
 class Node(AbstractNode):
