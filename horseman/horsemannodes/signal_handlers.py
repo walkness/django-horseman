@@ -29,6 +29,9 @@ def handle_pre_save(sender, instance, **kwargs):
             if not (field.many_to_many or field.one_to_many):
                 old_value = getattr(old, field.name)
                 new_value = getattr(new, field.name)
+                if field.name == 'url_path':
+                    old_value = old.get_url_path()
+                    new_value = new.get_url_path()
                 if old_value != new_value:
                     changed_fields.append(field)
 
@@ -36,16 +39,17 @@ def handle_pre_save(sender, instance, **kwargs):
         instance._changed_fields = set()
 
     if len(changed_fields) > 0:
-        instance._changed_fields.add(*[field.name for field in changed_fields])
+        instance._changed_fields.update([field.name for field in changed_fields])
 
 
 def handle_post_save(sender, instance, **kwargs):
-    if getattr(instance, '_changed', False):
+    changed_fields = list(getattr(instance, '_changed_fields', set()))
+    if len(changed_fields) > 0:
         signals.node_changed.send(
             sender=sender,
             old=getattr(instance, '_old_model', None),
             new=instance,
-            changed_fields=list(getattr(instance, '_changed_fields', set()))
+            changed_fields=changed_fields
         )
 
 

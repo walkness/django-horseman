@@ -103,7 +103,7 @@ class AbstractNode(mixins.AdminModelMixin, models.Model):
     def __str__(self):
         return self.title_display
 
-    def save(self, *args, **kwargs):
+    def save(self, send_save_finished=True, *args, **kwargs):
         self.url_path = self.get_url_path()
         if self.published:
             if self._old_published != self.published and not self.published_at:
@@ -111,6 +111,8 @@ class AbstractNode(mixins.AdminModelMixin, models.Model):
         else:
             self.published_at = None
         super(AbstractNode, self).save(*args, **kwargs)
+        if send_save_finished:
+            self.send_save_finished()
 
     def send_save_finished(self):
         node_save_finished.send(sender=self.__class__, instance=self)
