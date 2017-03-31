@@ -26,7 +26,8 @@ def handle_pre_save(sender, instance, **kwargs):
                 old_value = getattr(old, field.name, None)
                 new_value = getattr(new, field.name)
                 if field.name == 'url_path':
-                    old_value = old.get_url_path()
+                    if old:
+                        old_value = old.get_url_path()
                     new_value = new.get_url_path()
                 if old_value != new_value:
                     changed_fields.append(field)
