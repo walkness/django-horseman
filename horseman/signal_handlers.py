@@ -22,7 +22,7 @@ def handle_pre_save(sender, instance, **kwargs):
     changed_fields = []
     if fields:
         for field in fields:
-            if not (field.many_to_many or field.one_to_many):
+            if not (field.many_to_many or field.one_to_many or field.auto_created):
                 old_value = getattr(old, field.name, None)
                 new_value = getattr(new, field.name)
                 if field.name == 'url_path':
