@@ -5,8 +5,11 @@ from . import models
 
 @admin.register(models.Invalidation)
 class InvalidationAdmin(admin.ModelAdmin):
-    list_display = ['created_at', 'completed_at', 'cache_name', 'invalidated_objects', 'num_paths']
-    list_filter = ['cache_name']
+    list_display = [
+        'created_at', 'completed_at', 'cache_name', 'invalidated_objects', 'num_paths', 'status'
+    ]
+    list_filter = ['cache_name', 'status']
+    actions = ['update_status']
 
     def num_paths(self, obj):
         return len(obj.paths)
@@ -19,6 +22,9 @@ class InvalidationAdmin(admin.ModelAdmin):
             for obj in invalidated_objects
         ])
     invalidated_objects.allow_tags = True
+
+    def update_status(self, request, queryset):
+        queryset.update_status()
 
 
 @admin.register(models.InvalidationObject)

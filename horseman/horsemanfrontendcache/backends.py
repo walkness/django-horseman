@@ -39,8 +39,15 @@ class BaseBackend(object):
     def perform_invalidation(self, paths, objects=None):
         raise NotImplementedError
 
+    def update_status(self, invalidation_model):
+        raise NotImplementedError
+
 
 class CloudFrontBackend(BaseBackend):
+    status_map = {
+        'InProgress': 'in_progress',
+        'Completed': 'completed',
+    }
 
     def __init__(self, name, DISTRIBUTION_ID, **kwargs):
         super(CloudFrontBackend, self).__init__(name, **kwargs)
@@ -50,7 +57,17 @@ class CloudFrontBackend(BaseBackend):
         if not hasattr(self, '_client'):
             self._client = boto3.client('cloudfront')
         return self._client
-    
+
+    def get_status_from_response(self, response):
+        status = None
+        if 'Invalidation' in response and 'Status' in response['Invalidation']:
+            status = self.status_map.get(response['Invalidation']['Status'], None)
+        return status or 'other'
+
+    def get_invalidation_id_from_response(self, response):
+        if 'Invalidation' in response:
+            return response['Invalidation'].get('Id', None)
+
     def perform_invalidation(self, paths, objects=None):
         client = self.get_client()
         obj = self.get_invalidation_model()
@@ -77,8 +94,20 @@ class CloudFrontBackend(BaseBackend):
             if isinstance(create_time, datetime):
                 backend_details['Invalidation']['CreateTime'] = create_time.isoformat()
 
+        obj.status = self.get_status_from_response(response)
         obj.backend_details = backend_details
 
         obj.save()
         if objects:
             self.create_invalidation_objects(objects)
+
+    def update_status(self, invalidation_model):
+        client = self.get_client()
+        invalidation_id = self.get_invalidation_id_from_response(invalidation_model.backend_details)
+        response = client.get_invalidation(
+            DistributionId=self.distribution_id,
+            Id=invalidation_id,
+        )
+        invalidation_model.status = self.get_status_from_response(response)
+        invalidation_model.save(update_fields=['status'])
+        return invalidation_model

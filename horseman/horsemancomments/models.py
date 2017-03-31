@@ -4,6 +4,7 @@ from django.db import models
 from django.apps import apps
 from django.conf import settings
 from django.utils import timezone
+from django.utils.formats import localize
 
 import markdown
 from mptt.models import MPTTModel, TreeForeignKey
@@ -46,9 +47,11 @@ class CommentQuerySet(TreeQuerySet):
         return self.filter(email__iexact=email)
 
     def approve(self):
+        self.invalidate(force=True)
         return self.update(approved=True, approved_at=timezone.now())
 
     def unapprove(self):
+        self.invalidate(force=True)
         return self.update(approved=False, approved_at=None)
 
     def mark_as_spam(self, user_agent=None):
@@ -59,8 +62,8 @@ class CommentQuerySet(TreeQuerySet):
         for obj in self:
             obj.mark_as_not_spam(user_agent=user_agent)
 
-    def invalidate(self):
-        invalidate_items(self)
+    def invalidate(self, force=False):
+        invalidate_items(self, force=force)
 
 
 class CommentManager(TreeManager.from_queryset(CommentQuerySet)):
@@ -77,12 +80,12 @@ class BaseComment(AdminModelMixin, MPTTModel):
     class Meta:
         abstract = True
 
-    def get_cached_paths(self):
+    def get_cached_paths(self, **kwargs):
         return
         yield
 
-    def invalidate(self):
-        invalidate_item(self)
+    def invalidate(self, force=False):
+        invalidate_item(self, force=force)
 
 
 class Comment(BaseComment):
@@ -109,8 +112,8 @@ class Comment(BaseComment):
     objects = CommentManager()
 
     def __str__(self):
-        return '{name} at {created_at}'.format(
-            name=self.author['name'], created_at=self.created_at)
+        return '{name} on {created_at}'.format(
+            name=self.author['name'], created_at=localize(self.created_at))
 
     @classmethod
     def is_approved_email(cls, email):

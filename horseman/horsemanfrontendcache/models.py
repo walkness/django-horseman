@@ -3,8 +3,10 @@ import uuid
 from django.db import models
 from django.utils import timezone
 from django.contrib.postgres.fields import ArrayField, JSONField
-from django.contrib.contenttypes.fields import GenericForeignKey, GenericRelation
+from django.contrib.contenttypes.fields import GenericForeignKey
 from django.contrib.contenttypes.models import ContentType
+
+from .utils import update_invalidation_status
 
 
 class InvalidationQuerySet(models.QuerySet):
@@ -20,8 +22,19 @@ class InvalidationQuerySet(models.QuerySet):
             objects.extend(list(model_class.objects.filter(pk__in=object_ids)))
         return objects
 
+    def update_status(self):
+        for obj in self:
+            obj.update_status()
+
 
 class Invalidation(models.Model):
+    STATUS_CHOICES = (
+        ('in_progress', 'In progress'),
+        ('error', 'Error'),
+        ('completed', 'Completed'),
+        ('other', 'Other'),
+    )
+
     id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
     created_at = models.DateTimeField(default=timezone.now)
     completed_at = models.DateTimeField(blank=True, null=True)
@@ -29,6 +42,7 @@ class Invalidation(models.Model):
     backend = models.CharField(max_length=255)
     backend_details = JSONField(blank=True, null=True)
     paths = ArrayField(models.CharField(max_length=4000))
+    status = models.CharField(max_length=11, choices=STATUS_CHOICES, default=STATUS_CHOICES[0][0])
 
     objects = InvalidationQuerySet.as_manager()
 
@@ -38,6 +52,9 @@ class Invalidation(models.Model):
 
     def invalidated_objects(self):
         return Invalidation.objects.filter(pk=self.pk).invalidated_objects()
+
+    def update_status(self):
+        return update_invalidation_status(self)
 
 
 class InvalidationObject(models.Model):
