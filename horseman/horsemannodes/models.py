@@ -13,6 +13,8 @@ from horseman import settings, mixins
 from horseman.horsemanimages.models import Image
 from horseman.horsemanimages.tasks import create_image_rendition
 
+from horseman.horsemanfrontendcache.utils import invalidate_item, invalidate_items
+
 from .signals import node_save_finished
 
 
@@ -59,6 +61,9 @@ class NodeQuerySet(models.QuerySet):
 
     def unpublish(self):
         return self.update(published=False, published_by=None, published_at=None)
+
+    def invalidate(self):
+        invalidate_items(self)
 
 
 class NodeManager(models.Manager.from_queryset(NodeQuerySet)):
@@ -151,6 +156,9 @@ class AbstractNode(mixins.AdminModelMixin, models.Model):
 
     def on_m2m_added(self, field, pk_set):
         pass
+
+    def invalidate(self):
+        invalidate_item(self)
 
 
 class Node(AbstractNode):

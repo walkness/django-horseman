@@ -14,6 +14,7 @@ from markupfield.fields import MarkupField
 from akismet import Akismet
 
 from horseman.mixins import AdminModelMixin
+from horseman.horsemanfrontendcache.utils import invalidate_item, invalidate_items
 
 
 def linkify_callback(attrs, new=False):
@@ -58,6 +59,9 @@ class CommentQuerySet(TreeQuerySet):
         for obj in self:
             obj.mark_as_not_spam(user_agent=user_agent)
 
+    def invalidate(self):
+        invalidate_items(self)
+
 
 class CommentManager(TreeManager.from_queryset(CommentQuerySet)):
     pass    
@@ -72,6 +76,13 @@ class BaseComment(AdminModelMixin, MPTTModel):
 
     class Meta:
         abstract = True
+
+    def get_cached_paths(self):
+        return
+        yield
+
+    def invalidate(self):
+        invalidate_item(self)
 
 
 class Comment(BaseComment):
@@ -96,6 +107,10 @@ class Comment(BaseComment):
     admin_order = 0
 
     objects = CommentManager()
+
+    def __str__(self):
+        return '{name} at {created_at}'.format(
+            name=self.author['name'], created_at=self.created_at)
 
     @classmethod
     def is_approved_email(cls, email):

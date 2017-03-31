@@ -8,7 +8,7 @@ class NodeAdmin(admin.ModelAdmin):
     list_filter = ['published']
     search_fields = models.Node.search_fields
     ordering = ['-published_at']
-    actions = ['publish', 'unpublish']
+    actions = ['publish', 'unpublish', 'invalidate']
 
     def title(self, obj):
         return self.title_display
@@ -18,6 +18,9 @@ class NodeAdmin(admin.ModelAdmin):
 
     def unpublish(self, request, queryset):
         queryset.unpublish()
+
+    def invalidate(self, request, queryset):
+        queryset.invalidate()
 
     def save_model(self, request, obj, form, change):
         obj.save(send_save_finished=False)

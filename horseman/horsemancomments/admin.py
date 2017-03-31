@@ -7,7 +7,10 @@ class CommentAdmin(MPTTModelAdmin):
         'ip_address'
     ]
     list_filter = ['approved', 'spam', 'akismet_spam', 'user']
-    actions = ['approve', 'unapprove', 'mark_as_spam', 'mark_as_not_spam', 'akismet_check']
+    actions = [
+        'approve', 'unapprove', 'mark_as_spam', 'mark_as_not_spam', 'akismet_check',
+        'invalidate'
+    ]
     search_fields = ['name', 'email', 'url', 'body']
 
     def approve(self, request, queryset):
@@ -25,3 +28,6 @@ class CommentAdmin(MPTTModelAdmin):
 
     def mark_as_not_spam(self, request, queryset):
         queryset.mark_as_not_spam(user_agent=request.META.get('HTTP_USER_AGENT', None))
+
+    def invalidate(self, request, queryset):
+        queryset.invalidate()
