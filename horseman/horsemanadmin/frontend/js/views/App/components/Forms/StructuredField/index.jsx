@@ -53,7 +53,7 @@ class StructuredField extends Component {
   addNewBlock(type, before = null) {
     const value = this.state.value.slice(0);
     if (before) {
-      value.insertAt({ type }, before);
+      value.splice(before, 0, { type });
     } else {
       value.push({ type });
     }
@@ -71,6 +71,24 @@ class StructuredField extends Component {
     if (this.props.onChange) {
       this.props.onChange(value);
     }
+  }
+
+  @autobind
+  moveBlockUp(index) {
+    const value = this.state.value.slice(0);
+    const block = this.blockRefs[index].getAPIValue();
+    value.splice(index, 1);
+    value.splice(Math.max(index - 1, 0), 0, block);
+    this.setState({ value });
+  }
+
+  @autobind
+  moveBlockDown(index) {
+    const value = this.state.value.slice(0);
+    const block = this.blockRefs[index].getAPIValue();
+    value.splice(index, 1);
+    value.splice(Math.min(index + 1, value.length), 0, block);
+    this.setState({ value });
   }
 
   getAPIValue() {
@@ -93,6 +111,10 @@ class StructuredField extends Component {
             deleteBlock: this.deleteBlock,
             ref: c => { this.blockRefs[i] = c; },
             block,
+            blocks: this.props.fieldConfig.blocks,
+            onAddBeforeClick: newBlock => this.addNewBlock(newBlock, i),
+            onMoveUp: () => this.moveBlockUp(i),
+            onMoveDown: () => this.moveBlockDown(i),
           };
           if (block.type === 'richtext') {
             return <RichText {...blockProps} />;
