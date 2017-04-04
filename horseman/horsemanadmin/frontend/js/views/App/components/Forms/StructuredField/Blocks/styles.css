@@ -10,17 +10,40 @@
 	}
 }
 
+.add-block,
+.block-actions {
+	transition: all 100ms ease-in;
+}
+
+.add-block {
+	opacity: 0;
+	visibility: hidden;
+	position: absolute;
+	left: 50%;
+	transform: translateX(-50%) translatey(-50%);
+	z-index: 1020;
+
+	:global .btn {
+		background-color: #fff;
+		padding-top: .5em;
+		padding-bottom: .5em;
+	}
+
+	@nest .block:hover & {
+		opacity: 1;
+		visibility: visible;
+	}
+}
+
 .block-actions {
 	opacity: 0;
 	visibility: hidden;
 	position: absolute;
 	right: 0;
-	top: 0;
-	transition: opacity 300ms ease, visibility 0s linear 300ms;
+	transform: translateY(-50%);
 	z-index: 1010;
 
 	@nest .block:hover & {
-		transition-delay: 0;
 		opacity: 1;
 		visibility: visible;
 	}

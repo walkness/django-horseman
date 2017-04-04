@@ -1,5 +1,6 @@
 import React, { Component, PropTypes } from 'react';
 import { autobind } from 'core-decorators';
+import { isEqual } from 'lodash';
 
 import InputWrapper from '../InputWrapper';
 
@@ -27,13 +28,14 @@ class StructuredField extends Component {
     super(props, context);
     this.state = {
       value: [],
+      newest: null,
     };
     if (Array.isArray(props.value)) this.state.value = props.value;
     this.blockRefs = [];
   }
 
   componentWillReceiveProps(nextProps) {
-    if (nextProps.value && nextProps.value !== this.props.value) {
+    if (nextProps.value && !isEqual(this.props.value, nextProps.value)) {
       this.setState({ value: nextProps.value });
     }
   }
@@ -42,7 +44,7 @@ class StructuredField extends Component {
     if (updateState) {
       const value = this.state.value.slice(0);
       value[index] = Object.assign({}, value[index], newValue);
-      this.setState({ value });
+      this.setState({ value, newest: null });
     }
     if (this.props.onChange) {
       this.props.onChange();
@@ -52,12 +54,13 @@ class StructuredField extends Component {
   @autobind
   addNewBlock(type, before = null) {
     const value = this.state.value.slice(0);
-    if (before) {
-      value.splice(before, 0, { type });
+    const block = { type };
+    if (before || before === 0) {
+      value.splice(before, 0, block);
     } else {
-      value.push({ type });
+      value.push(block);
     }
-    this.setState({ value });
+    this.setState({ value, newest: before === 0 ? before : (before || value.length - 1) });
     if (this.props.onChange) {
       this.props.onChange(value);
     }
@@ -67,7 +70,7 @@ class StructuredField extends Component {
   deleteBlock(index) {
     const value = this.state.value.slice(0);
     value.splice(index, 1);
-    this.setState({ value });
+    this.setState({ value, newest: null });
     if (this.props.onChange) {
       this.props.onChange(value);
     }
@@ -79,7 +82,7 @@ class StructuredField extends Component {
     const block = this.blockRefs[index].getAPIValue();
     value.splice(index, 1);
     value.splice(Math.max(index - 1, 0), 0, block);
-    this.setState({ value });
+    this.setState({ value, newest: null });
   }
 
   @autobind
@@ -88,7 +91,7 @@ class StructuredField extends Component {
     const block = this.blockRefs[index].getAPIValue();
     value.splice(index, 1);
     value.splice(Math.min(index + 1, value.length), 0, block);
-    this.setState({ value });
+    this.setState({ value, newest: null });
   }
 
   getAPIValue() {
@@ -115,6 +118,7 @@ class StructuredField extends Component {
             onAddBeforeClick: newBlock => this.addNewBlock(newBlock, i),
             onMoveUp: () => this.moveBlockUp(i),
             onMoveDown: () => this.moveBlockDown(i),
+            isNew: this.state.newest === i,
           };
           if (block.type === 'richtext') {
             return <RichText {...blockProps} />;

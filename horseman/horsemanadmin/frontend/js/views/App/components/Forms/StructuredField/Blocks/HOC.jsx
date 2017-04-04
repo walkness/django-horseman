@@ -10,7 +10,7 @@ import styles from './styles.css';
 const BlockWrapper = ({ children, index, deleteBlock, blocks, onAddClick, onMoveUp, onMoveDown }) => (
   <div className='block' styleName='styles.block'>
 
-    <div>
+    <div styleName='styles.add-block'>
       <AddBlock blocks={blocks} onClick={onAddClick} />
     </div>
 

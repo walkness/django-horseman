@@ -15,9 +15,18 @@ class RichTextBlock extends Component {
     };
   }
 
+  componentDidMount() {
+    if (this.props.isNew) {
+      this.editor._focus();
+    }
+  }
+
   componentWillReceiveProps(nextProps) {
     if (this.props.block.value !== nextProps.block.value) {
       this.setState({ value: RichTextEditor.createValueFromString(nextProps.block.value || '', 'html') });
+    }
+    if (nextProps.isNew) {
+      this.editor._focus();
     }
   }
 
@@ -41,6 +50,7 @@ class RichTextBlock extends Component {
       <RichTextEditor
         value={this.state.value}
         onChange={this.handleChange}
+        ref={(c) => { this.editor = c; }}
       />
     );
   }

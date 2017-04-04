@@ -35,8 +35,14 @@ class ImageBlock extends Component {
   constructor(props, context) {
     super(props, context);
     this.state = {
-      showModal: false,
+      showModal: !!props.isNew,
     };
+  }
+
+  componentWillReceiveProps(nextProps) {
+    if (nextProps.isNew) {
+      this.setState({ showModal: true });
+    }
   }
 
   @autobind
