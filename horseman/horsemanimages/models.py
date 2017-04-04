@@ -46,6 +46,7 @@ class AbstractImage(models.Model):
 
     hash = models.CharField(max_length=32, editable=False)
 
+    filesize = models.PositiveIntegerField(blank=True, null=True)
     mime_type = models.CharField(max_length=50, blank=True)
 
     created_at = models.DateTimeField(default=timezone.now)
@@ -159,6 +160,8 @@ class AbstractImage(models.Model):
             self.captured_at = aware
         if (self.old_file != self.file or not self.mime_type) and self.file:
             self.mime_type = get_mime_type_from_file(self.file) or ''
+        if (self.old_file != self.file or not self.filesize) and self.file:
+            self.filesize = self.file.size
         return super(AbstractImage, self).save(*args, **kwargs)
 
     @contextmanager
@@ -264,6 +267,7 @@ class AbstractImage(models.Model):
         
         generated_image = filter_.run(self, BytesIO())
         rendition.file.save(filename, generated_image.f, save=False)
+        rendition.filesize = rendition.file.size
 
         rendition.save()
 
@@ -368,7 +372,7 @@ class Filter(object):
                 return willow.save_as_jpeg(output, quality=85, progressive=True, optimize=True)
             elif output_format == 'png':
                 return willow.save_as_png(output)
-            elif output_format == 'git':
+            elif output_format == 'gif':
                 return willow.save_as_gif(output)
 
 
@@ -394,6 +398,7 @@ class AbstractRendition(models.Model):
     width = models.PositiveIntegerField(editable=False)
     height = models.PositiveIntegerField(editable=False)
 
+    filesize = models.PositiveIntegerField(blank=True, null=True)
     mime_type = models.CharField(max_length=50, blank=True)
 
     created_at = models.DateTimeField(default=timezone.now)
@@ -414,6 +419,8 @@ class AbstractRendition(models.Model):
     def save(self, *args, **kwargs):
         if not self.mime_type and self.file:
             self.mime_type = get_mime_type_from_file(self.file) or ''
+        if not self.filesize and self.file:
+            self.filesize = self.file.size
         return super(AbstractRendition, self).save(*args, **kwargs)
 
     def get_upload_to(self, filename):
