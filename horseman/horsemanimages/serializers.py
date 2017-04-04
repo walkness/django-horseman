@@ -18,7 +18,7 @@ class RenditionSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = models.Rendition
-        fields = ['url', 'width', 'height', 'crop', 'mime_type']
+        fields = ['url', 'width', 'height', 'crop', 'mime_type', 'filesize']
 
 
 class RenditionsField(serializers.Field):
@@ -69,11 +69,11 @@ class ImageSerializer(serializers.ModelSerializer):
     class Meta:
         model = models.Image
         fields = [
-            'pk', 'title', 'url', 'mime_type', 'width', 'height', 'created_at', 'created_by',
-            'captured_at', 'captured_at_tz', 'renditions', 'meta']
+            'pk', 'title', 'url', 'mime_type', 'filesize', 'width', 'height', 'created_at',
+            'created_by', 'captured_at', 'captured_at_tz', 'renditions', 'meta']
         read_only_fields = [
-            'pk', 'url', 'width', 'height', 'mime_type', 'created_at', 'created_by', 'captured_at',
-            'renditions', 'meta']
+            'pk', 'url', 'width', 'height', 'mime_type', 'filesize', 'created_at', 'created_by',
+            'captured_at', 'renditions', 'meta']
         extra_kwargs = {
             'title': {'required': False, 'allow_null': True}
         }
@@ -91,6 +91,7 @@ class ImageSerializer(serializers.ModelSerializer):
             validated_data['title'] = fname_wo_ext
         instance = self.__class__.Meta.model(**validated_data)
         instance.file_bytes = file.file
+        instance.filesize = file.size
         instance.file.save(file.name, file, save=False)
         instance.update_exif(file)
         instance.save()
