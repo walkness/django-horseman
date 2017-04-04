@@ -125,6 +125,9 @@ class AbstractNode(mixins.AdminModelMixin, models.Model):
     def get_url_path(self):
         raise NotImplementedError
 
+    def get_absolute_url(self):
+        return self.url_path
+
     @property
     def title_display(self):
         if hasattr(self, 'title'):
