@@ -99,6 +99,15 @@ export default function imagesReducer(state = initialState.nodes, action) {
         byId: Object.assign({}, state.byId, processImages([action.response || action.data]).byId),
       });
 
+    case types.CLEAR_IMAGE_RENDITIONS:
+      return Object.assign({}, state, {
+        byId: Object.assign({}, state.byId, {
+          [action.id]: Object.assign({}, state.byId[action.id], {
+            renditions: {},
+          }),
+        }),
+      });
+
     case types.IMAGE_RENDITIONS.SUCCESS: {
       const renditions = {};
       const existingImage = state.byId[action.id];

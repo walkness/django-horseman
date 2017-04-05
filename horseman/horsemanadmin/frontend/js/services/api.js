@@ -135,6 +135,11 @@ export const getImages = (args) => callApi(`images/?${queryString(args)}`);
 export const getImage = (id) => callApi(`images/${id}/`);
 export const getImageRenditions = (id) => callApi(`images/${id}/renditions/`);
 export const updateImage = (id, data) => sendApi(`images/${id}/`, 'PATCH', data);
+export const replaceImageFile = (id, file, completion, onProgress) => {
+  const data = new FormData();
+  data.append('file', file);
+  return xhrUploadApi(`images/${id}/file/`, data, 'PUT', completion, onProgress);
+};
 export const uploadImage = (data, completion, onProgress) => xhrUploadApi(
   'images/', data, 'POST', completion, onProgress);
 

@@ -83,6 +83,13 @@ class StructuredField(JSONField):
 
         return {'blocks': blocks}
 
+    def get_image_filter_kwargs(self, image):
+        kwargs = []
+        for block in self.blocks:
+            for val in block.get_image_filter_kwargs(image):
+                kwargs.append(('{}__contains'.format(self.name), val))
+        return kwargs
+
 
 class SingleImageField(ForeignKey):
     image_model_class = Image

@@ -53,6 +53,9 @@ class Block(object):
                 image_fields[name] = field
         return image_fields
 
+    def get_image_filter_kwargs(self, image):
+        return []
+
     def get_field_config(self):
         fields = {}
         for name, field in self.get_fields():
@@ -124,9 +127,15 @@ class ImageBlock(ImageBlockMixin, Block):
 
     id = SingleImageField(queryset=Image.objects.all(), size_field='size')
 
+    def get_image_filter_kwargs(self, image):
+        return [[{'type': self.name, 'id': str(image.pk)}]]
+
 
 class GalleryBlock(ImageBlockMixin, Block):
     name = 'gallery'
 
     images = MultipleImageField(queryset=Image.objects.all(), size_field='size')
     columns = forms.IntegerField(min_value=2, max_value=5)
+
+    def get_image_filter_kwargs(self, image):
+        return [[{'type': self.name, 'images': [str(image.pk)]}]]

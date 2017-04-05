@@ -97,6 +97,28 @@ class ImageSerializer(serializers.ModelSerializer):
         instance.save()
         return instance
 
+    def update(self, instance, validated_data):
+        file = validated_data.pop('file', None)
+        for attr, value in validated_data.items():
+            setattr(instance, attr, value)
+
+        if file:
+            if 'title' not in validated_data:
+                old_fname, ext = os.path.splitext(os.path.basename(instance.file.name))
+                if old_fname.lower() == instance.title.lower():
+                    new_fname, ext = os.path.splitext(os.path.basename(file.name))
+                    instance.title = new_fname
+            instance.file_bytes = file.file
+            instance.filesize = file.size
+            instance.captured_at_tz = None
+            instance.file.save(file.name, file, save=False)
+            instance.update_exif(file)
+
+        instance.save()
+        if file:
+            instance.renditions.all().delete()
+        return instance
+
 
 class AdminImageSerializer(ImageSerializer):
     renditions = RenditionsField(models.Image.admin_sizes)

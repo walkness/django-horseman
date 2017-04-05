@@ -7,6 +7,7 @@ from contextlib import contextmanager
 from datetime import datetime
 from unidecode import unidecode
 from django.db import models
+from django.apps import apps as django_apps
 from django.utils import timezone
 from django.conf import settings as django_settings
 from django.contrib.postgres.fields import JSONField
@@ -294,6 +295,10 @@ class AbstractImage(models.Model):
 
     def get_revision_relation_value(self):
         return str(self.pk)
+
+    def get_related_nodes(self):
+        node_model = django_apps.get_model('horsemannodes', 'Node')
+        return node_model.objects.get_all_nodes_with_image(self)
 
 
 class Image(AbstractImage):

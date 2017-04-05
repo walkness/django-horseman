@@ -170,7 +170,12 @@ class ImageBrowser extends Component {
   handleLoadNext() {
     const ordered = this.getOrderedNode();
     if (ordered.next && !ordered.loading) {
-      this.props.imagesRequest(Object.assign({}, this.props.filters, ordered.next));
+      this.props.imagesRequest(Object.assign(
+        {},
+        { ordering: this.props.defaultOrder },
+        this.props.filters,
+        ordered.next,
+      ));
     }
   }
 

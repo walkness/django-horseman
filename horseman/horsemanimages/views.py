@@ -2,12 +2,14 @@ from rest_framework import viewsets
 from rest_framework.parsers import FormParser, MultiPartParser
 from rest_framework.decorators import parser_classes, detail_route
 from rest_framework.response import Response
+from rest_framework.exceptions import ValidationError
 from rest_framework.status import (
     HTTP_201_CREATED, HTTP_400_BAD_REQUEST)
 
 from django_filters import rest_framework as filters, DateFilter
 
 from horseman.mixins import SearchableMixin, BoolQueryParamMixin
+from horseman.horsemannodes.serializers import NodeSerializer
 
 from . import models
 from . import serializers
@@ -52,9 +54,34 @@ class ImageViewSet(BoolQueryParamMixin, SearchableMixin, viewsets.ModelViewSet):
 
         return Response(status=HTTP_400_BAD_REQUEST)
 
+    @parser_classes((FormParser, MultiPartParser, ))
+    @detail_route(methods=['PUT'])
+    def file(self, request, *args, **kwargs):
+        file = request.data.get('file', None)
+        data = request.data.get('data', {})
+        if not file:
+            raise ValidationError('Must include a file.')
+
+        instance = self.get_object()
+        serializer = self.get_serializer(instance, data=data, partial=True)
+        if serializer.is_valid(raise_exception=True):
+            serializer.save(file=file)
+            return Response(serializer.data)
+
+        return Response(status=HTTP_400_BAD_REQUEST)
+
     @detail_route(methods=['GET'])
     def renditions(self, request, pk):
         return RenditionViewSet.as_view({'get': 'list'})(request, image_pk=pk)
+
+    @detail_route(methods=['GET'])
+    def usage(self, request, pk):
+        instance = self.get_object()
+        nodes_by_type = instance.get_related_nodes()
+        serialized_nodes = {}
+        for node_type, nodes in nodes_by_type.items():
+            serialized_nodes[node_type] = NodeSerializer(nodes, many=True).data
+        return Response(serialized_nodes)
 
 
 class RenditionViewSet(viewsets.ModelViewSet):

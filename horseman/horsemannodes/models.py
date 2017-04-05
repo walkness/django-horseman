@@ -9,6 +9,9 @@ from django.contrib.postgres.fields import JSONField
 
 from exclusivebooleanfield.fields import ExclusiveBooleanField
 
+from mptt.managers import TreeManager
+from mptt.querysets import TreeQuerySet
+
 from horseman import settings, mixins
 from horseman.horsemanimages.models import Image
 from horseman.horsemanimages.tasks import create_image_rendition
@@ -65,8 +68,35 @@ class NodeQuerySet(models.QuerySet):
     def invalidate(self):
         invalidate_items(self)
 
+    def get_all_nodes_with_image(self, image):
+        sub_node_types = Node.get_all_types()
+        nodes_by_type = {}
+        for node_type in sub_node_types:
+            nodes = list(node_type.objects.get_with_image(image))
+            if len(nodes) > 0:
+                nodes_by_type[node_type.type()] = nodes
+        return nodes_by_type
+
+    def get_with_image(self, image):
+        kwargs = self.model.get_related_images_filter_lookups(image)
+        if kwargs:
+            key, val = kwargs.pop()
+            query = models.Q(**{key: val})
+            for key, val in kwargs:
+                query |= models.Q(**{key: val})
+            return self.filter(query)
+        return []
+
 
 class NodeManager(models.Manager.from_queryset(NodeQuerySet)):
+    pass
+
+
+class TreeNodeQuerySet(NodeQuerySet, TreeQuerySet):
+    pass
+
+
+class TreeNodeManager(TreeManager.from_queryset(TreeNodeQuerySet)):
     pass
 
 
@@ -172,6 +202,29 @@ class Node(AbstractNode):
             for obj in node_type.objects.all():
                 obj.url_path = obj.get_url_path()
                 obj.save(update_fields=['url_path'])
+
+    @classmethod
+    def get_image_fields(cls):
+        fields = []
+        for field in cls._meta.get_fields():
+            get_image_ids = getattr(field, 'get_image_ids', None)
+            if (
+                callable(get_image_ids) or
+                (isinstance(field, models.ForeignKey) and issubclass(field.related_model, Image))
+            ):
+                fields.append(field)
+        return fields
+
+    @classmethod
+    def get_related_images_filter_lookups(cls, image):
+        kwargs = []
+        for field in cls.get_image_fields():
+            get_filter_kwargs = getattr(field, 'get_image_filter_kwargs', None)
+            if callable(get_filter_kwargs):
+                kwargs.extend(get_filter_kwargs(image))
+            elif field.is_relation:
+                kwargs.append((field.attname, image.pk))
+        return kwargs
 
     def active_revision(self):
         return self.revisions.filter(active=True).defer('content').first()

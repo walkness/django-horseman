@@ -3,14 +3,16 @@ import { connect } from 'react-redux';
 import Formsy from 'formsy-react';
 import { autobind } from 'core-decorators';
 import { FormattedMessage } from 'react-intl';
+import Dropzone from 'react-dropzone';
 
 import {
   image as imageAction,
   imageRenditions as imageRenditionsAction,
+  clearImageRenditions,
   timezones as timezonesAction,
   imageUpdated,
 } from '../../../../../actions';
-import { updateImage } from '../../../../../services/api';
+import { updateImage, replaceImageFile } from '../../../../../services/api';
 
 import { Input, TimezoneSelect } from '../../../components/Forms';
 import { default as Img } from '../../../components/Image';
@@ -31,12 +33,14 @@ class Image extends Component {
     imageRequest: PropTypes.func.isRequired,
     imageRenditionsRequest: PropTypes.func.isRequired,
     imageUpdated: PropTypes.func.isRequired,
+    clearImageRenditions: PropTypes.func.isRequired,
   };
 
   constructor(props, context) {
     super(props, context);
     this.state = {
       submitting: false,
+      progress: null,
     };
   }
 
@@ -57,6 +61,29 @@ class Image extends Component {
         } else {
           this.setState({ submitting: false });
           this.props.imageUpdated(response);
+        }
+      });
+    });
+  }
+
+  @autobind
+  handleReplaceImage(files) {
+    const newFile = files[0];
+    this.setState({ submitting: true }, () => {
+      replaceImageFile(this.props.params.id, newFile, ({ error, response }) => {
+        if (error) {
+
+        } else {
+          this.setState({ submitting: false });
+          this.props.clearImageRenditions(response.pk);
+          this.props.imageUpdated(response);
+          this.props.imageRenditionsRequest(response.pk);
+        }
+      }, (progress) => {
+        if (progress.lengthComputable) {
+          if (progress.lengthComputable) {
+            this.setState({ progress: progress.loaded / progress.total });
+          }
         }
       });
     });
@@ -95,9 +122,16 @@ class Image extends Component {
               heading
             />
 
-            <div styleName='image'>
-              <Img image={image} />
-            </div>
+            <Dropzone
+              className='dropzone'
+              onDrop={this.handleReplaceImage}
+              multiple={false}
+              accept='image/*'
+            >
+              <div styleName='image'>
+                <Img image={image} />
+              </div>
+            </Dropzone>
 
           </main>
 
@@ -136,7 +170,7 @@ class Image extends Component {
           <h2>Available renditions</h2>
 
           <ul>
-            { renditions.map((rendition) => (
+            { renditions.map(rendition => (
               <li>
                 <a href={rendition.url} target='_blank' rel='noopener noreferrer'>
                   <FormattedMessage
@@ -144,9 +178,9 @@ class Image extends Component {
                     values={{
                       width: rendition.width,
                       height: rendition.height,
-                      filesize: rendition.filesize / 1000000,
+                      filesize: rendition.filesize / 1000,
                     }}
-                    defaultMessage='{width}x{height} ({filesize, number} MB)'
+                    defaultMessage='{width}x{height} ({filesize, number, noDecimals} KB)'
                   />
                 </a>
               </li>
@@ -172,6 +206,7 @@ export default connect(
   mapStateToProps, {
     imageRequest,
     imageRenditionsRequest,
+    clearImageRenditions,
     imageUpdated,
     timezonesRequest,
   })(Image);

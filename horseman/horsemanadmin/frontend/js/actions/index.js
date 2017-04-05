@@ -41,6 +41,7 @@ export const imageRenditions = {
   success: (id, response) => action(types.IMAGE_RENDITIONS.SUCCESS, { id, response }),
   failure: (id, error) => action(types.IMAGE_RENDITIONS.FAILURE, { id, error }),
 };
+export const clearImageRenditions = id => action(types.CLEAR_IMAGE_RENDITIONS, { id });
 export const imageUpdated = data => action(types.IMAGE_UPDATED, { data });
 export const imageUploaded = data => action(types.IMAGE_UPLOADED, { data });
 
