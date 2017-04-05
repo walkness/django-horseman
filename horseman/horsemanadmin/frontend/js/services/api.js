@@ -133,6 +133,7 @@ export const getNodeRevisions = (pk, args) => callApi(`nodes/${pk}/revisions/?${
 
 export const getImages = (args) => callApi(`images/?${queryString(args)}`);
 export const getImage = (id) => callApi(`images/${id}/`);
+export const getImageRenditions = (id) => callApi(`images/${id}/renditions/`);
 export const updateImage = (id, data) => sendApi(`images/${id}/`, 'PATCH', data);
 export const uploadImage = (data, completion, onProgress) => xhrUploadApi(
   'images/', data, 'POST', completion, onProgress);

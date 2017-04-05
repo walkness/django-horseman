@@ -99,6 +99,25 @@ export default function imagesReducer(state = initialState.nodes, action) {
         byId: Object.assign({}, state.byId, processImages([action.response || action.data]).byId),
       });
 
+    case types.IMAGE_RENDITIONS.SUCCESS: {
+      const renditions = {};
+      const existingImage = state.byId[action.id];
+      action.response.results.forEach((rendition) => {
+        renditions[rendition.pk] = Object.assign(
+          {},
+          existingImage && existingImage.renditions && existingImage.renditions[rendition.pk],
+          rendition,
+        );
+      });
+      return Object.assign({}, state, {
+        byId: Object.assign({}, state.byId, {
+          [action.id]: Object.assign({}, existingImage, {
+            renditions: Object.assign({}, existingImage && existingImage.renditions, renditions),
+          }),
+        }),
+      });
+    }
+
     case types.IMAGE_UPLOADED: {
       const { byId, ids } = processImages([action.data]);
       const ordered = {};

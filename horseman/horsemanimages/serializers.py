@@ -18,7 +18,7 @@ class RenditionSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = models.Rendition
-        fields = ['url', 'width', 'height', 'crop', 'mime_type', 'filesize']
+        fields = ['pk', 'url', 'width', 'height', 'crop', 'mime_type', 'filesize']
 
 
 class RenditionsField(serializers.Field):

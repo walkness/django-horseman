@@ -36,6 +36,11 @@ export const image = {
   success: (id, response) => action(types.IMAGE.SUCCESS, { id, response }),
   failure: (id, error) => action(types.IMAGE.FAILURE, { id, error }),
 };
+export const imageRenditions = {
+  request: (id) => action(types.IMAGE_RENDITIONS.REQUEST, { id }),
+  success: (id, response) => action(types.IMAGE_RENDITIONS.SUCCESS, { id, response }),
+  failure: (id, error) => action(types.IMAGE_RENDITIONS.FAILURE, { id, error }),
+};
 export const imageUpdated = data => action(types.IMAGE_UPDATED, { data });
 export const imageUploaded = data => action(types.IMAGE_UPLOADED, { data });
 

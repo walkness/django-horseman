@@ -1,6 +1,6 @@
 from rest_framework import viewsets
 from rest_framework.parsers import FormParser, MultiPartParser
-from rest_framework.decorators import parser_classes
+from rest_framework.decorators import parser_classes, detail_route
 from rest_framework.response import Response
 from rest_framework.status import (
     HTTP_201_CREATED, HTTP_400_BAD_REQUEST)
@@ -51,3 +51,22 @@ class ImageViewSet(BoolQueryParamMixin, SearchableMixin, viewsets.ModelViewSet):
             )
 
         return Response(status=HTTP_400_BAD_REQUEST)
+
+    @detail_route(methods=['GET'])
+    def renditions(self, request, pk):
+        return RenditionViewSet.as_view({'get': 'list'})(request, image_pk=pk)
+
+
+class RenditionViewSet(viewsets.ModelViewSet):
+    model = models.Rendition
+    serializer_class = serializers.RenditionSerializer
+    queryset = models.Rendition.objects.all()
+
+    def get_queryset(self):
+        qs = super(RenditionViewSet, self).get_queryset()
+
+        image_pk = self.kwargs.get('image_pk', None)
+        if image_pk:
+            qs = qs.filter(image_id=image_pk)
+
+        return qs

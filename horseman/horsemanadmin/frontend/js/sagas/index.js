@@ -51,6 +51,13 @@ function* watchImageRequest() {
   }
 }
 
+function* watchImageRenditionsRequest() {
+  while (true) {
+    const { id } = yield take(types.IMAGE_RENDITIONS.REQUEST);
+    yield fork(callAPI, api.getImageRenditions, actions.imageRenditions, [id]);
+  }
+}
+
 function* watchUsersRequest() {
   while (true) {
     const { args } = yield take(types.USERS.REQUEST);
@@ -93,6 +100,7 @@ export default function* rootSaga() {
     watchNodeRevisionsRequest(),
     watchImagesRequest(),
     watchImageRequest(),
+    watchImageRenditionsRequest(),
     watchUsersRequest(),
     watchUserRequest(),
     watchLogin(),
