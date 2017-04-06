@@ -1,5 +1,11 @@
 from django.apps import AppConfig
 
 
-class HorsemanimagesConfig(AppConfig):
-    name = 'horsemanimages'
+class HorsemanImagesConfig(AppConfig):
+    name = 'horseman.horsemanimages'
+    label = 'horsemanimages'
+    verbose_name = 'Horseman images'
+
+    def ready(self):
+        from .signal_handlers import register_signal_handlers
+        register_signal_handlers()

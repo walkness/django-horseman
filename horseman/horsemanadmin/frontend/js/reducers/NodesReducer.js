@@ -185,6 +185,23 @@ export default function nodesReducer(state = initialState.nodes, action) {
       });
     }
 
+    case types.IMAGE_USAGE.SUCCESS: {
+      const byType = {};
+      Object.keys(action.response).forEach((nodeType) => {
+        const existingState = state[nodeType];
+        const byId = {};
+        const nodes = action.response[nodeType];
+        nodes.forEach((node) => {
+          byId[node.pk] = Object.assign(
+            {}, existingState && existingState.byId && existingState.byId[node.pk], node);
+        });
+        byType[nodeType] = Object.assign({}, existingState, {
+          byId: Object.assign({}, existingState && existingState.byId, byId),
+        });
+      });
+      return Object.assign({}, state, byType);
+    }
+
     default:
       return state;
   }

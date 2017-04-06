@@ -18,7 +18,9 @@ from timezone_field import TimeZoneField
 from willow.image import Image as WillowImage
 
 from horseman import settings
+
 from .exif import EXIF
+from .signals import image_file_changed
 
 
 def get_upload_to(instance, filename):
@@ -141,6 +143,7 @@ class AbstractImage(models.Model):
     def __init__(self, *args, **kwargs):
         super(AbstractImage, self).__init__(*args, **kwargs)
         self.old_file = self.file
+        self.old_filename = self.file.name
         self.old_hash = self.hash
         self.exif_updated = False
         self.old_captured_at_tz = self.captured_at_tz
@@ -149,8 +152,13 @@ class AbstractImage(models.Model):
         return self.title
 
     def save(self, *args, **kwargs):
-        if self.old_file != self.file and not self.exif_updated:
+        old_filename = self.old_filename
+        new_filename = self.file.name
+        file_changed = old_filename != new_filename
+
+        if file_changed and not self.exif_updated:
             self.update_exif()
+
         if (
             self.captured_at and
             self.captured_at_tz and
@@ -159,11 +167,21 @@ class AbstractImage(models.Model):
             naive = self.captured_at.replace(tzinfo=None)
             aware = self.captured_at_tz.localize(naive)
             self.captured_at = aware
-        if (self.old_file != self.file or not self.mime_type) and self.file:
+
+        if (file_changed or not self.mime_type) and self.file:
             self.mime_type = get_mime_type_from_file(self.file) or ''
-        if (self.old_file != self.file or not self.filesize) and self.file:
+
+        if (file_changed or not self.filesize) and self.file:
             self.filesize = self.file.size
-        return super(AbstractImage, self).save(*args, **kwargs)
+
+        new = super(AbstractImage, self).save(*args, **kwargs)
+
+        if file_changed:
+            image_file_changed.send(
+                sender=self.__class__, instance=self, old_filename=old_filename,
+                new_filename=new_filename)
+
+        return new
 
     @contextmanager
     def get_willow_image(self):
@@ -300,6 +318,10 @@ class AbstractImage(models.Model):
         node_model = django_apps.get_model('horsemannodes', 'Node')
         return node_model.objects.get_all_nodes_with_image(self)
 
+    def get_cached_paths(self):
+        return
+        yield
+
 
 class Image(AbstractImage):
     pass
@@ -417,6 +439,13 @@ class AbstractRendition(models.Model):
     @property
     def url(self):
         return self.file.url
+
+    @property
+    def target(self):
+        return {
+            'width': self.target_width,
+            'height': self.target_height,
+        }
 
     def __str__(self):
         return '{}x{}{}'.format(self.target_width, self.target_height, '_crop' if self.crop else '')

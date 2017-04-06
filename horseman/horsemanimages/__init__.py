@@ -1,3 +1,6 @@
+default_app_config = 'horseman.horsemanimages.apps.HorsemanImagesConfig'
+
+
 def get_rendition_name(name, crop, width, height):
     return '{}_{}x{}{}'.format(name, width, height, '_crop' if crop else '')
 

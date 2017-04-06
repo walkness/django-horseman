@@ -111,3 +111,16 @@ class CloudFrontBackend(BaseBackend):
         invalidation_model.status = self.get_status_from_response(response)
         invalidation_model.save(update_fields=['status'])
         return invalidation_model
+
+
+class ConsoleBackend(BaseBackend):
+
+    def perform_invalidation(self, paths, objects=None):
+        print('\nInvalidating paths for cache "{name}":\n{paths}\n'.format(
+            paths='\n'.join(paths), name=self.name))
+        obj = self.get_invalidation_model()
+        obj.paths = paths
+        obj.status = 'completed'
+        obj.save()
+        if objects:
+            self.create_invalidation_objects(objects)

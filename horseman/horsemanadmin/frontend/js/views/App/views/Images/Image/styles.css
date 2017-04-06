@@ -26,3 +26,70 @@
 	width: 100%;
 	margin-top: 2rem;
 }
+
+.meta {
+	display: flex;
+	flex-flow: row;
+}
+
+.renditions {
+	width: 33.333333%;
+
+	ul {
+		list-style-type: none;
+		margin: 0;
+		padding: 0;
+
+		li {
+			padding: .5rem 0;
+
+			a {
+				display: flex;
+				flex-flow: row;
+				align-items: center;
+			}
+		}
+	}
+}
+
+.rendition-preview {
+	height: 3rem;
+	width: 5rem;
+	text-align: left;
+	margin-right: 1rem;
+
+	> svg {
+		width: 100%;
+		height: 100%;
+		object-fit: contain;
+		object-position: left center;
+
+		:global {
+			#target {
+				fill: gray(90%);
+			}
+
+			#image {
+				fill: gray(50%);
+			}
+		}
+	}
+}
+
+.usage {
+	ul {
+		list-style-type: none;
+		margin: 0;
+		padding: 0;
+
+		> li {
+			h3 {
+				margin-bottom: .5em;
+
+				a {
+					text-decoration: none;
+				}
+			}
+		}
+	}
+}
