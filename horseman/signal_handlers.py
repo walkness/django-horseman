@@ -42,7 +42,8 @@ def handle_pre_save(sender, instance, **kwargs):
 def handle_m2m_changed(sender, instance, action=None, **kwargs):
     field = [
         field for field in instance._meta.get_fields()
-        if field.many_to_many and field.remote_field.through == sender
+        if field.many_to_many and
+        getattr(field.remote_field, 'through', getattr(field, 'through', None)) == sender
     ][0]
     field_name = field.name
 
