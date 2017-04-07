@@ -131,6 +131,7 @@ class ImageChooser extends Component {
         <footer styleName='styles.footer'>
           <button
             type='button'
+            className='btn'
             disabled={selected.length === 0}
             onClick={this.handleSubmit}
           >

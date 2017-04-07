@@ -1,0 +1,14 @@
+.root {
+	display: flex;
+	flex-flow: row;
+	align-items: center;
+	font-size: .8em;
+
+	> span {
+		margin-right: .5em;
+	}
+
+	button {
+		padding: .5em .75em;
+	}
+}

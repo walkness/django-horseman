@@ -37,6 +37,8 @@ class EditNode extends Component {
     this.state = {
       changed: false,
       imageFilters: {},
+      saving: false,
+      error: null,
     };
     this.fieldRefs = {};
   }
@@ -86,28 +88,31 @@ class EditNode extends Component {
 
   @autobind
   handleSubmit(data, resetForm, invalidateForm, query) {
-    const { nodes, params } = this.props;
-    const nodeType = this.getNodeType();
-    const nodeState = nodes[nodeType];
-    const includedFields = Object.keys(data);
-    const missingValues = nodeState.configuration.admin_fields.filter(
-      fieldName => includedFields.indexOf(fieldName) === -1);
-    const completeData = Object.assign({}, data);
-    missingValues.forEach((fieldName) => {
-      if (this.fieldRefs[fieldName] && this.fieldRefs[fieldName].getAPIValue) {
-        completeData[fieldName] = this.fieldRefs[fieldName].getAPIValue();
-      }
-    });
-    this.apiCall(
-      completeData,
-      Object.assign({}, { type: nodeType }, query),
-    ).then(({ response, error }) => {
-      if (error) {
-
-      } else {
-        const action = params.id ? this.props.nodeUpdated : this.props.nodeCreated;
-        action(response, nodeType);
-      }
+    this.setState({ saving: true }, () => {
+      const { nodes, params } = this.props;
+      const nodeType = this.getNodeType();
+      const nodeState = nodes[nodeType];
+      const includedFields = Object.keys(data);
+      const missingValues = nodeState.configuration.admin_fields.filter(
+        fieldName => includedFields.indexOf(fieldName) === -1);
+      const completeData = Object.assign({}, data);
+      missingValues.forEach((fieldName) => {
+        if (this.fieldRefs[fieldName] && this.fieldRefs[fieldName].getAPIValue) {
+          completeData[fieldName] = this.fieldRefs[fieldName].getAPIValue();
+        }
+      });
+      this.apiCall(
+        completeData,
+        Object.assign({}, { type: nodeType }, query),
+      ).then(({ response, error }) => {
+        if (error) {
+          this.setState({ saving: false, error });
+        } else {
+          const action = params.id ? this.props.nodeUpdated : this.props.nodeCreated;
+          action(response, nodeType);
+          this.setState({ saving: false, error: null });
+        }
+      });
     });
   }
 
@@ -144,7 +149,7 @@ class EditNode extends Component {
   }
 
   render() {
-    const { changed } = this.state;
+    const { changed, saving } = this.state;
     const { nodes, params, location } = this.props;
     const nodeType = this.getNodeType();
     const nodeState = nodes[nodeType];
@@ -194,7 +199,7 @@ class EditNode extends Component {
               <button
                 type='submit'
                 className='btn'
-                disabled={!this.state.changed}
+                disabled={!changed || saving}
                 styleName='styles.primary-action'
               >
                 Save draft
@@ -203,18 +208,39 @@ class EditNode extends Component {
                 <DropdownToggle>▲</DropdownToggle>
                 <DropdownMenu styleName='extra-actions-menu' up>
                   { node ?
-                    <li><button type='button' className='btn' onClick={this.handleDelete}>
-                      Delete permanently
-                    </button></li>
+                    <li>
+                      <button
+                        type='button'
+                        className='btn'
+                        onClick={this.handleDelete}
+                        disabled={saving}
+                      >
+                        Delete permanently
+                      </button>
+                    </li>
                   : null }
                   { node && node.published ?
-                    <li><button type='button' className='btn' onClick={this.handleUnpublish}>
-                      Unpublish
-                    </button></li>
+                    <li>
+                      <button
+                        type='button'
+                        className='btn'
+                        onClick={this.handleUnpublish}
+                        disabled={saving}
+                      >
+                        Unpublish
+                      </button>
+                    </li>
                   : null }
-                  <li><button type='button' className='btn' onClick={this.handlePublish}>
-                    Save and publish
-                  </button></li>
+                  <li>
+                    <button
+                      type='button'
+                      className='btn'
+                      onClick={this.handlePublish}
+                      disabled={!((!(node && node.published) || changed) && !saving)}
+                    >
+                      Save and publish
+                    </button>
+                  </li>
                 </DropdownMenu>
               </Dropdown>
 
@@ -232,6 +258,7 @@ class EditNode extends Component {
               current={currentRevision}
               latest={node && node.latest_revision}
               usersById={this.props.usersById}
+              saving={saving}
             />
           </div>
 

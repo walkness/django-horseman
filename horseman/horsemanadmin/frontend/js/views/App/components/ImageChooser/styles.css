@@ -39,6 +39,7 @@
 	width: 20rem;
 	border-left: 1px solid gray(95%);
 	padding: 2%;
+	overflow-y: auto;
 }
 
 .imagePreview {

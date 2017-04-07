@@ -192,17 +192,19 @@ class ImageBrowser extends Component {
       >
 
         <div styleName='styles.filters'>
-          <Input
-            name='s'
-            label='Search'
-            getValue={() => filters.search || null}
-            setValue={this.handleSearchInputChange}
-          />
-          <Ordering
-            ordering={filters.ordering}
-            onChange={ordering => handleFiltersChange({ ordering })}
-            defaultOrder='-created_at'
-          />
+          <div styleName='search-ordering'>
+            <Input
+              name='s'
+              label='Search'
+              getValue={() => filters.search || null}
+              setValue={this.handleSearchInputChange}
+            />
+            <Ordering
+              ordering={filters.ordering}
+              onChange={ordering => handleFiltersChange({ ordering })}
+              defaultOrder='-created_at'
+            />
+          </div>
           <Filters
             filters={filters}
             handleFiltersChange={handleFiltersChange}

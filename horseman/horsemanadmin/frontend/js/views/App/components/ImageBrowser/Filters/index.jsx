@@ -3,13 +3,13 @@ import React, { PropTypes } from 'react';
 import { DatePicker } from '../../Forms/Date';
 import DateRange from './DateRange';
 
-import styles from './styles.css';
+import './styles.css';
 
 
 const Filters = ({ filters, handleFiltersChange, display, toggleDisplay }) => (
-  <div styleName='styles.filters'>
+  <div styleName='filters'>
 
-    <button type='button' className='btn' onClick={toggleDisplay}>
+    <button type='button' className='btn' styleName='show-button' onClick={toggleDisplay}>
       {display ? 'Hide filters' : 'Show filters'}
     </button>
 
