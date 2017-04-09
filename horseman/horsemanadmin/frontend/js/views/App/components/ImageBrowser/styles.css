@@ -9,7 +9,21 @@
 }
 
 .filters {
+}
 
+:global(.modal) {
+	.filters {
+		padding: 0 1rem 1rem;
+	}
+}
+
+.search-ordering {
+	display: flex;
+	flex-flow: row;
+
+	:global .input-wrapper {
+		width: 80%;
+	}
 }
 
 .images {

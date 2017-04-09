@@ -29,6 +29,11 @@
 
         & > button {
             cursor: pointer;
+
+            &:active,
+            &:focus {
+                outline: 0;
+            }
         }
     }
 

@@ -4,6 +4,8 @@ import Option from './Option';
 
 import { ORDER } from './constants';
 
+import './styles.css';
+
 
 const Ordering = ({ ordering, defaultOrder, onChange }) => {
   const getOrder = (value) => {
@@ -22,7 +24,9 @@ const Ordering = ({ ordering, defaultOrder, onChange }) => {
   };
 
   return (
-    <div>
+    <div styleName='root'>
+
+      <span>Sort</span>
 
       { [
         { label: 'Uploaded', value: 'created_at' },

@@ -1,5 +1,11 @@
 .filters {
+	text-align: center;
+}
 
+.show-button {
+	font-size: .8em;
+	border: none;
+	padding: .2em;
 }
 
 .date-range {

@@ -12,7 +12,6 @@
 	bottom: 0;
 	left: 0;
 	width: 15rem;
-	padding: 0 1rem;
 	color: gray(90%);
 	background-color: gray(30%);
 	font-size: .9rem;
@@ -25,6 +24,7 @@
 .apps {
 	list-style-type: none;
 	padding: 0;
+	overflow-y: auto;
 
 	ul {
 		list-style-type: none;
@@ -51,11 +51,6 @@
 				color: gray(30%);
 			}
 		}
-
-		& > li {
-			margin-left: -1rem;
-			margin-right: -1rem;
-		}
 	}
 
 	& > li {
@@ -67,7 +62,7 @@
 
 .section-header {
 	margin: 0;
-	padding: 1rem 0;
+	padding: 1rem;
 	text-transform: uppercase;
 	font-weight: bold;
 	color: gray(60%);
@@ -75,14 +70,12 @@
 }
 
 .user {
-	margin-left: -1rem;
-	margin-right: -1rem;
 	padding: .5rem 1rem 1.5rem;
 	background-color: gray(25%);
 	border-top: 1px solid gray(23%);
 
 	.section-header {
-		padding-bottom: .5rem;
+		padding: 1rem 0 .5rem;
 	}
 
 	> a {

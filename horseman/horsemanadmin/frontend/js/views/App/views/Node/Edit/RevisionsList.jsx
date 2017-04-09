@@ -16,6 +16,7 @@ class RevisionsList extends Component {
     revisionsById: PropTypes.object.isRequired,
     current: PropTypes.string,
     usersById: PropTypes.object.isRequired,
+    saving: PropTypes.bool,
   };
 
   static contextTypes = {
@@ -23,7 +24,7 @@ class RevisionsList extends Component {
   };
 
   render() {
-    const { revisions, revisionsById, current, latest, usersById } = this.props;
+    const { revisions, revisionsById, current, latest, usersById, saving } = this.props;
     const currentRevision = revisionsById && revisionsById[current];
     const currentRevisionUser = currentRevision && usersById[currentRevision.revision.created_by];
     return (
@@ -31,24 +32,28 @@ class RevisionsList extends Component {
 
         { currentRevision ?
           <div styleName='styles.current-revision'>
-            <FormattedMessage
-              id='node.edit.revisions.current'
-              values={{
-                latest: latest === current ? 'yes' : 'no',
-                revisionDateRelative: (
-                  <FormattedRelative value={new Date(currentRevision.revision.created_at)}>
-                    { formatted => (
-                      <time dateTime={currentRevision.revision.created_at}>{ formatted }</time>
-                    ) }
-                  </FormattedRelative>
-                ),
-                revisedBy: currentRevisionUser && currentRevisionUser.first_name,
-              }}
-              defaultMessage='{latest, select,
-                yes {Last modified {revisionDateRelative} by {revisedBy}}
-                no {Revision created {revisionDateRelative} by {revisedBy}}
-              }'
-            />
+            { saving ?
+              <FormattedMessage id='node.edit.saving' defaultMessage='Saving…' />
+            :
+              <FormattedMessage
+                id='node.edit.revisions.current'
+                values={{
+                  latest: latest === current ? 'yes' : 'no',
+                  revisionDateRelative: (
+                    <FormattedRelative value={new Date(currentRevision.revision.created_at)}>
+                      { formatted => (
+                        <time dateTime={currentRevision.revision.created_at}>{ formatted }</time>
+                      ) }
+                    </FormattedRelative>
+                  ),
+                  revisedBy: currentRevisionUser && currentRevisionUser.first_name,
+                }}
+                defaultMessage='{latest, select,
+                  yes {Last modified {revisionDateRelative} by {revisedBy}}
+                  no {Revision created {revisionDateRelative} by {revisedBy}}
+                }'
+              />
+            }
           </div>
         : null }
 
