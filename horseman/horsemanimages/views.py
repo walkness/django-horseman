@@ -1,3 +1,5 @@
+from django.db.models import Case, When, IntegerField
+
 from rest_framework import viewsets
 from rest_framework.parsers import FormParser, MultiPartParser
 from rest_framework.decorators import parser_classes, detail_route
@@ -5,14 +7,37 @@ from rest_framework.response import Response
 from rest_framework.exceptions import ValidationError
 from rest_framework.status import (
     HTTP_201_CREATED, HTTP_400_BAD_REQUEST)
+from rest_framework.filters import OrderingFilter
 
 from django_filters import rest_framework as filters, DateFilter
+from django_filters.rest_framework import DjangoFilterBackend
 
 from horseman.mixins import SearchableMixin, BoolQueryParamMixin
 from horseman.horsemannodes.serializers import NodeSerializer
 
 from . import models
 from . import serializers
+
+
+class IgnoreNullOrderingFilter(OrderingFilter):
+    
+    def filter_queryset(self, request, queryset, view):
+        ordering = self.get_ordering(request, queryset, view)
+
+        if ordering:
+            annotations = {}
+            new_ordering = []
+            for field in ordering:
+                orderless_field = field.lstrip('-')
+                null_field = 'null_%s' % orderless_field
+                annotations[null_field] = Case(When(
+                    then=0,
+                    **{'{}__isnull'.format(orderless_field): True}),
+                default=1, output_field=IntegerField())
+                new_ordering.extend(['-%s' % null_field, field])
+            queryset = queryset.annotate(**annotations).order_by(*new_ordering)
+
+        return queryset
 
 
 class ImageFilter(filters.FilterSet):
@@ -29,10 +54,13 @@ class ImageFilter(filters.FilterSet):
 class ImageViewSet(BoolQueryParamMixin, SearchableMixin, viewsets.ModelViewSet):
     model = models.Image
     serializer_class = serializers.AdminImageSerializer
-    queryset = models.Image.objects.prefetch_related('renditions').order_by('-created_at').all()
+    queryset = models.Image.objects.prefetch_related('renditions').all()
     search_query_param = 'search'
     search_fields = ['title']
+    filter_backends = (IgnoreNullOrderingFilter, DjangoFilterBackend, )
     filter_class = ImageFilter
+    ordering_fields = ('created_at', 'captured_at')
+    ordering = ('-created_at',)
 
     def get_serializer(self, *args, **kwargs):
         if self.get_query_param_bool('async_renditions'):

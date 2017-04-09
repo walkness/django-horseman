@@ -17,7 +17,7 @@ class ImageUploader extends Component {
 
   static defaultProps = {
     multiple: false,
-    maxConcurrent: 5,
+    maxConcurrent: 1,
     onUploadSuccess: () => {},
   };
 
@@ -51,11 +51,29 @@ class ImageUploader extends Component {
 
   @autobind
   handleUploadSuccess(data, id) {
+    const { files } = this.state;
     const allowUpload = this.state.allowUpload.slice(0);
     const index = allowUpload.indexOf(id);
     if (index !== -1) allowUpload.splice(index, 1);
+    const currentIndex = files.indexOf(id);
+    if (currentIndex !== -1 && currentIndex < files.length) {
+      allowUpload.push(files[currentIndex + 1]);
+    }
     this.setState({ allowUpload });
     this.props.onUploadSuccess(data);
+  }
+
+  @autobind
+  handleUploadError(error, id) {
+    const { files } = this.state;
+    const allowUpload = this.state.allowUpload.slice(0);
+    const index = allowUpload.indexOf(id);
+    if (index !== -1) allowUpload.splice(index, 1);
+    const currentIndex = files.indexOf(id);
+    if (currentIndex !== -1 && currentIndex < files.length) {
+      allowUpload.push(files[currentIndex + 1]);
+    }
+    this.setState({ allowUpload });
   }
 
   render() {
@@ -76,6 +94,7 @@ class ImageUploader extends Component {
               file={this.state.filesById[id]}
               allowUpload={this.state.allowUpload.indexOf(id) !== -1}
               onUploadSuccess={this.handleUploadSuccess}
+              onUploadError={this.handleUploadError}
             />
           )) }
         </ul>

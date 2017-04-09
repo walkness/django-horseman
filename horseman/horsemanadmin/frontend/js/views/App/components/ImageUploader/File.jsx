@@ -18,11 +18,13 @@ class File extends Component {
     }).isRequired,
     allowUpload: PropTypes.bool,
     onUploadSuccess: PropTypes.func,
+    onUploadError: PropTypes.func,
   };
 
   static defaultProps = {
     allowUpload: true,
     onUploadSuccess: () => {},
+    onUploadError: () => {},
   };
 
   constructor(props, context) {
@@ -58,6 +60,7 @@ class File extends Component {
             progress: 1,
             uploadErrors: [],
           });
+          this.props.onUploadError(error, file.preview);
         } else {
           this.setState({
             status: uploadStatus.SUCCESS,
