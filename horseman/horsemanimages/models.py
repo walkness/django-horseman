@@ -239,7 +239,13 @@ class AbstractImage(models.Model):
     def get_file_hash(self):
         file_bytes = getattr(self, 'file_bytes', getattr(self.file._file, 'file', None))
         assert file_bytes is not None, 'Unable to get file bytes.'
-        self.hash = hashlib.md5(file_bytes.getvalue()).hexdigest()
+        value = None
+        if hasattr(file_bytes, 'getvalue'):
+            value = file_bytes.getvalue()
+        else:
+            file_bytes.seek(0)
+            value = file_bytes.read()
+        self.hash = hashlib.md5(value).hexdigest()
         return self.hash
 
     def get_upload_to(self, filename):
