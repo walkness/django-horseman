@@ -1,5 +1,5 @@
 import React, { Component, PropTypes } from 'react';
-import { locationShape } from 'react-router/lib/PropTypes';
+import { routerShape, locationShape } from 'react-router/lib/PropTypes';
 import { connect } from 'react-redux';
 import Formsy from 'formsy-react';
 import { autobind } from 'core-decorators';
@@ -30,6 +30,11 @@ class EditNode extends Component {
   static propTypes = {
     params: PropTypes.object.isRequired,
     location: locationShape.isRequired,
+    adminURLBase: PropTypes.string.isRequired,
+  };
+
+  static contextTypes = {
+    router: routerShape.isRequired,
   };
 
   constructor(props, context) {
@@ -111,6 +116,13 @@ class EditNode extends Component {
           const action = params.id ? this.props.nodeUpdated : this.props.nodeCreated;
           action(response, nodeType);
           this.setState({ saving: false, error: null });
+          if (!params.id) {
+            const { adminURLBase } = this.props;
+            const { app_label, model_name } = nodeState.configuration;
+            this.context.router.replace(
+              `${adminURLBase}${app_label}/${model_name}/${response.pk}/`, // eslint-disable-line camelcase
+            );
+          }
         }
       });
     });
@@ -275,6 +287,7 @@ const mapStateToProps = state => ({
   orderedImages: state.images.ordered,
   usersById: state.users.byId,
   previewSiteURL: state.config.previewSiteURL,
+  adminURLBase: state.config.adminURLBase,
 });
 
 const nodeRequest = nodeAction.request;
