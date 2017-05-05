@@ -57,7 +57,7 @@ class NodeList extends Component {
             <div styleName='styles.column'>Last updated</div>
           </li>
 
-          { orderedNodes && orderedNodes.ids.map((pk) => {
+          { orderedNodes && orderedNodes.ids && orderedNodes.ids.map((pk) => {
             const node = nodeState.byId[pk];
             if (!node) return null;
             return (
