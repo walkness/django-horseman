@@ -48,12 +48,18 @@ export function Block(WrappedComponent) {
       onMoveDown: PropTypes.func.isRequired,
     };
 
+    shouldComponentUpdate(nextProps) {
+      const { blockChanging } = nextProps;
+      if (blockChanging === null) return true;
+      return blockChanging;
+    }
+
     getAPIValue() {
       return this.wrappedComponent.getAPIValue();
     }
 
     render() {
-      const { blocks, ...props } = this.props;
+      const { blocks, blockChanging, ...props } = this.props;
       return (
         <BlockWrapper
           index={this.props.index}

@@ -1,6 +1,7 @@
 import React, { Component, PropTypes } from 'react';
 import { autobind } from 'core-decorators';
 import { isEqual } from 'lodash';
+import uuidV4 from 'uuid/v4';
 
 import InputWrapper from '../InputWrapper';
 
@@ -17,6 +18,10 @@ const getBlockConfig = (fieldConfig, blockType) => {
   }, null);
 };
 
+const getInitialValue = (value) => {
+  return value.map((block, i) => Object.assign({}, block, { key: uuidV4() }));
+};
+
 
 class StructuredField extends Component {
 
@@ -30,22 +35,28 @@ class StructuredField extends Component {
       value: [],
       newest: null,
     };
-    if (Array.isArray(props.value)) this.state.value = props.value;
+    if (Array.isArray(props.value)) {
+      this.state.value = getInitialValue(props.value);
+    }
     this.blockRefs = [];
+    this.blockChanging = null;
   }
 
   componentWillReceiveProps(nextProps) {
     if (nextProps.value && !isEqual(this.props.value, nextProps.value)) {
-      this.setState({ value: nextProps.value });
+      this.setState({ value: getInitialValue(nextProps.value) });
     }
   }
 
-  updateBlock(index, newValue, updateState = true) {
-    if (updateState) {
-      const value = this.state.value.slice(0);
-      value[index] = Object.assign({}, value[index], newValue);
-      this.setState({ value, newest: null });
-    }
+  componentDidUpdate() {
+    this.blockChanging = null;
+  }
+
+  updateBlock(index, newValue) {
+    const value = this.state.value.slice(0);
+    value[index] = Object.assign({}, value[index], newValue);
+    this.blockChanging = index;
+    this.setState({ value, newest: null });
     if (this.props.onChange) {
       this.props.onChange();
     }
@@ -54,7 +65,7 @@ class StructuredField extends Component {
   @autobind
   addNewBlock(type, before = null) {
     const value = this.state.value.slice(0);
-    const block = { type };
+    const block = { type, key: uuidV4() };
     if (before || before === 0) {
       value.splice(before, 0, block);
     } else {
@@ -108,7 +119,7 @@ class StructuredField extends Component {
       <div styleName='styles.structured-field'>
         { this.state.value.map((block, i) => {
           const blockProps = {
-            key: i,
+            key: block.key,
             index: i,
             onChange: (v, update) => this.updateBlock(i, v, update),
             deleteBlock: this.deleteBlock,
@@ -119,6 +130,7 @@ class StructuredField extends Component {
             onMoveUp: () => this.moveBlockUp(i),
             onMoveDown: () => this.moveBlockDown(i),
             isNew: this.state.newest === i,
+            blockChanging: this.blockChanging === null ? null : this.blockChanging === i,
           };
           if (block.type === 'richtext') {
             return <RichText {...blockProps} />;

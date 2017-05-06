@@ -1,19 +1,30 @@
+/* eslint no-underscore-dangle: ["error", { "allow": ["_focus"] }] */
+
 import React, { Component, PropTypes } from 'react';
 import { autobind } from 'core-decorators';
 
-import RichTextEditor from '../../../RTE/src/RichTextEditor';
+import RichTextEditor, { EditorValue, createValueFromString } from '../../../RTE/src/RichTextEditor';
 
-import Block from './HOC';
+import HOC from './HOC';
 
 
 class RichTextBlock extends Component {
 
-  constructor(props, context) {
-    super(props, context);
-    this.state = {
-      value: RichTextEditor.createValueFromString(props.block.value || '', 'html'),
-    };
-  }
+  static propTypes = {
+    isNew: PropTypes.bool.isRequired,
+    block: PropTypes.shape({
+      type: PropTypes.string,
+      value: PropTypes.oneOfType([
+        PropTypes.string,
+        PropTypes.instanceOf(EditorValue),
+      ]),
+    }).isRequired,
+    onChange: PropTypes.func.isRequired,
+  };
+
+  static defaultProps = {
+    value: null,
+  };
 
   componentDidMount() {
     if (this.props.isNew) {
@@ -22,18 +33,9 @@ class RichTextBlock extends Component {
   }
 
   componentWillReceiveProps(nextProps) {
-    if (this.props.block.value !== nextProps.block.value) {
-      this.setState({ value: RichTextEditor.createValueFromString(nextProps.block.value || '', 'html') });
-    }
     if (nextProps.isNew) {
       this.editor._focus();
     }
-  }
-
-  @autobind
-  handleChange(value) {
-    this.setState({ value });
-    this.props.onChange(value, false);
   }
 
   getBlock(value) {
@@ -42,13 +44,24 @@ class RichTextBlock extends Component {
   }
 
   getAPIValue() {
-    return this.getBlock(this.state.value.toString('html'));
+    const { value } = this.props.block;
+    return this.getBlock(value instanceof EditorValue ? value.toString('html') : value);
+  }
+
+  @autobind
+  handleChange(value) {
+    this.props.onChange(this.getBlock(value));
   }
 
   render() {
+    const { value } = this.props.block;
     return (
       <RichTextEditor
-        value={this.state.value}
+        value={(
+          !(value instanceof EditorValue) ?
+          createValueFromString(value || '', 'html') :
+          value
+        )}
         onChange={this.handleChange}
         ref={(c) => { this.editor = c; }}
       />
@@ -56,4 +69,4 @@ class RichTextBlock extends Component {
   }
 }
 
-export default Block(RichTextBlock);
+export default HOC(RichTextBlock);
