@@ -6,7 +6,7 @@ import Block from './HOC';
 import Image from '../../../Image';
 import ImageChooserModal from '../../../ImageChooser/Modal';
 
-import { Unattached as Select } from '../../../Forms/Select';
+import { Select } from '../../../Forms/Select';
 
 import styles from './styles.css';
 
