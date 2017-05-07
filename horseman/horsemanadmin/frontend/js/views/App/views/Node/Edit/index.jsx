@@ -3,6 +3,7 @@ import { routerShape, locationShape } from 'react-router/lib/PropTypes';
 import { connect } from 'react-redux';
 import Formsy from 'formsy-react';
 import { autobind } from 'core-decorators';
+import slugify from 'slugify';
 
 import {
   nodes as nodesAction,
@@ -46,6 +47,16 @@ class EditNode extends Component {
       error: null,
     };
     this.fieldRefs = {};
+    const nodeConfig = props.nodes[this.getNodeType()].configuration;
+    this.autopopulateSources = {};
+    Object.values(nodeConfig.field_config).forEach((field) => {
+      if (field.autopopulate) {
+        field.autopopulate.forEach((source) => {
+          if (!this.autopopulateSources[source]) this.autopopulateSources[source] = [];
+          this.autopopulateSources[source].push(field.name);
+        });
+      }
+    });
   }
 
   componentWillMount() {
@@ -148,7 +159,31 @@ class EditNode extends Component {
   }
 
   @autobind
-  handleFormChange() {
+  handleFormChange(field, value) {
+    const autopopulateFields = this.autopopulateSources[field];
+    if (autopopulateFields) {
+      const nodeConfig = this.props.nodes[this.getNodeType()].configuration;
+      autopopulateFields.forEach((autoField) => {
+        const fieldConfig = nodeConfig.field_config[autoField];
+        if (fieldConfig.autopopulate) {
+          const components = [];
+          const oldComponents = [];
+          const oldSlug = this.fieldRefs[autoField].props.getValue();
+          fieldConfig.autopopulate.forEach((source) => {
+            const oldValue = this.fieldRefs[source].props.getValue();
+            oldComponents.push(oldValue);
+            if (source === field) {
+              components.push(value);
+            } else {
+              components.push(oldValue);
+            }
+          });
+          if (!oldSlug || slugify(oldComponents.join('-')).toLowerCase() === oldSlug.toLowerCase()) {
+            this.fieldRefs[autoField].props.setValue(slugify(components.join('-')).toLowerCase());
+          }
+        }
+      });
+    }
     if (!this.state.changed) {
       this.setState({ changed: true });
     }
@@ -199,7 +234,7 @@ class EditNode extends Component {
                 imageUploaded={this.props.imageUploaded}
                 nodes={nodes}
                 nodesRequest={this.props.nodesRequest}
-                onChange={this.handleFormChange}
+                onChange={(value) => this.handleFormChange(fieldName, value)}
                 imageFilters={this.state.imageFilters}
                 handleImageFiltersChange={this.handleImageFiltersChange}
               />

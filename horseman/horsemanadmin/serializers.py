@@ -19,6 +19,7 @@ class AdminModelConfigurationSerializer(serializers.Serializer):
     def get_field_config(self, cls):
         field_config = {}
         fields = cls.get_editable_fields()
+        autopopulate_fields = getattr(cls, 'autopopulate_fields', {})
         for field in fields:
             field_config[field.name] = {
                 'type': '{}.{}'.format(
@@ -27,6 +28,9 @@ class AdminModelConfigurationSerializer(serializers.Serializer):
                 ),
                 'title_field': field.name == getattr(cls, 'admin_title_field', None),
             }
+
+            if field.name in autopopulate_fields:
+                field_config[field.name]['autopopulate'] = autopopulate_fields[field.name]
 
             for att in [
                 'name', 'verbose_name', 'verbose_name_plural', 'max_length', 'blank'

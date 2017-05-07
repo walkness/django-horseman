@@ -127,6 +127,7 @@ class AbstractNode(mixins.AdminModelMixin, models.Model):
     admin_title_field = None
     api_fields = ['pk', 'type', 'created_at', 'published_at', 'modified_at', 'slug', 'published']
     search_fields = ['slug']
+    autopopulate_fields = {}
 
     class Meta:
         abstract = True
