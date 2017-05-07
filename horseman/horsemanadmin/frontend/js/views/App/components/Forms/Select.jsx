@@ -5,7 +5,7 @@ import { autobind } from 'core-decorators';
 import InputWrapper from './InputWrapper';
 
 
-class Select extends Component {
+class _Select extends Component {
 
   @autobind
   handleChange(e) {
@@ -26,6 +26,6 @@ class Select extends Component {
   }
 }
 
-export const Unattached = InputWrapper(Select);
+export const Select = InputWrapper(_Select);
 
-export default HOC(Unattached);
+export default HOC(Select);

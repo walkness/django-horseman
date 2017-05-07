@@ -1,0 +1,51 @@
+.body {
+
+}
+
+.body-inner {
+	position: absolute;
+	left: 0;
+	right: 0;
+	height: 100%;
+	display: flex;
+	flex-flow: column;
+	padding: 0 1rem;
+}
+
+.nodes {
+	display: flex;
+	flex-flow: column;
+	height: 100%;
+}
+
+.node-list {
+	list-style-type: none;
+	padding: 0;
+	margin: 0;
+
+	> li {
+		> button {
+			display: block;
+			width: 100%;
+			background: gray(95%);
+			border: 1px solid gray(99%);
+			text-align: left;
+			padding: .5em .75em;
+			cursor: pointer;
+
+			@nest &:focus {
+				outline: 0;
+			}
+
+			@nest &:global(.active) {
+				background: gray(85%);
+			}
+		}
+	}
+}
+
+.node-list-wrapper {
+	flex: 1 100%;
+	height: 100%;
+	overflow-y: auto;
+}

@@ -11,6 +11,7 @@ class Modal extends Component {
     children: PropTypes.node,
     className: PropTypes.string,
     title: PropTypes.string,
+    size: PropTypes.oneOf(['small', 'large']),
   };
 
   static childContextTypes = {
@@ -24,11 +25,18 @@ class Modal extends Component {
   }
 
   render() {
-    const { children, className, ...props } = this.props;
+    const { children, className, size, ...props } = this.props;
     return (
       <div>
 
-        <div className={classNames('modal', className)} styleName='styles.modal' {...props}>
+        <div
+          className={classNames('modal', className, {
+            [styles.small]: size === 'small',
+            [styles.large]: size === 'large',
+          })}
+          styleName='styles.modal'
+          {...props}
+        >
 
           <div styleName='styles.content'>
             { children }

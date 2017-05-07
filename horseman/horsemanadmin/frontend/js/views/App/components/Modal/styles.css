@@ -5,7 +5,20 @@
 	bottom: 0;
 	right: 0;
 	z-index: 1050;
-	padding: 5rem 0;
+	font-family: -apple-system, system-ui, BlinkMacSystemFont, Segoe UI, Roboto, Helvetica Neue, Arial, sans-serif;
+}
+
+.small {
+	& .content {
+		max-height: 30rem;
+		max-width: 30rem;
+	}
+}
+
+.large {
+	& .content {
+		
+	}
 }
 
 .content {
@@ -16,6 +29,12 @@
 	height: 100%;
 	display: flex;
 	flex-flow: column;
+	position: absolute;
+	top: 50%;
+	left: 0;
+	right: 0;
+	max-height: 96vh;
+	transform: translateY(-50%);
 }
 
 .backdrop {
@@ -46,8 +65,9 @@
 
 .body {
 	flex: 1 100%;
+	position: relative;
 }
 
 .footer {
-	
+	padding: 1rem;
 }

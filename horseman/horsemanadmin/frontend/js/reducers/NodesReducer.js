@@ -61,11 +61,13 @@ export default function nodesReducer(state = initialState.nodes, action) {
           {}, existingState && existingState.revisionsById, revisionsById),
         latest_revision: (
           (node.latest_revision && (node.latest_revision.pk || node.latest_revision)) ||
-          (latestRevision && node.revision && node.revision.pk)
+          (latestRevision && node.revision && node.revision.pk) ||
+          (existingState && existingState.latest_revision)
         ) || null,
         active_revision: (
           (node.active_revision && (node.active_revision.pk || node.active_revision)) ||
-          (activeRevision && node.revision && node.revision.pk)
+          (activeRevision && node.revision && node.revision.pk) ||
+          (existingState && existingState.active_revision)
         ) || null,
       });
       return node.pk;
