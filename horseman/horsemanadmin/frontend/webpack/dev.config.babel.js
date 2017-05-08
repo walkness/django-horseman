@@ -61,9 +61,19 @@ config.module.rules.push(
   },
   {
     test: /\.css$/,
+    exclude: /node_modules/,
     use: [
       'style-loader',
       `css-loader?sourceMap&modules&importLoaders=1&localIdentName=${cssModulesGeneratedScopedName}`,
+      'postcss-loader',
+    ],
+  },
+  {
+    test: /\.css$/,
+    include: /node_modules/,
+    use: [
+      'style-loader',
+      'css-loader?sourceMap&importLoaders=1',
       'postcss-loader',
     ],
   },
