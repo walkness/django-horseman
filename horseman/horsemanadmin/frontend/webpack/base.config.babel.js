@@ -5,6 +5,8 @@ import webpack from 'webpack';
 
 const context = path.resolve(__dirname, '../');
 
+export const cssModulesGeneratedScopedName = '[local]__[hash:base64:5]';
+
 export default {
   context,
 

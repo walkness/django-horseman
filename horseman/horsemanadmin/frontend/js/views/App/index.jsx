@@ -7,7 +7,7 @@ import { logout as logoutAction } from '../../actions';
 import LoginWrapper from './components/LoginWrapper';
 import Sidebar from './components/Sidebar';
 
-import styles from './styles.css';
+import './styles.scss';
 
 
 class App extends Component {
@@ -42,10 +42,10 @@ class App extends Component {
       );
     }
     return (
-      <div id='app' styleName='styles.app'>
+      <div id='app' styleName='app'>
 
-        <main styleName='styles.main-wrapper'>
-          <div styleName='styles.main'>
+        <main styleName='main-wrapper'>
+          <div styleName='main'>
             { children }
           </div>
         </main>

@@ -1,10 +1,10 @@
 import React, { PropTypes } from 'react';
 
-import styles from './styles.css';
+import './styles.scss';
 
 
 const ModalFooter = ({ children }) => (
-  <footer styleName='styles.footer'>
+  <footer styleName='footer'>
 
     { children }
 

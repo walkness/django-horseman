@@ -7,7 +7,6 @@ import { render } from 'react-dom';
 import { AppContainer } from 'react-hot-loader';
 
 import 'normalize.css';
-import '../scss/main.scss';
 
 import store from './store';
 

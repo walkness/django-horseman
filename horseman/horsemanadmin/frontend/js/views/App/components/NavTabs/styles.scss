@@ -1,4 +1,8 @@
+@import '../../../../../scss/mixins';
+
 .root {
+  @include clearfix;
+
 	> a,
 	> button {
 		display: block;
@@ -6,16 +10,16 @@
 		padding: .5em 1.5em;
 		background: gray(95%);
 		border: 1px solid gray(80%);
+    cursor: pointer;
 
-		@nest &:global(.active) {
+		&:global(.active) {
 			background: transparent;
 			border-bottom: none;
 		}
-	}
 
-	@nest &::after {
-		content: ' ';
-		display: table;
-		clear: both;
+    &:focus,
+    &:active {
+      outline: 0;
+    }
 	}
 }

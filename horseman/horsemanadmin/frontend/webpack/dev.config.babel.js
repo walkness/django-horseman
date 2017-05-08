@@ -5,7 +5,7 @@ import path from 'path';
 import webpack from 'webpack';
 import BundleTracker from 'webpack-bundle-tracker';
 
-import config from './base.config.babel';
+import config, { cssModulesGeneratedScopedName } from './base.config.babel';
 
 // Use webpack dev server
 config.entry = [
@@ -39,8 +39,9 @@ config.module.rules.push(
     loader: 'babel-loader',
     query: {
       plugins: [
-        ['babel-plugin-react-css-modules', {
+        ['react-css-modules', {
           context: config.context,
+          generateScopedName: cssModulesGeneratedScopedName,
           filetypes: {
             '.scss': 'postcss-scss',
           },
@@ -51,39 +52,18 @@ config.module.rules.push(
   },
   {
     test: /\.scss$/,
-    include: path.resolve(config.context, './js/'),
     use: [
       'style-loader',
-      'css-loader?sourceMap&modules&importLoaders=2&localIdentName=[path]___[name]__[local]___[hash:base64:5]',
-      'postcss-loader',
-      'sass-loader',
-    ],
-  },
-  {
-    test: /\.scss$/,
-    exclude: path.resolve(config.context, './js/'),
-    use: [
-      'style-loader',
-      'css-loader?importLoaders=2',
+      `css-loader?sourceMap&modules&importLoaders=2&localIdentName=${cssModulesGeneratedScopedName}`,
       'postcss-loader',
       'sass-loader',
     ],
   },
   {
     test: /\.css$/,
-    include: path.resolve(config.context, './js/'),
     use: [
       'style-loader',
-      'css-loader?sourceMap&modules&importLoaders=1&localIdentName=[path]___[name]__[local]___[hash:base64:5]',
-      'postcss-loader',
-    ],
-  },
-  {
-    test: /\.css$/,
-    exclude: path.resolve(config.context, './js/'),
-    use: [
-      'style-loader',
-      'css-loader?importLoaders=1',
+      `css-loader?sourceMap&modules&importLoaders=1&localIdentName=${cssModulesGeneratedScopedName}`,
       'postcss-loader',
     ],
   },

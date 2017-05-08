@@ -1,6 +1,6 @@
 import React, { PropTypes } from 'react';
 
-import './styles.css';
+import './styles.scss';
 
 const NavTabs = ({ children }) => (
   <nav styleName='root'>

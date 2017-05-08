@@ -1,19 +1,37 @@
+@import '../../../scss/variables';
+
+.app {
+  display: flex;
+  flex-flow: row;
+}
+
+.main-wrapper {
+	flex: 1 100%;
+	padding: 1rem 2rem 3rem;
+	background-color: gray(98%);
+	border-color: gray(92%);
+	border-style: solid;
+	border-width: 0 0 1px 1px;
+}
+
+.main {
+}
+
 * {
   box-sizing: border-box;
 }
 
 body {
-  background-color: gray(50%);
-  font-family: -apple-system, system-ui, BlinkMacSystemFont, Segoe UI, Roboto, Helvetica Neue, Arial, sans-serif;
+  background-color: $body-bg;
+  font-family: $font-family;
   font-size: 1rem;
   font-weight: 400;
-  color: gray(30%);
+  color: $body-color;
 }
 
 a,
-.link {
-  $color: #6e9ab5;
-  color: $color;
+:global(.link) {
+  color: $link-color;
   background-color: transparent;
   border: 0;
   cursor: pointer;
@@ -25,16 +43,16 @@ a,
   }
 
   &:hover {
-    color: darken($color, 15%);
+    color: darken($link-color, 15%);
   }
 
   &:active,
   &.active {
-    color: darken($color, 25%);
+    color: darken($link-color, 25%);
   }
 }
 
-.btn {
+:global(.btn) {
   display: inline-block;
   background-color: transparent;
   border: 1px solid gray(80%);

@@ -6,7 +6,7 @@ import ExtractTextPlugin from 'extract-text-webpack-plugin';
 import BundleTracker from 'webpack-bundle-tracker';
 import CleanWebpackPlugin from 'clean-webpack-plugin';
 
-import config from './base.config.babel';
+import config, { cssModulesGeneratedScopedName } from './base.config.babel';
 
 config.output.path = path.resolve(__dirname, '../dist/');
 config.output.publicPath = '//static.walkandalie.com.s3.amazonaws.com/';
@@ -57,8 +57,9 @@ config.module.rules.push(
     loader: 'babel-loader',
     query: {
       plugins: [
-        ['babel-plugin-react-css-modules', {
+        ['react-css-modules', {
           context: config.context,
+          generateScopedName: cssModulesGeneratedScopedName,
           filetypes: {
             '.scss': 'postcss-scss',
           },
@@ -69,22 +70,9 @@ config.module.rules.push(
   },
   {
     test: /\.scss$/,
-    include: path.resolve(config.context, './js/'),
     use: ExtractTextPlugin.extract({
       use: [
-        `css-loader?${JSON.stringify(cssNano)}&modules&importLoaders=2&localIdentName=[path]___[name]__[local]___[hash:base64:5]`,
-        'postcss-loader',
-        'sass-loader',
-      ],
-      fallback: 'style-loader',
-    }),
-  },
-  {
-    test: /\.scss$/,
-    exclude: path.resolve(config.context, './js/'),
-    use: ExtractTextPlugin.extract({
-      use: [
-        `css-loader?${JSON.stringify(cssNano)}&importLoaders=2`,
+        `css-loader?${JSON.stringify(cssNano)}&modules&importLoaders=2&localIdentName=${cssModulesGeneratedScopedName}`,
         'postcss-loader',
         'sass-loader',
       ],
@@ -93,21 +81,9 @@ config.module.rules.push(
   },
   {
     test: /\.css$/,
-    include: path.resolve(config.context, './js/'),
     use: ExtractTextPlugin.extract({
       use: [
-        `css-loader?${JSON.stringify(cssNano)}&modules&importLoaders=2&localIdentName=[path]___[name]__[local]___[hash:base64:5]`,
-        'postcss-loader',
-      ],
-      fallback: 'style-loader',
-    }),
-  },
-  {
-    test: /\.css$/,
-    exclude: path.resolve(config.context, './js/'),
-    use: ExtractTextPlugin.extract({
-      use: [
-        `css-loader?${JSON.stringify(cssNano)}&importLoaders=2`,
+        `css-loader?${JSON.stringify(cssNano)}&modules&importLoaders=2&localIdentName=${cssModulesGeneratedScopedName}`,
         'postcss-loader',
       ],
       fallback: 'style-loader',
