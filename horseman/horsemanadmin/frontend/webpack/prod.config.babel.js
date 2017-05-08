@@ -81,9 +81,21 @@ config.module.rules.push(
   },
   {
     test: /\.css$/,
+    exclude: /node_modules/,
     use: ExtractTextPlugin.extract({
       use: [
         `css-loader?${JSON.stringify(cssNano)}&modules&importLoaders=2&localIdentName=${cssModulesGeneratedScopedName}`,
+        'postcss-loader',
+      ],
+      fallback: 'style-loader',
+    }),
+  },
+  {
+    test: /\.css$/,
+    include: /node_modules/,
+    use: ExtractTextPlugin.extract({
+      use: [
+        'css-loader?sourceMap&importLoaders=1',
         'postcss-loader',
       ],
       fallback: 'style-loader',
