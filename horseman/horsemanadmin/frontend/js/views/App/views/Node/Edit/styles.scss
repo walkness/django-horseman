@@ -2,6 +2,7 @@
 @import '../../../../../../scss/mixins';
 
 $dropdown-toggle-size: .8em;
+$extra-actions-width: 14rem;
 
 .form {
     padding-bottom: 4.5rem;
@@ -35,12 +36,25 @@ $dropdown-toggle-size: .8em;
     }
 }
 
+.left {
+  display: flex;
+  flex-flow: row;
+  align-items: center;
+
+  > a {
+      display: block;
+      color: gray(75%);
+      font-size: .8em;
+      padding: .5em .75em;
+  }
+}
+
 .action-buttons {
     display: flex;
     flex-flow: row;
     align-items: center;
-    position: relative;
-    min-width: 10rem;
+    min-width: $extra-actions-width;
+    height: 100%;
 
     :global {
         .dropdown {
@@ -58,13 +72,6 @@ $dropdown-toggle-size: .8em;
             text-align: left;
         }
     }
-
-    & > a {
-        display: block;
-        color: gray(75%);
-        font-size: .8em;
-        padding: .5em .75em;
-    }
 }
 
 .primary-action {
@@ -74,15 +81,19 @@ $dropdown-toggle-size: .8em;
 
 .extra-actions-menu {
     top: inherit !important;
+    left: 1rem;
     bottom: 100%;
-    width: 100%;
+    min-width: $extra-actions-width;
     background-color: $body-bg;
 
     li {
         :global .btn {
             display: block;
             width: 100%;
-            margin-bottom: -$btn-border-width;
+
+            & + :global(.btn) {
+              margin-bottom: -$btn-border-width;
+            }
         }
     }
 }

@@ -89,3 +89,14 @@
 .slug-field {
     font-family: monospace;
 }
+
+.image-chooser {
+}
+
+.image-chooser-actions {
+  :global(.btn) {
+    & + :global(.btn) {
+      margin-left: -$btn-border-width;
+    }
+  }
+}

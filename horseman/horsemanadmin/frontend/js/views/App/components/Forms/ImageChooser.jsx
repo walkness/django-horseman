@@ -7,6 +7,8 @@ import ImageChooserModal from '../ImageChooser/Modal';
 
 import InputWrapper from './InputWrapper';
 
+import './styles.scss';
+
 
 class ImageChooser extends Component {
 
@@ -39,19 +41,31 @@ class ImageChooser extends Component {
     const { showModal } = this.state;
     const image = imagesById[this.props.getValue()];
     return (
-      <div>
+      <div styleName='image-chooser'>
 
         { image ?
           <Image image={image} srcSize='thumbnail_300' />
         : null }
 
-        <button
-          type='button'
-          className='btn'
-          onClick={() => this.setState({ showModal: !showModal })}
-        >
-          Select image
-        </button>
+        <div styleName='image-chooser-actions'>
+
+          <button
+            type='button'
+            className='btn'
+            onClick={() => this.setState({ showModal: !showModal })}
+          >
+            Select image
+          </button>
+
+          <button
+            type='button'
+            className='btn'
+            onClick={() => this.handleChange(null)}
+          >
+            Remove image
+          </button>
+
+        </div>
 
         { showModal ?
           <ImageChooserModal

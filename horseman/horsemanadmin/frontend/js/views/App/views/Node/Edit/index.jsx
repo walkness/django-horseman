@@ -242,54 +242,57 @@ class EditNode extends Component {
           }) }
 
           <div styleName='styles.node-actions'>
-            <div styleName='styles.action-buttons'>
-              <button
-                type='submit'
-                className='btn'
-                disabled={!changed || saving}
-                styleName='styles.primary-action'
-              >
-                Save draft
-              </button>
-              <Dropdown>
-                <DropdownToggle>▲</DropdownToggle>
-                <DropdownMenu styleName='extra-actions-menu' up>
-                  { node ?
+            <div styleName='styles.left'>
+              <div styleName='styles.action-buttons'>
+                <button
+                  type='submit'
+                  className='btn'
+                  disabled={!changed || saving}
+                  styleName='styles.primary-action'
+                >
+                  Save draft
+                </button>
+                <Dropdown>
+                  <DropdownToggle>▲</DropdownToggle>
+                  <DropdownMenu styleName='extra-actions-menu' up>
+                    { node ?
+                      <li>
+                        <button
+                          type='button'
+                          className='btn'
+                          onClick={this.handleDelete}
+                          disabled={saving}
+                        >
+                          Delete permanently
+                        </button>
+                      </li>
+                    : null }
+                    { node && node.published ?
+                      <li>
+                        <button
+                          type='button'
+                          className='btn'
+                          onClick={this.handleUnpublish}
+                          disabled={saving}
+                        >
+                          Unpublish
+                        </button>
+                      </li>
+                    : null }
                     <li>
                       <button
                         type='button'
                         className='btn'
-                        onClick={this.handleDelete}
-                        disabled={saving}
+                        onClick={this.handlePublish}
+                        disabled={!((!(node && node.published) || changed) && !saving)}
                       >
-                        Delete permanently
+                        Save and publish
                       </button>
                     </li>
-                  : null }
-                  { node && node.published ?
-                    <li>
-                      <button
-                        type='button'
-                        className='btn'
-                        onClick={this.handleUnpublish}
-                        disabled={saving}
-                      >
-                        Unpublish
-                      </button>
-                    </li>
-                  : null }
-                  <li>
-                    <button
-                      type='button'
-                      className='btn'
-                      onClick={this.handlePublish}
-                      disabled={!((!(node && node.published) || changed) && !saving)}
-                    >
-                      Save and publish
-                    </button>
-                  </li>
-                </DropdownMenu>
-              </Dropdown>
+                  </DropdownMenu>
+                </Dropdown>
+
+              </div>
 
               <a
                 href={`${this.props.previewSiteURL}/?preview=${currentRevision}`}
