@@ -1,3 +1,4 @@
+from django.apps import apps
 from django.db.models import ForeignKey, ManyToManyField
 
 from rest_framework import serializers
@@ -8,6 +9,7 @@ from horseman.horsemannodes.models import Node
 class AdminModelConfigurationSerializer(serializers.Serializer):
     node_type = serializers.CharField(source='type')
     app_label = serializers.CharField(source='_meta.app_label')
+    app_admin_order = serializers.SerializerMethodField()
     model_name = serializers.CharField(source='_meta.model_name')
     name = serializers.CharField(source='_meta.verbose_name')
     name_plural = serializers.CharField(source='_meta.verbose_name_plural')
@@ -15,6 +17,9 @@ class AdminModelConfigurationSerializer(serializers.Serializer):
     field_config = serializers.SerializerMethodField()
     admin_fields = serializers.ListField()
     admin_order = serializers.IntegerField()
+
+    def get_app_admin_order(self, cls):
+        return getattr(apps.get_app_config(cls._meta.app_label), 'admin_order', 0)
 
     def get_field_config(self, cls):
         field_config = {}

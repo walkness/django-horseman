@@ -19,6 +19,14 @@ const Sidebar = ({ nodes, currentUser, usersById, isLoggedIn, logoutRequest, adm
     if (!apps[appLabel]) apps[appLabel] = [];
     apps[appLabel].push(node);
   });
+  const appLabels = Object.keys(apps);
+  appLabels.sort((a, b) => {
+    const orderA = apps[a][0].configuration.app_admin_order;
+    const orderB = apps[b][0].configuration.app_admin_order;
+    if (orderA > orderB) return 1;
+    if (orderA > orderB) return -1;
+    return 0;
+  });
   const currentUserObj = usersById[currentUser];
 
   const handleLogoutClick = (e) => {
@@ -32,7 +40,7 @@ const Sidebar = ({ nodes, currentUser, usersById, isLoggedIn, logoutRequest, adm
       <div styleName='styles.sidebar'>
 
         <ul styleName='styles.apps'>
-          { Object.keys(apps).map(appLabel => {
+          { appLabels.map(appLabel => {
             const appNodes = apps[appLabel];
             return (
               <li key={appLabel}>
