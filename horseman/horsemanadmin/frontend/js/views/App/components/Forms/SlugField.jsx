@@ -13,7 +13,7 @@ const SlugField = ({ ...props }) => (
     validationErrors={{
       matchRegexp: 'Can contain only letters, numbers, underscores and dashes.',
     }}
-    className={styles['slug-field']}
+    className={`slug-field ${styles['slug-field']}`}
     {...props}
   />
 );

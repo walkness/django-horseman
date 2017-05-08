@@ -6,7 +6,7 @@ import classNames from 'classnames';
 
 import Dropdown, { DropdownMenu, DropdownToggle } from '../../../components/Dropdown';
 
-import styles from './styles.css';
+import styles from './styles.scss';
 
 
 class RevisionsList extends Component {

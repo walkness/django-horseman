@@ -1,13 +1,13 @@
 import React, { PropTypes } from 'react';
 
-import styles from './styles.css';
+import './styles.css';
 
 
 const DropdownToggle = (props, context) => (
   <button
     type='button'
-    className='dropdown-toggle'
-    styleName='styles.toggle'
+    className='dropdown-toggle btn'
+    styleName='toggle'
     data-toggle='dropdown'
     role='button'
     aria-haspopup='true'

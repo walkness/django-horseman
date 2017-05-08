@@ -1,18 +1,37 @@
+@import '../../../../../../../scss/variables';
+@import '../../../../../../../scss/mixins';
+
+$block-border-color: $gray-lighter;
+
 .block {
 	text-align: center;
 	position: relative;
 	padding: 1rem 0;
 
-	:global {
-		& .rich-text-editor {
-			margin-top: 0;
-		}
+	:global(.rich-text-editor) {
+		margin-top: 0;
+    border-color: $block-border-color;
 	}
 }
 
 .add-block,
 .block-actions {
 	transition: all 100ms ease-in;
+
+  :global(.btn) {
+    border: $btn-border-width solid transparent;
+    opacity: 1;
+    white-space: nowrap;
+
+    @include button-size(.35rem, .5rem, .75rem, 1, 0);
+    @include button-variant($gray-light, $white, $block-border-color);
+
+    &:global(.close) {
+      font-size: 1rem;
+      padding-top: .2em;
+      line-height: .9;
+    }
+  }
 }
 
 .add-block {
@@ -23,13 +42,7 @@
 	transform: translateX(-50%) translatey(-50%);
 	z-index: 1020;
 
-	:global .btn {
-		background-color: #fff;
-		padding-top: .5em;
-		padding-bottom: .5em;
-	}
-
-	@nest .block:hover & {
+	.block:hover & {
 		opacity: 1;
 		visibility: visible;
 	}
@@ -43,7 +56,13 @@
 	transform: translateY(-50%);
 	z-index: 1010;
 
-	@nest .block:hover & {
+  :global(.btn) {
+    & + :global(.btn) {
+      margin-left: -$btn-border-width;
+    }
+  }
+
+	.block:hover & {
 		opacity: 1;
 		visibility: visible;
 	}
@@ -54,7 +73,7 @@
 	flex-flow: row;
 	justify-content: space-between;
 	align-items: center;
-	border: 1px solid gray(95%);
+	border: 1px solid $block-border-color;
 	padding: 1rem;
 }
 

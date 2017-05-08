@@ -1,0 +1,154 @@
+@import '../../../../../../scss/variables';
+@import '../../../../../../scss/mixins';
+
+$dropdown-toggle-size: .8em;
+
+.form {
+    padding-bottom: 4.5rem;
+
+    > :global(.input-wrapper) {
+        > :global(.control-wrapper) {
+            > input:not(:global(.slug-field)),
+            > textarea {
+                font-family: 'Georgia', serif;
+            }
+        }
+    }
+}
+
+.node-actions {
+    position: fixed;
+    bottom: 0;
+    left: 15rem;
+    right: 0;
+    height: 4.5rem;
+    background-color: gray(50%);
+    display: flex;
+    flex-flow: row;
+    justify-content: space-between;
+    padding: 1rem;
+
+    :global {
+        .btn {
+            @include button-variant($gray, $gray-lightest, darken($gray-lightest, 10%));
+        }
+    }
+}
+
+.action-buttons {
+    display: flex;
+    flex-flow: row;
+    align-items: center;
+    position: relative;
+    min-width: 10rem;
+
+    :global {
+        .dropdown {
+            position: static;
+            height: 100%;
+        }
+
+        .dropdown-toggle {
+            height: 100%;
+            margin-left: -$btn-border-width;
+            font-size: $dropdown-toggle-size;
+        }
+
+        .btn {
+            text-align: left;
+        }
+    }
+
+    & > a {
+        display: block;
+        color: gray(75%);
+        font-size: .8em;
+        padding: .5em .75em;
+    }
+}
+
+.primary-action {
+    flex: 1;
+    height: 100%;
+}
+
+.extra-actions-menu {
+    top: inherit !important;
+    bottom: 100%;
+    width: 100%;
+
+    li {
+        :global .btn {
+            display: block;
+            width: 100%;
+            margin-bottom: -$btn-border-width;
+        }
+    }
+}
+
+.revisions {
+    position: relative;
+    display: flex;
+    flex-flow: row;
+    align-items: center;
+
+    :global(.dropdown) {
+        position: static;
+        height: 100%;
+
+        :global(.dropdown-toggle) {
+            height: 100%;
+            font-size: $dropdown-toggle-size;
+        }
+    }
+}
+
+.current-revision {
+    padding: .5em .75em;
+    color: gray(75%);
+    font-size: .8em;
+}
+
+.revisions-list {
+    background-color: #fff;
+    top: inherit !important;
+    left: inherit !important;
+    bottom: 100%;
+    right: 0;
+    margin-bottom: 1rem !important;
+}
+
+.revision {
+    padding: .5rem 1rem;
+    border: 1px solid gray(95%);
+    min-width: 15em;
+    display: block;
+    margin-top: -1px;
+    text-decoration: none;
+    display: flex;
+    flex-flow: row;
+    align-items: center;
+    font-size: .9em;
+    white-space: nowrap;
+
+    img {
+        margin-top: -.5rem;
+        margin-bottom: -.5rem;
+        margin-left: -1rem;
+        margin-right: .5rem;
+        height: 2.5em;
+    }
+
+    &:global(.active) {
+        background-color: gray(80%);
+    }
+}
+
+.tag {
+    display: inline-block;
+    border: 1px solid gray(60%);
+    border-radius: .25em;
+    padding: .25em .5em;
+    font-size: .8em;
+    margin-left: .5rem;
+}

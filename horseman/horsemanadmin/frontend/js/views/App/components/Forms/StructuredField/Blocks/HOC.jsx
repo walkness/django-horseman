@@ -4,20 +4,20 @@ import CloseButton from '../../../CloseButton';
 
 import AddBlock from '../AddBlock';
 
-import styles from './styles.css';
+import './styles.scss';
 
 
 const BlockWrapper = ({ children, index, deleteBlock, blocks, onAddClick, onMoveUp, onMoveDown }) => (
-  <div className='block' styleName='styles.block'>
+  <div className='block' styleName='block'>
 
-    <div styleName='styles.add-block'>
+    <div styleName='add-block'>
       <AddBlock blocks={blocks} onClick={onAddClick} />
     </div>
 
-    <div styleName='styles.block-actions'>
-      <button onClick={onMoveUp} type='button'>▲</button>
-      <button onClick={onMoveDown} type='button'>▼</button>
-      <CloseButton onClick={() => deleteBlock(index)} title='Delete' />
+    <div styleName='block-actions'>
+      <button className='btn' onClick={onMoveUp} type='button'>▲</button>
+      <button className='btn' onClick={onMoveDown} type='button'>▼</button>
+      <CloseButton className='btn' onClick={() => deleteBlock(index)} title='Delete' />
     </div>
 
     { children }

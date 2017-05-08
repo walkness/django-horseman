@@ -2,3 +2,31 @@ $body-bg: gray(50%);
 $font-family: -apple-system, system-ui, BlinkMacSystemFont, Segoe UI, Roboto, Helvetica Neue, Arial, sans-serif;
 $body-color: gray(30%);
 $link-color: #6e9ab5;
+
+$white:  #fff;
+$black:  #000;
+$red:    #d9534f;
+$orange: #f0ad4e;
+$yellow: #ffd500;
+$green:  #5cb85c;
+$blue:   #0275d8;
+$teal:   #5bc0de;
+$pink:   #ff5b77;
+$purple: #613d7c;
+
+// Create grayscale
+$gray-dark:                 #292b2c;
+$gray:                      #464a4c;
+$gray-light:                #636c72;
+$gray-lighter:              #eceeef;
+$gray-lightest:             #f7f7f9;
+
+// Reassign color vars to semantic color scheme
+$color-primary:             $blue;
+$color-success:             $green;
+$color-info:                $teal;
+$color-warning:             $orange;
+$color-danger:              $red;
+$color-inverse:             $gray-dark;
+
+$btn-border-width: 1px;

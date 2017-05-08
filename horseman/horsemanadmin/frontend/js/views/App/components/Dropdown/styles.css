@@ -3,7 +3,9 @@
 }
 
 .toggle {
-
+	&:global(.btn) {
+		padding: .125rem .375rem;
+	}
 }
 
 .menu {

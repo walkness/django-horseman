@@ -23,7 +23,7 @@ import Dropdown, { DropdownMenu, DropdownToggle } from '../../../components/Drop
 
 import RevisionsList from './RevisionsList';
 
-import styles from './styles.css';
+import styles from './styles.scss';
 
 
 class EditNode extends Component {

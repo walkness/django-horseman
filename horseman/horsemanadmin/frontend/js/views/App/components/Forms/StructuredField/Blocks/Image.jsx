@@ -8,7 +8,7 @@ import ImageChooserModal from '../../../ImageChooser/Modal';
 
 import { Select } from '../../../Forms/Select';
 
-import styles from './styles.css';
+import styles from './styles.scss';
 
 
 class ImageBlock extends Component {

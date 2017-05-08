@@ -1,7 +1,51 @@
-@mixin clearfix() {
+@mixin clearfix {
   &::after {
-    display: block;
-    content: "";
     clear: both;
+    content: '';
+    display: block;
   }
+}
+
+@mixin button-variant($color, $background, $border) {
+  $active-background: darken($background, 10%);
+  $active-border: darken($border, 12%);
+
+  color: $color;
+  background-color: $background;
+  border-color: $border;
+
+  // Hover and focus styles are shared
+  &:hover {
+    color: $color;
+    background-color: $active-background;
+    border-color: $active-border;
+  }
+
+  &:focus,
+  &.focus {
+    box-shadow: 0 0 0 2px rgba($border, .5);
+  }
+
+  // Disabled comes first so active can properly restyle
+  &.disabled,
+  &:disabled {
+    background-color: $background;
+    border-color: $border;
+  }
+
+  &:active,
+  &.active,
+  .show > &.dropdown-toggle {
+    color: $color;
+    background-color: $active-background;
+    background-image: none; // Remove the gradient for the pressed/active state
+    border-color: $active-border;
+  }
+}
+
+@mixin button-size($padding-y, $padding-x, $font-size, $line-height, $border-radius) {
+  padding: $padding-y $padding-x;
+  font-size: $font-size;
+  line-height: $line-height;
+  border-radius: $border-radius;
 }

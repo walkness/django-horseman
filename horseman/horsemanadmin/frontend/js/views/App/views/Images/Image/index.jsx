@@ -169,7 +169,7 @@ class Image extends Component {
 
             <GPS image={image} />
 
-            <button className='btn' styleName='submit'>Update</button>
+            <button className='btn btn-primary' styleName='submit'>Update</button>
 
           </aside>
 

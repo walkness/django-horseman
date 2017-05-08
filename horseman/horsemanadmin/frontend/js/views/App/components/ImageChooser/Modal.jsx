@@ -13,8 +13,6 @@ const ImageChooserModal = ({ modalProps, ...props }) => (
       <ImageChooser {...props} />
     </ModalBody>
 
-    <ModalFooter />
-
   </Modal>
 );
 

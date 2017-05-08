@@ -1,0 +1,14 @@
+@import '../../../../../../scss/variables';
+
+.structured-field {
+	background-color: #fff;
+	padding: .5rem 1rem;
+}
+
+.add-block {
+	:global(.btn) {
+    & + :global(.btn) {
+      margin-left: -1px;
+    }
+  }
+}

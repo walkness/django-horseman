@@ -97,7 +97,7 @@ class UserEdit extends Component {
             ]}
           />
 
-          <button className='btn'>
+          <button className='btn btn-primary'>
             Update
           </button>
 

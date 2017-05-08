@@ -8,7 +8,7 @@ import InputWrapper from '../InputWrapper';
 import { RichText, Image } from './Blocks';
 import AddBlock from './AddBlock';
 
-import styles from './styles.css';
+import styles from './styles.scss';
 
 
 const getBlockConfig = (fieldConfig, blockType) => {
