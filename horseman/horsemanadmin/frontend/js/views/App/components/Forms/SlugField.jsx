@@ -2,7 +2,7 @@ import React, { PropTypes } from 'react';
 
 import Input from './Input';
 
-import styles from './styles.css';
+import styles from './styles.scss';
 
 
 const SlugField = ({ ...props }) => (

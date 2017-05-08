@@ -1,7 +1,7 @@
 import React, { Component, PropTypes } from 'react';
 import classNames from 'classnames';
 
-import styles from './styles.css';
+import styles from './styles.scss';
 
 
 function InputWrapper(WrappedComponent) {

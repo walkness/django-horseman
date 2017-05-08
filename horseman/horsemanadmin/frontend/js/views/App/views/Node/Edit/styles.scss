@@ -22,7 +22,7 @@ $dropdown-toggle-size: .8em;
     left: 15rem;
     right: 0;
     height: 4.5rem;
-    background-color: gray(50%);
+    background-color: $body-bg;
     display: flex;
     flex-flow: row;
     justify-content: space-between;
@@ -76,6 +76,7 @@ $dropdown-toggle-size: .8em;
     top: inherit !important;
     bottom: 100%;
     width: 100%;
+    background-color: $body-bg;
 
     li {
         :global .btn {

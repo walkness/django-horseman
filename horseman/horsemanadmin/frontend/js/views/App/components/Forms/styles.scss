@@ -1,0 +1,91 @@
+@import '../../../../../scss/variables';
+
+.wrapper {
+    padding: 1em 0;
+
+    :global {
+        & .input-label {
+            opacity: 1;
+            visibility: visible;
+            transition: opacity 300ms ease, color 300ms ease;
+        }
+    }
+
+    &:global(.heading) {
+        input,
+        textarea {
+            font-size: 2.5em;
+        }
+    }
+
+    &:global(.required) {
+
+    }
+
+    &:global(.success) {
+
+    }
+
+    &:global(.error) {
+        :global {
+            & .input-label {
+                color: red;
+            }
+
+            & input,
+            & textarea {
+                border-bottom-color: red;
+            }
+        }
+    }
+
+    &:global(.empty) {
+        :global {
+            & .input-label {
+                opacity: 0;
+                visibility: hidden;
+                transition: opacity 300ms ease, visibility 0s linear 300ms, color 300ms ease;
+            }
+        }
+    }
+
+    &:global(.large) {
+        font-size: 1.5em;
+    }
+}
+
+.label {
+    display: block;
+    font-weight: 600;
+    font-size: .8em;
+    color: gray(60%);
+    margin-bottom: .5em;
+}
+
+.control-wrapper {
+    input,
+    textarea {
+        width: 100%;
+        background-color: #fff;
+        border: 1px solid transparent;
+        border-bottom-color: gray(85%);
+        padding: .5em .75rem;
+        transition: border-color 300ms ease;
+        color: $body-color;
+
+        &:focus {
+            outline: 0;
+            border-bottom-color: blue;
+        }
+    }
+
+    :global {
+        & .react-datepicker__input-container {
+            width: 100%;
+        }
+    }
+}
+
+.slug-field {
+    font-family: monospace;
+}
