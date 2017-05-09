@@ -1,0 +1,73 @@
+@import '../../../../../scss/variables';
+
+.ImageUploader {
+
+	:global(.dropzone) {
+		width: 100%;
+		min-height: 15rem;
+		background-color: $gray-lightest;
+    border: 3px dashed darken($gray-lightest, 5%);
+    display: flex;
+    flex-flow: row;
+    align-items: center;
+    justify-content: space-around;
+    color: $gray-light;
+    cursor: pointer;
+    margin-bottom: 2rem;
+	}
+}
+
+.files {
+	list-style-type: none;
+	margin: 0;
+	padding: 0;
+}
+
+.file {
+  $bg: $gray-lighter;
+	display: flex;
+	flex-flow: row;
+	align-items: center;
+  justify-content: space-between;
+	padding: .5rem .75rem;
+	background-color: $bg;
+  color: darken($bg, 50%);
+	margin-top: 1px;
+  border: 1px solid darken($bg, 5%);
+}
+
+.file__uploading {
+  background-color: $state-primary-bg;
+  color: $state-primary-text;
+  border-color: $state-primary-border-color;
+}
+
+.file__error {
+	background-color: $state-danger-bg;
+  color: $state-danger-text;
+}
+
+.file__success {
+  background-color: $state-success-bg;
+  color: $state-success-text;
+  border-color: $state-success-border-color;
+}
+
+.filePreview {
+	height: 5rem;
+	width: auto;
+}
+
+.fileName {
+	padding: .5rem 1rem;
+}
+
+.file-details {
+  display: flex;
+  flex-flow: row;
+  align-items: center;
+}
+
+.upload-status {
+
+}
