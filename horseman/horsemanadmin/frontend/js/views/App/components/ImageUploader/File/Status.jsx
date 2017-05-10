@@ -5,7 +5,7 @@ import './styles.scss';
 
 
 const Status = (props) => {
-  const { status, progress, uploadError, id, pk, addToQueue, duplicates, toggleDuplicates } = props;
+  const { status, progress, uploadError, id, pk, addToQueue, duplicates, toggleDuplicates, updatedIds } = props;
   const link = (
     id && (
       <FormattedMessage
@@ -42,31 +42,34 @@ const Status = (props) => {
   );
 
   const showDuplicates = (
-    duplicates && duplicates.length > 0 && (
-      <FormattedMessage
-        id='imageUpload.file.status.duplicates'
-        values={{
-          numDuplicates: duplicates.length,
-          showing: props.showDuplicates ? 'yes' : 'no',
-        }}
-        defaultMessage='{showing, select,
-          yes {Hide}
-          no {Show}
-        } {numDuplicates, plural,
-          =1 {duplicate}
-          other {{numDuplicates, number} duplicates}
-        }'
+    ((duplicates && duplicates.length > 0) || (updatedIds && updatedIds.length > 0)) && (
+      <button
+        type='button'
+        className='link'
+        onClick={() => toggleDuplicates()}
       >
-        { formatted => (
-          <button
-            type='button'
-            className='link'
-            onClick={() => toggleDuplicates()}
-          >
-            {formatted}
-          </button>
-        ) }
-      </FormattedMessage>
+        <FormattedMessage
+          id='imageUpload.file.status.duplicates'
+          values={{
+            numDuplicates: duplicates.length,
+            showing: props.showDuplicates ? 'yes' : 'no',
+            numUpdated: (updatedIds && updatedIds.length) || 0,
+          }}
+          defaultMessage='{showing, select,
+            yes {Hide}
+            no {Show}
+          } {numUpdated, plural,
+            =0 {{numDuplicates, plural,
+              =1 {duplicate}
+              other {{numDuplicates, number} duplicates}
+            }}
+            other {{numUpdated, plural,
+              =1 {updated image}
+              other {{numUpdated, number} updated images}
+            }}
+          }'
+        />
+      </button>
     )
   );
 
@@ -82,6 +85,7 @@ const Status = (props) => {
           link,
           retry,
           showDuplicates,
+          new: updatedIds && updatedIds.length > 0 ? 'no' : 'yes',
         }}
         defaultMessage='{status, select,
           PENDING {Waiting to upload…}
@@ -95,7 +99,10 @@ const Status = (props) => {
           DUPLICATE {{errorCode, select,
             other {{defaultErrorMessage}}
           } – {showDuplicates}}
-          SUCCESS {Uploaded – {link}}
+          SUCCESS {Uploaded – {new, select,
+            yes {{link}}
+            no {{showDuplicates}}
+          }}
         }'
       />
     </div>
@@ -115,6 +122,7 @@ Status.propTypes = {
   addToQueue: PropTypes.func.isRequired,
   toggleDuplicates: PropTypes.func.isRequired,
   showDuplicates: PropTypes.bool.isRequired,
+  updatedIds: PropTypes.arrayOf(PropTypes.string).isRequired,
 };
 
 Status.defaultProps = {

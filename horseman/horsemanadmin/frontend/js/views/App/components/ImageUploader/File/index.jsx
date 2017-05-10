@@ -25,6 +25,7 @@ class File extends Component {
     allowUpload: PropTypes.bool,
     onUploadSuccess: PropTypes.func,
     onUploadError: PropTypes.func,
+    onReplaceSuccess: PropTypes.func,
     addToQueue: PropTypes.func.isRequired,
     id: PropTypes.string.isRequired,
     imagesById: PropTypes.object.isRequired,
@@ -45,9 +46,11 @@ class File extends Component {
       uploadErrors: [],
       duplicates: [],
       id: null,
+      updatedIds: [],
       showDuplicates: false,
       replaceIds: [],
       uploadArgs: {},
+      ignoreIds: [],
     };
   }
 
@@ -74,7 +77,7 @@ class File extends Component {
           const uploadError = uploadErrors[0];
           const isDuplicate = [
             'duplicate', 'duplicate_hash', 'duplicate_name', 'duplicate_exif',
-          ].indexOf(uploadError.code) !== -1;
+          ].indexOf(uploadError && uploadError.code) !== -1;
           const replaceIds = this.state.replaceIds.slice(0);
           if (isDuplicate) {
             ((uploadError && uploadError.duplicates) || []).forEach((duplicate) => {
@@ -97,9 +100,14 @@ class File extends Component {
             status: uploadStatus.SUCCESS,
             progress: 1,
             uploadErrors: [],
-            id: response.pk,
+            id: response.pk || null,
+            updatedIds: Array.isArray(response) ? response.map(image => image.pk) : [],
           }, () => {
-            this.props.onUploadSuccess(response, id);
+            if (this.state.uploadArgs.replace) {
+              this.props.onReplaceSuccess(response, id);
+            } else {
+              this.props.onUploadSuccess(response, id);
+            }
           });
         }
       }, (progress) => {
@@ -113,6 +121,7 @@ class File extends Component {
   @autobind
   toggleReplaceIds(ids) {
     const replaceIds = this.state.replaceIds.slice(0);
+    const ignoreIds = this.state.ignoreIds.slice(0);
     (Array.isArray(ids) ? ids : [ids]).forEach((id) => {
       const index = replaceIds.indexOf(id);
       if (index === -1) {
@@ -120,14 +129,33 @@ class File extends Component {
       } else {
         replaceIds.splice(index, 1);
       }
+
+      const ignoreIndex = ignoreIds.indexOf(id);
+      if (ignoreIndex === -1) {
+        ignoreIds.push(id);
+      } else {
+        ignoreIds.splice(ignoreIndex, 1);
+      }
     });
-    this.setState({ replaceIds });
+    this.setState({ replaceIds, ignoreIds });
   }
 
   @autobind
   handleUploadAnyway() {
-    const uploadArgs = {};
     const uploadError = this.state.uploadErrors[0];
+
+    const ignore_duplicates = (this.state.uploadArgs.ignore_duplicates || []).slice(0); // eslint-disable-line camelcase, max-len
+    if (uploadError && uploadError.duplicates) {
+      uploadError.duplicates.forEach((id) => {
+        const index = ignore_duplicates.indexOf(id);
+        if (index === -1) {
+          ignore_duplicates.push(id);
+        }
+      });
+    }
+
+    const uploadArgs = { ignore_duplicates };
+
     uploadArgs[`ignore_${uploadError.code}`] = true;
     this.setState({ uploadArgs }, () => {
       this.props.addToQueue(this.props.id);
@@ -136,7 +164,15 @@ class File extends Component {
 
   @autobind
   handleReplace() {
-    const { replaceIds } = this.state;
+    const { replaceIds, ignoreIds } = this.state;
+
+    const ignore_duplicates = (this.state.uploadArgs.ignore_duplicates || []).slice(0); // eslint-disable-line camelcase, max-len
+    ignoreIds.forEach((id) => {
+      const index = ignore_duplicates.indexOf(id);
+      if (index === -1) {
+        ignore_duplicates.push(id);
+      }
+    });
 
     const replace = (this.state.uploadArgs.replace || []).slice(0);
     replaceIds.forEach((id) => {
@@ -146,7 +182,7 @@ class File extends Component {
       }
     });
 
-    const uploadArgs = { replace };
+    const uploadArgs = { replace, ignore_duplicates };
 
     const uploadError = this.state.uploadErrors[0];
     uploadArgs[`ignore_${uploadError.code}`] = true;
@@ -158,7 +194,7 @@ class File extends Component {
 
   render() {
     const { file } = this.props;
-    const { status, progress, uploadErrors, showDuplicates, replaceIds } = this.state;
+    const { status, progress, uploadErrors, showDuplicates, replaceIds, updatedIds } = this.state;
     const uploadError = uploadErrors[0];
     return (
       <li
@@ -191,17 +227,19 @@ class File extends Component {
           addToQueue={this.props.addToQueue}
           toggleDuplicates={() => this.setState({ showDuplicates: !showDuplicates })}
           showDuplicates={showDuplicates}
+          updatedIds={updatedIds}
         />
 
         { showDuplicates ?
           <Duplicates
-            ids={uploadError && uploadError.duplicates}
+            ids={(uploadError && uploadError.duplicates) || updatedIds}
             imagesById={this.props.imagesById}
             imagesRequest={this.props.imagesRequest}
             replaceIds={replaceIds}
             toggleReplaceIds={this.toggleReplaceIds}
             uploadAndReplace={this.handleReplace}
             uploadAnyway={this.handleUploadAnyway}
+            viewOnly={!(uploadError && uploadError.duplicates)}
           />
         : null }
 

@@ -7,7 +7,7 @@ import Exposure from '../../../ImageDetails/Exposure';
 import './styles.scss';
 
 
-const Duplicate = ({ image, replace, toggleReplace }) => {
+const Duplicate = ({ image, replace, toggleReplace, viewOnly }) => {
   const checkboxId = `replace_${image.pk}`;
   return (
     <li styleName='duplicate'>
@@ -45,13 +45,17 @@ const Duplicate = ({ image, replace, toggleReplace }) => {
         </div>
 
         <div styleName='duplicate-actions'>
-          <input
-            type='checkbox'
-            id={checkboxId}
-            name={checkboxId}
-            checked={replace}
-            onChange={toggleReplace}
-          />
+          { !viewOnly ?
+            <input
+              type='checkbox'
+              id={checkboxId}
+              name={checkboxId}
+              checked={replace}
+              onChange={toggleReplace}
+            />
+          : null }
+
+          <a href={`/images/${image.pk}/`} target='_blank'>View</a>
         </div>
 
       </label>
@@ -64,8 +68,15 @@ Duplicate.propTypes = {
   image: PropTypes.shape({
     title: PropTypes.string,
   }).isRequired,
-  replace: PropTypes.bool.isRequired,
-  toggleReplace: PropTypes.func.isRequired,
+  replace: PropTypes.bool,
+  toggleReplace: PropTypes.func,
+  viewOnly: PropTypes.bool,
+};
+
+Duplicate.defaultProps = {
+  replace: false,
+  toggleReplace: () => {},
+  viewOnly: false,
 };
 
 export default Duplicate;

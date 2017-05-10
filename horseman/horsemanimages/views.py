@@ -61,13 +61,14 @@ class ImageFilter(filters.FilterSet):
 
 class ImageUploadParams(filters.FilterSet):
     replace = UUIDInFilter(name='pk', lookup_expr='in')
+    ignore_duplicates = UUIDInFilter(name='pk', lookup_expr='in')
     ignore_duplicate_hash = BooleanFilter(widget=CheckboxInput)
     ignore_duplicate_name = BooleanFilter(widget=CheckboxInput)
     ignore_duplicate_exif = BooleanFilter(widget=CheckboxInput)
 
     class Meta:
         model = models.Image
-        fields = ['replace']
+        fields = ['replace', 'ignore_duplicates']
 
 
 class ImageViewSet(BoolQueryParamMixin, SearchableMixin, viewsets.ModelViewSet):
@@ -101,7 +102,7 @@ class ImageViewSet(BoolQueryParamMixin, SearchableMixin, viewsets.ModelViewSet):
         if serializer.is_valid(raise_exception=True):
             instance = serializer.save(created_by=request.user)
             return Response(
-                self.serializer_class(instance).data,
+                self.serializer_class(instance, many=isinstance(instance, list)).data,
                 status=HTTP_201_CREATED
             )
 
@@ -118,14 +119,13 @@ class ImageViewSet(BoolQueryParamMixin, SearchableMixin, viewsets.ModelViewSet):
         data['file'] = file
 
         instance = self.get_object()
-        serializer = self.get_serializer(instance, data=data, partial=True)
-        try:
-            if serializer.is_valid(raise_exception=True):
-                serializer.save()
-                return Response(serializer.data)
-        except serializers.DuplicateImageError as exc:
-            print(exc.__class__)
-            raise exc
+        serializer = self.get_serializer(
+            instance, data=data, partial=True, ignore_duplicate_hash=True,
+            ignore_duplicate_name=True, ignore_duplicate_exif=True,
+        )
+        if serializer.is_valid(raise_exception=True):
+            serializer.save()
+            return Response(serializer.data)
 
         return Response(status=HTTP_400_BAD_REQUEST)
 

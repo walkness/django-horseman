@@ -100,40 +100,71 @@ class ImageSerializer(serializers.ModelSerializer):
     def __init__(self, *args, **kwargs):
         self.extra_image_sizes = kwargs.pop('extra_image_sizes', {})
         self.async_renditions = kwargs.pop('async_renditions', False)
-        self.replace_images = kwargs.pop('replace', [])
+        self.replace_images = kwargs.pop('replace', None)
+        self.ignore_duplicates = kwargs.pop('ignore_duplicates', None)
         self.ignore_duplicate_hash = kwargs.pop('ignore_duplicate_hash', False)
         self.ignore_duplicate_name = kwargs.pop('ignore_duplicate_name', False)
         self.ignore_duplicate_exif = kwargs.pop('ignore_duplicate_exif', False)
         super(ImageSerializer, self).__init__(*args, **kwargs)
         self.fields['renditions'].async_renditions = self.async_renditions
 
+    def get_duplicate_queryset(self):
+        queryset = models.Image.objects.all()
+        if self.replace_images:
+            queryset = queryset.exclude(pk__in=self.replace_images)
+        if self.ignore_duplicates:
+            queryset = queryset.exclude(pk__in=self.ignore_duplicates)
+        return queryset
+
     def validate_file(self, data):
-        self.file_hash = models.compute_hash(data.file)
-        duplicates = models.Image.objects.filter(hash=self.file_hash).values_list('pk', flat=True)
-        if len(duplicates) > 0:
-            raise DuplicateImageError(
-                'This file has already been uploaded', code='duplicate_hash', duplicates=duplicates)
-
-        if models.Image.objects.filter(original_filename=data.name).exists():
-            raise DuplicateImageError('A file with the same name has already been uploaded',
-                code='duplicate_name')
-
-        self.file_exif = models.get_exif_json(data.file)
-        if len(self.file_exif.keys()) > 0:
-            exif = self.file_exif.get('EXIF', {})
-            if models.Image.objects.filter(
-                exif_data__EXIF__DateTimeDigitized=exif.get('DateTimeDigitized'),
-                exif_data__EXIF__BodySerialNumber=exif.get('BodySerialNumber'),
-            ).exists():
+        if not self.ignore_duplicate_hash:
+            self.file_hash = models.compute_hash(data.file)
+            duplicates = self.get_duplicate_queryset().filter(
+                hash=self.file_hash).values_list('pk', flat=True)
+            if len(duplicates) > 0:
                 raise DuplicateImageError(
-                    'A file captured at the same time from the same camera has already been uploaded',
-                    code='duplicate_exif'
+                    'This file has already been uploaded',
+                    code='duplicate_hash',
+                    duplicates=duplicates,
                 )
+
+        if not self.ignore_duplicate_name:
+            duplicates = self.get_duplicate_queryset().filter(
+                original_filename=data.name).values_list('pk', flat=True)
+            if len(duplicates) > 0:
+                raise DuplicateImageError(
+                    'A file with the same name has already been uploaded',
+                    code='duplicate_name',
+                    duplicates=duplicates,
+                )
+
+        if not self.ignore_duplicate_exif:
+            self.file_exif = models.get_exif_json(data.file)
+            if len(self.file_exif.keys()) > 0:
+                exif = self.file_exif.get('EXIF', {})
+                duplicates = self.get_duplicate_queryset().filter(
+                    exif_data__EXIF__DateTimeDigitized=exif.get('DateTimeDigitized'),
+                    exif_data__EXIF__BodySerialNumber=exif.get('BodySerialNumber'),
+                ).values_list('pk', flat=True)
+                if len(duplicates) > 0:
+                    raise DuplicateImageError(
+                        'A file captured at the same time from the same camera has already been uploaded',
+                        code='duplicate_exif',
+                        duplicates=duplicates,
+                    )
 
         return data
 
     def create(self, validated_data):
         file = validated_data.pop('file')
+
+        if self.replace_images:
+            instances = models.Image.objects.filter(pk__in=self.replace_images)
+            updated = []
+            for instance in instances:
+                updated.append(self.update(instance, {'file': file}))
+            return updated
+
         if 'title' not in validated_data:
             fname_wo_ext, ext = os.path.splitext(os.path.basename(file.name))
             validated_data['title'] = fname_wo_ext
@@ -163,16 +194,29 @@ class ImageSerializer(serializers.ModelSerializer):
             setattr(instance, attr, value)
 
         if file:
+            instance.file_bytes = file.file
+
+            if not hasattr(self, 'file_hash'):
+                self.file_hash = models.compute_hash(instance.file_bytes)
+            instance.hash = self.file_hash
+
             if 'title' not in validated_data:
                 old_fname, ext = os.path.splitext(os.path.basename(instance.file.name))
                 if old_fname.lower() == instance.title.lower():
                     new_fname, ext = os.path.splitext(os.path.basename(file.name))
                     instance.title = new_fname
-            instance.file_bytes = file.file
+
+            instance.original_filename = file.name
             instance.filesize = file.size
             instance.captured_at_tz = None
             instance.file.save(file.name, file, save=False)
-            instance.update_exif(file)
+
+            if not hasattr(self, 'file_exif'):
+                self.file_exif = models.get_exif_json(instance.file_bytes)
+
+            instance.exif_data = self.file_exif
+            instance.update_capture_time_from_exif(self.file_exif)
+            instance.exif_updated = True
 
         instance.save()
         if file:

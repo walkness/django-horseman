@@ -95,9 +95,13 @@ export default function imagesReducer(state = initialState.nodes, action) {
 
     case types.IMAGE.SUCCESS:
     case types.IMAGE_UPDATED:
+    case types.IMAGES_UPDATED: {
+      const images = action.response || action.data;
       return Object.assign({}, state, {
-        byId: Object.assign({}, state.byId, processImages([action.response || action.data]).byId),
+        byId: Object.assign(
+          {}, state.byId, processImages(Array.isArray(images) ? images : [images]).byId),
       });
+    }
 
     case types.CLEAR_IMAGE_RENDITIONS:
       return Object.assign({}, state, {

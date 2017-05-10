@@ -26,6 +26,7 @@ export const IMAGE_RENDITIONS = createRequestTypes('IMAGE_RENDITIONS');
 export const IMAGE_USAGE = createRequestTypes('IMAGE_USAGE');
 export const CLEAR_IMAGE_RENDITIONS = 'CLEAR_IMAGE_RENDITIONS';
 export const IMAGE_UPDATED = 'IMAGE_UPDATED';
+export const IMAGES_UPDATED = 'IMAGES_UPDATED';
 export const IMAGE_UPLOADED = 'IMAGE_UPLOADED';
 
 export const USERS = createRequestTypes('USERS');

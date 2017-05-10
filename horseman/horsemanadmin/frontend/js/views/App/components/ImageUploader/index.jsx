@@ -14,6 +14,7 @@ class ImageUploader extends Component {
     multiple: PropTypes.bool,
     maxConcurrent: PropTypes.number,
     onUploadSuccess: PropTypes.func,
+    onReplaceSuccess: PropTypes.func,
     imagesById: PropTypes.object.isRequired,
     imagesRequest: PropTypes.func.isRequired,
   };
@@ -81,6 +82,12 @@ class ImageUploader extends Component {
   }
 
   @autobind
+  handleReplaceSuccess(data, id) {
+    this.advanceUpload(id);
+    this.props.onReplaceSuccess(data);
+  }
+
+  @autobind
   addToQueue(id) {
     const { maxConcurrent } = this.props;
     const queue = this.state.queue.slice(0);
@@ -118,6 +125,7 @@ class ImageUploader extends Component {
               allowUpload={this.state.allowUpload.indexOf(id) !== -1}
               onUploadSuccess={this.handleUploadSuccess}
               onUploadError={this.handleUploadError}
+              onReplaceSuccess={this.handleReplaceSuccess}
               addToQueue={this.addToQueue}
               imagesById={this.props.imagesById}
               imagesRequest={this.props.imagesRequest}

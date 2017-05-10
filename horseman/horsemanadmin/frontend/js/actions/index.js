@@ -48,6 +48,7 @@ export const imageUsage = {
 };
 export const clearImageRenditions = id => action(types.CLEAR_IMAGE_RENDITIONS, { id });
 export const imageUpdated = data => action(types.IMAGE_UPDATED, { data });
+export const imagesUpdated = data => action(types.IMAGES_UPDATED, { data });
 export const imageUploaded = data => action(types.IMAGE_UPLOADED, { data });
 
 export const users = {

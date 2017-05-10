@@ -44,14 +44,17 @@ export const getPaginationParamsFromURI = (uri) => {
 
 
 export const flattenErrors = (errors, fieldMessage = (fieldName, error) => `${fieldName}: ${error.message}`) => {
-  const fieldErrors = [];
-  (Object.keys(errors.field_errors)).forEach((fieldName) => {
-    errors.field_errors[fieldName].forEach((error) => {
-      fieldErrors.push(Object.assign({}, error, {
-        field: fieldName,
-        message: fieldMessage(fieldName, error),
-      }));
+  if (errors.field_errors || errors.non_field_errors) {
+    const fieldErrors = [];
+    (Object.keys(errors.field_errors)).forEach((fieldName) => {
+      errors.field_errors[fieldName].forEach((error) => {
+        fieldErrors.push(Object.assign({}, error, {
+          field: fieldName,
+          message: fieldMessage(fieldName, error),
+        }));
+      });
     });
-  });
-  return [...errors.non_field_errors, ...fieldErrors];
+    return [...errors.non_field_errors, ...fieldErrors];
+  }
+  return [];
 };

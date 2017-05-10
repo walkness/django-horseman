@@ -1,7 +1,7 @@
 import React, { Component, PropTypes } from 'react';
 import { connect } from 'react-redux';
 
-import { imageUploaded, images as imagesAction } from '../../../../../actions';
+import { imageUploaded, images as imagesAction, imagesUpdated } from '../../../../../actions';
 
 import ImageUploader from '../../../components/ImageUploader';
 
@@ -11,6 +11,7 @@ class ImageUpload extends Component {
     return (
       <ImageUploader
         onUploadSuccess={this.props.imageUploaded}
+        onReplaceSuccess={this.props.imagesUpdated}
         imagesById={this.props.imagesById}
         imagesRequest={this.props.imagesRequest}
         multiple
@@ -29,4 +30,5 @@ export default connect(
   mapStateToProps, {
     imageUploaded,
     imagesRequest,
+    imagesUpdated,
   })(ImageUpload);

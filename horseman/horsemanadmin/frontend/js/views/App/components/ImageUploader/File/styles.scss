@@ -51,8 +51,12 @@
   display: flex;
   flex-flow: row;
   align-items: center;
+  flex: 0 0 auto;
+  margin-right: 1rem
 }
 
 .upload-status {
-
+  flex: 0 1 35%;
+  text-align: right;
+  margin-left: 1rem;
 }
