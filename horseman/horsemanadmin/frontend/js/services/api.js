@@ -141,8 +141,8 @@ export const replaceImageFile = (id, file, completion, onProgress) => {
   data.append('file', file);
   return xhrUploadApi(`images/${id}/file/`, data, 'PUT', completion, onProgress);
 };
-export const uploadImage = (data, completion, onProgress) => xhrUploadApi(
-  'images/', data, 'POST', completion, onProgress);
+export const uploadImage = (data, args, completion, onProgress) => xhrUploadApi(
+  `images/?${queryString(args)}`, data, 'POST', completion, onProgress);
 
 export const getUsers = args => callApi(`users/?${queryString(args)}`);
 export const getUser = id => callApi(`users/${id}/`);

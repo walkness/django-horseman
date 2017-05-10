@@ -1,9 +1,9 @@
 import React, { PropTypes } from 'react';
-import { FormattedMessage, FormattedDate, FormattedTime } from 'react-intl';
+import { FormattedMessage } from 'react-intl';
 import moment from 'moment-timezone';
 
 
-const DateTime = ({ value, timezone, defaultTimezone, displayTimezone }) => {
+const DateTime = ({ value, timezone, defaultTimezone, displayTimezone, ...props }) => {
   let date = value && moment(value);
   if (timezone) {
     date = date.tz(timezone);
@@ -16,14 +16,16 @@ const DateTime = ({ value, timezone, defaultTimezone, displayTimezone }) => {
     }
   }
   return (
-    <FormattedMessage
-      id='image.date'
-      values={{
-        date: date.format('LL'),
-        time: date.format(displayTimezone ? 'LTS z' : 'LTS'),
-      }}
-      defaultMessage='{date} at {time}'
-    />
+    <span {...props}>
+      <FormattedMessage
+        id='image.date'
+        values={{
+          date: date.format('LL'),
+          time: date.format(displayTimezone ? 'LTS z' : 'LTS'),
+        }}
+        defaultMessage='{date} at {time}'
+      />
+    </span>
   );
 };
 

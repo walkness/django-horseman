@@ -1,3 +1,120 @@
+@import '../../../../../../../scss/variables';
+@import '../../../../../../../scss/mixins';
+
 .root {
   width: 100%;
+  color: $gray-light;
+  font-size: .85rem;
+  margin-top: 1rem;
+}
+
+.select-actions {
+  $spacing: .5rem;
+  margin: .5rem (- $spacing);
+  display: flex;
+  flex-flow: row;
+  justify-content: flex-end;
+
+  button {
+    margin: 0 $spacing;
+  }
+}
+
+.list {
+  list-style-type: none;
+  padding: 0;
+  margin: 0;
+  clear: both;
+}
+
+.duplicate {
+  background-color: $gray-lighter;
+  padding: .5rem;
+  margin: .25rem 0;
+
+  > label {
+    display: flex;
+    flex-flow: row;
+    justify-content: space-between;
+    cursor: pointer;
+  }
+}
+
+.duplicate-info {
+  display: flex;
+  flex-flow: row wrap;
+  align-items: center;
+  justify-content: space-between;
+  flex: 2 1 75%;
+}
+
+.image-details {
+  display: flex;
+  flex-flow: row wrap;
+  align-items: center;
+}
+
+.file-details {
+  margin: 0 .5rem;
+}
+
+.title {
+  margin-top: 0;
+  margin-bottom: .5rem;
+}
+
+.original-filename,
+.capture-time {
+  color: lighten($gray-light, 15%);
+}
+
+.original-filename {
+  margin-bottom: 1rem;
+}
+
+.capture-time {
+
+}
+
+.preview {
+  width: 7rem;
+
+  img {
+    width: 100%;
+    height: auto;
+  }
+}
+
+.exposure {
+  margin: -.5em 0;
+  color: lighten($gray-light, 15%);
+
+  h3 {
+    display: none;
+  }
+
+  dl {
+    margin: .5em 0;
+  }
+}
+
+.duplicate-actions {
+  flex: 1 0 25%;
+  text-align: right;
+}
+
+.actions {
+    display: flex;
+    flex-flow: row wrap;
+    flex-direction: row-reverse;
+    justify-content: flex-start;
+    margin-top: 1rem;
+
+    button {
+      margin-left: 1rem;
+
+      & + button {
+        margin-left: 0;        
+      }
+    }
 }

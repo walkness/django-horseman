@@ -1,3 +1,4 @@
+from django.forms import CheckboxInput
 from django.db.models import Case, When, IntegerField
 
 from rest_framework import viewsets
@@ -9,7 +10,9 @@ from rest_framework.status import (
     HTTP_201_CREATED, HTTP_400_BAD_REQUEST)
 from rest_framework.filters import OrderingFilter
 
-from django_filters import rest_framework as filters, DateFilter
+from django_filters import (
+    rest_framework as filters, DateFilter, BaseInFilter, UUIDFilter, BooleanFilter, CharFilter
+)
 from django_filters.rest_framework import DjangoFilterBackend
 
 from horseman.mixins import SearchableMixin, BoolQueryParamMixin
@@ -40,15 +43,31 @@ class IgnoreNullOrderingFilter(OrderingFilter):
         return queryset
 
 
+class UUIDInFilter(BaseInFilter, UUIDFilter):
+    pass
+
+
 class ImageFilter(filters.FilterSet):
     uploaded_before = DateFilter(name='created_at', lookup_expr='lte')
     uploaded_after = DateFilter(name='created_at', lookup_expr='gte')
     captured_before = DateFilter(name='captured_at', lookup_expr='lte')
     captured_after = DateFilter(name='captured_at', lookup_expr='gte')
+    pk__in = UUIDInFilter(name='pk', lookup_expr='in')
 
     class Meta:
         model = models.Image
-        fields = ['uploaded_before', 'uploaded_after', 'captured_before', 'captured_after']
+        fields = ['uploaded_before', 'uploaded_after', 'captured_before', 'captured_after', 'pk__in']
+
+
+class ImageUploadParams(filters.FilterSet):
+    replace = UUIDInFilter(name='pk', lookup_expr='in')
+    ignore_duplicate_hash = BooleanFilter(widget=CheckboxInput)
+    ignore_duplicate_name = BooleanFilter(widget=CheckboxInput)
+    ignore_duplicate_exif = BooleanFilter(widget=CheckboxInput)
+
+    class Meta:
+        model = models.Image
+        fields = ['replace']
 
 
 class ImageViewSet(BoolQueryParamMixin, SearchableMixin, viewsets.ModelViewSet):
@@ -73,7 +92,12 @@ class ImageViewSet(BoolQueryParamMixin, SearchableMixin, viewsets.ModelViewSet):
         data = request.data.get('data', {})
         data['file'] = file
 
-        serializer = self.serializer_class(data=data)
+        filterset = ImageUploadParams(request.query_params)
+        serializer_kwargs = {}
+        if filterset.form.is_valid():
+            serializer_kwargs.update(filterset.form.cleaned_data)
+
+        serializer = self.serializer_class(data=data, **serializer_kwargs)
         if serializer.is_valid(raise_exception=True):
             instance = serializer.save(created_by=request.user)
             return Response(

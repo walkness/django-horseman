@@ -3,6 +3,7 @@
 import React, { Component, PropTypes } from 'react';
 import classNames from 'classnames';
 import { FormattedMessage } from 'react-intl';
+import { autobind } from 'core-decorators';
 
 import uploadStatus from '../../../../../constants/UploadTypes';
 import { uploadImage } from '../../../../../services/api';
@@ -45,6 +46,8 @@ class File extends Component {
       duplicates: [],
       id: null,
       showDuplicates: false,
+      replaceIds: [],
+      uploadArgs: {},
     };
   }
 
@@ -65,17 +68,27 @@ class File extends Component {
     this.setState({ status: uploadStatus.UPLOADING }, () => {
       const data = new FormData();
       data.append('file', file);
-      uploadImage(data, ({ error, response }) => {
+      uploadImage(data, this.state.uploadArgs, ({ error, response }) => {
         if (error) {
           const uploadErrors = flattenErrors(error);
           const uploadError = uploadErrors[0];
           const isDuplicate = [
             'duplicate', 'duplicate_hash', 'duplicate_name', 'duplicate_exif',
           ].indexOf(uploadError.code) !== -1;
+          const replaceIds = this.state.replaceIds.slice(0);
+          if (isDuplicate) {
+            ((uploadError && uploadError.duplicates) || []).forEach((duplicate) => {
+              const index = replaceIds.indexOf(duplicate);
+              if (index === -1) {
+                replaceIds.push(duplicate);
+              }
+            });
+          }
           this.setState({
             status: isDuplicate ? uploadStatus.DUPLICATE : uploadStatus.ERROR,
             progress: 1,
             duplicates: uploadError && uploadError.duplicates,
+            replaceIds,
             uploadErrors,
           });
           this.props.onUploadError(error, id);
@@ -97,9 +110,55 @@ class File extends Component {
     });
   }
 
+  @autobind
+  toggleReplaceIds(ids) {
+    const replaceIds = this.state.replaceIds.slice(0);
+    (Array.isArray(ids) ? ids : [ids]).forEach((id) => {
+      const index = replaceIds.indexOf(id);
+      if (index === -1) {
+        replaceIds.push(id);
+      } else {
+        replaceIds.splice(index, 1);
+      }
+    });
+    this.setState({ replaceIds });
+  }
+
+  @autobind
+  handleUploadAnyway() {
+    const uploadArgs = {};
+    const uploadError = this.state.uploadErrors[0];
+    uploadArgs[`ignore_${uploadError.code}`] = true;
+    this.setState({ uploadArgs }, () => {
+      this.props.addToQueue(this.props.id);
+    });
+  }
+
+  @autobind
+  handleReplace() {
+    const { replaceIds } = this.state;
+
+    const replace = (this.state.uploadArgs.replace || []).slice(0);
+    replaceIds.forEach((id) => {
+      const index = replace.indexOf(id);
+      if (index === -1) {
+        replace.push(id);
+      }
+    });
+
+    const uploadArgs = { replace };
+
+    const uploadError = this.state.uploadErrors[0];
+    uploadArgs[`ignore_${uploadError.code}`] = true;
+
+    this.setState({ uploadArgs }, () => {
+      this.props.addToQueue(this.props.id);
+    });
+  }
+
   render() {
     const { file } = this.props;
-    const { status, progress, uploadErrors, showDuplicates } = this.state;
+    const { status, progress, uploadErrors, showDuplicates, replaceIds } = this.state;
     const uploadError = uploadErrors[0];
     return (
       <li
@@ -131,6 +190,7 @@ class File extends Component {
           duplicates={uploadError && uploadError.duplicates}
           addToQueue={this.props.addToQueue}
           toggleDuplicates={() => this.setState({ showDuplicates: !showDuplicates })}
+          showDuplicates={showDuplicates}
         />
 
         { showDuplicates ?
@@ -138,6 +198,10 @@ class File extends Component {
             ids={uploadError && uploadError.duplicates}
             imagesById={this.props.imagesById}
             imagesRequest={this.props.imagesRequest}
+            replaceIds={replaceIds}
+            toggleReplaceIds={this.toggleReplaceIds}
+            uploadAndReplace={this.handleReplace}
+            uploadAnyway={this.handleUploadAnyway}
           />
         : null }
 

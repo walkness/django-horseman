@@ -45,8 +45,14 @@ const Status = (props) => {
     duplicates && duplicates.length > 0 && (
       <FormattedMessage
         id='imageUpload.file.status.duplicates'
-        values={{ numDuplicates: duplicates.length }}
-        defaultMessage='Show {numDuplicates, plural,
+        values={{
+          numDuplicates: duplicates.length,
+          showing: props.showDuplicates ? 'yes' : 'no',
+        }}
+        defaultMessage='{showing, select,
+          yes {Hide}
+          no {Show}
+        } {numDuplicates, plural,
           =1 {duplicate}
           other {{numDuplicates, number} duplicates}
         }'
@@ -108,6 +114,7 @@ Status.propTypes = {
   duplicates: PropTypes.arrayOf(PropTypes.string),
   addToQueue: PropTypes.func.isRequired,
   toggleDuplicates: PropTypes.func.isRequired,
+  showDuplicates: PropTypes.bool.isRequired,
 };
 
 Status.defaultProps = {

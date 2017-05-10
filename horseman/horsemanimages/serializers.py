@@ -86,8 +86,9 @@ class ImageSerializer(serializers.ModelSerializer):
     class Meta:
         model = models.Image
         fields = [
-            'pk', 'title', 'file', 'url', 'mime_type', 'filesize', 'width', 'height', 'created_at',
-            'created_by', 'captured_at', 'captured_at_tz', 'renditions', 'meta']
+            'pk', 'title', 'file', 'original_filename', 'url', 'mime_type', 'filesize', 'width',
+            'height', 'created_at', 'created_by', 'captured_at', 'captured_at_tz', 'renditions',
+            'meta']
         read_only_fields = [
             'pk', 'url', 'width', 'height', 'mime_type', 'filesize', 'created_at', 'created_by',
             'captured_at', 'renditions', 'meta']
@@ -99,6 +100,10 @@ class ImageSerializer(serializers.ModelSerializer):
     def __init__(self, *args, **kwargs):
         self.extra_image_sizes = kwargs.pop('extra_image_sizes', {})
         self.async_renditions = kwargs.pop('async_renditions', False)
+        self.replace_images = kwargs.pop('replace', [])
+        self.ignore_duplicate_hash = kwargs.pop('ignore_duplicate_hash', False)
+        self.ignore_duplicate_name = kwargs.pop('ignore_duplicate_name', False)
+        self.ignore_duplicate_exif = kwargs.pop('ignore_duplicate_exif', False)
         super(ImageSerializer, self).__init__(*args, **kwargs)
         self.fields['renditions'].async_renditions = self.async_renditions
 

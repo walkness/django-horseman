@@ -12,7 +12,7 @@ const items = [
 ];
 
 
-const Exposure = ({ image }) => {
+const Exposure = ({ image, ...props }) => {
   if (!(image && image.meta && (image.meta.exposure || image.meta.camera))) return null;
 
   const { camera, exposure } = image.meta;
@@ -21,7 +21,7 @@ const Exposure = ({ image }) => {
   const lensApertureRange = (camera && camera.lens_aperture) || [null, null];
 
   return (
-    <div>
+    <div {...props}>
 
       <h3>Exposure Details</h3>
 
