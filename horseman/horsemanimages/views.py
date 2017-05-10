@@ -71,10 +71,11 @@ class ImageViewSet(BoolQueryParamMixin, SearchableMixin, viewsets.ModelViewSet):
     def create(self, request, *args, **kwargs):
         file = request.data.get('file', None)
         data = request.data.get('data', {})
+        data['file'] = file
 
         serializer = self.serializer_class(data=data)
         if serializer.is_valid(raise_exception=True):
-            instance = serializer.save(file=file, created_by=request.user)
+            instance = serializer.save(created_by=request.user)
             return Response(
                 self.serializer_class(instance).data,
                 status=HTTP_201_CREATED
@@ -90,11 +91,17 @@ class ImageViewSet(BoolQueryParamMixin, SearchableMixin, viewsets.ModelViewSet):
         if not file:
             raise ValidationError('Must include a file.')
 
+        data['file'] = file
+
         instance = self.get_object()
         serializer = self.get_serializer(instance, data=data, partial=True)
-        if serializer.is_valid(raise_exception=True):
-            serializer.save(file=file)
-            return Response(serializer.data)
+        try:
+            if serializer.is_valid(raise_exception=True):
+                serializer.save()
+                return Response(serializer.data)
+        except serializers.DuplicateImageError as exc:
+            print(exc.__class__)
+            raise exc
 
         return Response(status=HTTP_400_BAD_REQUEST)
 

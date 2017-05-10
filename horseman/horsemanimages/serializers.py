@@ -1,8 +1,25 @@
 import os.path
 from rest_framework import serializers
+from rest_framework.exceptions import APIException
 import pytz
 
 from . import models, tasks
+
+
+class DuplicateImageError(APIException):
+    status_code = 400
+    default_detail = 'An image like this already exists'
+    default_code = 'duplicate'
+
+    def __init__(self, detail, code=None, duplicates=None):
+        self.duplicates = duplicates
+        super(DuplicateImageError, self).__init__(detail, code)
+        self.detail.duplicates = duplicates
+
+    def get_full_details(self):
+        details = super(DuplicateImageError, self).get_full_details()
+        details['duplicates'] = self.duplicates
+        return details
 
 
 class TimezoneField(serializers.Field):
@@ -69,13 +86,14 @@ class ImageSerializer(serializers.ModelSerializer):
     class Meta:
         model = models.Image
         fields = [
-            'pk', 'title', 'url', 'mime_type', 'filesize', 'width', 'height', 'created_at',
+            'pk', 'title', 'file', 'url', 'mime_type', 'filesize', 'width', 'height', 'created_at',
             'created_by', 'captured_at', 'captured_at_tz', 'renditions', 'meta']
         read_only_fields = [
             'pk', 'url', 'width', 'height', 'mime_type', 'filesize', 'created_at', 'created_by',
             'captured_at', 'renditions', 'meta']
         extra_kwargs = {
-            'title': {'required': False, 'allow_null': True}
+            'title': {'required': False, 'allow_null': True},
+            'file': {'required': False, 'write_only': True},
         }
 
     def __init__(self, *args, **kwargs):
@@ -84,16 +102,53 @@ class ImageSerializer(serializers.ModelSerializer):
         super(ImageSerializer, self).__init__(*args, **kwargs)
         self.fields['renditions'].async_renditions = self.async_renditions
 
+    def validate_file(self, data):
+        self.file_hash = models.compute_hash(data.file)
+        duplicates = models.Image.objects.filter(hash=self.file_hash).values_list('pk', flat=True)
+        if len(duplicates) > 0:
+            raise DuplicateImageError(
+                'This file has already been uploaded', code='duplicate_hash', duplicates=duplicates)
+
+        if models.Image.objects.filter(original_filename=data.name).exists():
+            raise DuplicateImageError('A file with the same name has already been uploaded',
+                code='duplicate_name')
+
+        self.file_exif = models.get_exif_json(data.file)
+        if len(self.file_exif.keys()) > 0:
+            exif = self.file_exif.get('EXIF', {})
+            if models.Image.objects.filter(
+                exif_data__EXIF__DateTimeDigitized=exif.get('DateTimeDigitized'),
+                exif_data__EXIF__BodySerialNumber=exif.get('BodySerialNumber'),
+            ).exists():
+                raise DuplicateImageError(
+                    'A file captured at the same time from the same camera has already been uploaded',
+                    code='duplicate_exif'
+                )
+
+        return data
+
     def create(self, validated_data):
         file = validated_data.pop('file')
         if 'title' not in validated_data:
             fname_wo_ext, ext = os.path.splitext(os.path.basename(file.name))
             validated_data['title'] = fname_wo_ext
         instance = self.__class__.Meta.model(**validated_data)
+
+        if hasattr(self, 'file_hash'):
+            instance.hash = self.file_hash
+
         instance.file_bytes = file.file
         instance.filesize = file.size
+        instance.original_filename = file.name
         instance.file.save(file.name, file, save=False)
-        instance.update_exif(file)
+
+        if hasattr(self, 'file_exif'):
+            instance.exif_data = self.file_exif
+            instance.update_capture_time_from_exif(self.file_exif)
+            instance.exif_updated = True
+        else:
+            instance.update_exif(file)
+
         instance.save()
         return instance
 

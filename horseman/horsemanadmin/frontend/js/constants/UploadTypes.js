@@ -2,5 +2,6 @@ export default {
   PENDING: 'PENDING',
   UPLOADING: 'UPLOADING',
   ERROR: 'ERROR',
+  DUPLICATE: 'DUPLICATE',
   SUCCESS: 'SUCCESS',
 };

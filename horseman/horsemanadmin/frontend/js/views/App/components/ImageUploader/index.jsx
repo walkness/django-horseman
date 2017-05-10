@@ -14,6 +14,8 @@ class ImageUploader extends Component {
     multiple: PropTypes.bool,
     maxConcurrent: PropTypes.number,
     onUploadSuccess: PropTypes.func,
+    imagesById: PropTypes.object.isRequired,
+    imagesRequest: PropTypes.func.isRequired,
   };
 
   static defaultProps = {
@@ -84,10 +86,11 @@ class ImageUploader extends Component {
     const queue = this.state.queue.slice(0);
     const index = queue.indexOf(id);
     if (index === -1) {
-      queue.push(id);
       const allowUpload = this.state.allowUpload.slice(0);
       if (allowUpload.length < maxConcurrent) {
         allowUpload.push(id);
+      } else {
+        queue.push(id);
       }
       this.setState({ queue, allowUpload });
     }
@@ -116,6 +119,8 @@ class ImageUploader extends Component {
               onUploadSuccess={this.handleUploadSuccess}
               onUploadError={this.handleUploadError}
               addToQueue={this.addToQueue}
+              imagesById={this.props.imagesById}
+              imagesRequest={this.props.imagesRequest}
             />
           )) }
         </ul>

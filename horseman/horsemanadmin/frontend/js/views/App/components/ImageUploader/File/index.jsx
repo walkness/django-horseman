@@ -4,8 +4,12 @@ import React, { Component, PropTypes } from 'react';
 import classNames from 'classnames';
 import { FormattedMessage } from 'react-intl';
 
-import uploadStatus from '../../../../constants/UploadTypes';
-import { uploadImage } from '../../../../services/api';
+import uploadStatus from '../../../../../constants/UploadTypes';
+import { uploadImage } from '../../../../../services/api';
+import { flattenErrors } from '../../../../../utils';
+
+import Status from './Status';
+import Duplicates from './Duplicates';
 
 import styles from './styles.scss';
 
@@ -22,6 +26,8 @@ class File extends Component {
     onUploadError: PropTypes.func,
     addToQueue: PropTypes.func.isRequired,
     id: PropTypes.string.isRequired,
+    imagesById: PropTypes.object.isRequired,
+    imagesRequest: PropTypes.func.isRequired,
   };
 
   static defaultProps = {
@@ -36,7 +42,9 @@ class File extends Component {
       status: uploadStatus.PENDING,
       progress: 0,
       uploadErrors: [],
+      duplicates: [],
       id: null,
+      showDuplicates: false,
     };
   }
 
@@ -59,10 +67,16 @@ class File extends Component {
       data.append('file', file);
       uploadImage(data, ({ error, response }) => {
         if (error) {
+          const uploadErrors = flattenErrors(error);
+          const uploadError = uploadErrors[0];
+          const isDuplicate = [
+            'duplicate', 'duplicate_hash', 'duplicate_name', 'duplicate_exif',
+          ].indexOf(uploadError.code) !== -1;
           this.setState({
-            status: uploadStatus.ERROR,
+            status: isDuplicate ? uploadStatus.DUPLICATE : uploadStatus.ERROR,
             progress: 1,
-            uploadErrors: [],
+            duplicates: uploadError && uploadError.duplicates,
+            uploadErrors,
           });
           this.props.onUploadError(error, id);
         } else {
@@ -85,12 +99,14 @@ class File extends Component {
 
   render() {
     const { file } = this.props;
-    const { status, progress, uploadErrors, id } = this.state;
+    const { status, progress, uploadErrors, showDuplicates } = this.state;
+    const uploadError = uploadErrors[0];
     return (
       <li
         className={classNames({
           [styles.file__uploading]: status === uploadStatus.UPLOADING,
           [styles.file__error]: status === uploadStatus.ERROR,
+          [styles.file__duplicate]: status === uploadStatus.DUPLICATE,
           [styles.file__success]: status === uploadStatus.SUCCESS,
         })}
         styleName='styles.file'
@@ -106,57 +122,24 @@ class File extends Component {
           <div styleName='styles.fileName'>{ file.name }</div>
         </div>
 
-        <div styleName='styles.upload-status'>
-          <FormattedMessage
-            id='imageUpload.file.status'
-            values={{
-              status,
-              progress,
-              link: (
-                id && (
-                  <FormattedMessage
-                    id='imageUpload.file.status.link'
-                    defaultMessage='View'
-                  >
-                    { formatted => (
-                      <a
-                        href={`/images/${id}/`}
-                        target='_blank' // eslint-disable-line react/jsx-no-target-blank
-                      >
-                        {formatted}
-                      </a>
-                    ) }
-                  </FormattedMessage>
-                )
-              ),
-              retry: (
-                <FormattedMessage
-                  id='imageUpload.file.status.retry'
-                  defaultMessage='Retry'
-                >
-                  { formatted => (
-                    <button
-                      type='button'
-                      className='link'
-                      onClick={() => this.props.addToQueue(this.props.id)}
-                    >
-                      {formatted}
-                    </button>
-                  ) }
-                </FormattedMessage>
-              ),
-            }}
-            defaultMessage='{status, select,
-              PENDING {Waiting to upload…}
-              UPLOADING {{progress, plural,
-                =1 {Processing…}
-                other {Uploading: {progress, number, percent}}
-              }}
-              ERROR {An error occurred - {retry}}
-              SUCCESS {Uploaded – {link}}
-            }'
+        <Status
+          status={status}
+          progress={progress}
+          uploadError={uploadError}
+          id={this.props.id}
+          pk={this.state.id}
+          duplicates={uploadError && uploadError.duplicates}
+          addToQueue={this.props.addToQueue}
+          toggleDuplicates={() => this.setState({ showDuplicates: !showDuplicates })}
+        />
+
+        { showDuplicates ?
+          <Duplicates
+            ids={uploadError && uploadError.duplicates}
+            imagesById={this.props.imagesById}
+            imagesRequest={this.props.imagesRequest}
           />
-        </div>
+        : null }
 
       </li>
     );

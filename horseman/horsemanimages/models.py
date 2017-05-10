@@ -36,11 +36,27 @@ def get_mime_type_from_file(file):
     return mime
 
 
+def compute_hash(file_bytes):
+    value = None
+    if hasattr(file_bytes, 'getvalue'):
+        value = file_bytes.getvalue()
+    else:
+        file_bytes.seek(0)
+        value = file_bytes.read()
+    return hashlib.md5(value).hexdigest()
+
+
+def get_exif_json(file_bytes):
+    exif = EXIF(file_bytes)
+    return exif.get_json()
+
+
 class AbstractImage(models.Model):
     if settings.USE_UUID_KEYS:
         id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
 
     title = models.CharField(max_length=255)
+    original_filename = models.CharField(max_length=255, editable=False)
 
     file = models.ImageField(
         'file', upload_to=get_upload_to, width_field='width', height_field='height')
@@ -158,6 +174,7 @@ class AbstractImage(models.Model):
 
         if file_changed and not self.exif_updated:
             self.update_exif()
+            self.update_capture_time_from_exif()
 
         if (
             self.captured_at and
@@ -201,26 +218,28 @@ class AbstractImage(models.Model):
                 image_file.close()
 
     def get_exif(self, file=None):
-        exif = EXIF(file or self.file.file)
-        return exif.get_json()
+        return get_exif_json(file or self.file.file)
 
     def update_exif(self, file=None):
         exif = self.get_exif(file)
         if exif and len(exif.keys()) > 0:
             self.exif_data = exif
-            capture_time = exif.get('EXIF', {}).get('DateTimeOriginal', None)
-            if capture_time:
-                naive = datetime.strptime(capture_time, '%Y-%m-%dT%H:%M:%S')
-                if naive:
-                    tz = pytz.UTC
-                    if self.captured_at_tz:
-                        tz = self.captured_at_tz
-                    else:
-                        tz = self.update_captured_at_tz_from_gps(tz)
-
-                    aware = tz.localize(naive)
-                    self.captured_at = aware
             self.exif_updated = True
+
+    def update_capture_time_from_exif(self, _exif=None):
+        exif = _exif or self.exif_data
+        capture_time = exif.get('EXIF', {}).get('DateTimeOriginal', None)
+        if capture_time:
+            naive = datetime.strptime(capture_time, '%Y-%m-%dT%H:%M:%S')
+            if naive:
+                tz = pytz.UTC
+                if self.captured_at_tz:
+                    tz = self.captured_at_tz
+                else:
+                    tz = self.update_captured_at_tz_from_gps(tz)
+
+                aware = tz.localize(naive)
+                self.captured_at = aware
 
     def update_captured_at_tz_from_gps(self, default=None):
         tz = default
@@ -239,17 +258,11 @@ class AbstractImage(models.Model):
     def get_file_hash(self):
         file_bytes = getattr(self, 'file_bytes', getattr(self.file._file, 'file', None))
         assert file_bytes is not None, 'Unable to get file bytes.'
-        value = None
-        if hasattr(file_bytes, 'getvalue'):
-            value = file_bytes.getvalue()
-        else:
-            file_bytes.seek(0)
-            value = file_bytes.read()
-        self.hash = hashlib.md5(value).hexdigest()
+        self.hash = compute_hash(file_bytes)
         return self.hash
 
     def get_upload_to(self, filename):
-        file_hash = self.get_file_hash()
+        file_hash = self.hash or self.get_file_hash()
         folder_name = 'original_images/{}'.format(file_hash)
         filename = self.file.field.storage.get_valid_name(filename)
 
