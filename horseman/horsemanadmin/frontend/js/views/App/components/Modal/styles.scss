@@ -1,3 +1,5 @@
+@import '../../../../../scss/variables';
+
 .modal {
 	position: fixed;
 	top: 0;
@@ -22,7 +24,7 @@
 }
 
 .content {
-	width: 80%;
+	width: $modal-width-large;
 	background-color: #fff;
 	margin: 0 auto;
 	box-shadow: 0 1px 1px rgba(0, 0, 0, .3);

@@ -2,12 +2,12 @@ import React, { PropTypes } from 'react';
 
 import Item from './Item';
 
-import styles from './styles.css';
+import './styles.scss';
 
 
 const ImageBrowserGrid = ({ ids, imagesById, getLink, onImageClick, selected, contentRef }) => {
   return (
-    <div className='image-browser-grid' styleName='styles.grid' ref={contentRef}>
+    <div className='image-browser-grid' styleName='grid' ref={contentRef}>
 
       { ids.map(id => (
         <Item

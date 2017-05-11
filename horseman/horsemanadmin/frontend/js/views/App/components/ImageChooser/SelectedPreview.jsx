@@ -7,7 +7,7 @@ import GPS from '../ImageDetails/GPS';
 import DateTime from '../ImageDetails/DateTime';
 import Row from '../ImageDetails/Row';
 
-import styles from './styles.css';
+import styles from './styles.scss';
 
 
 const SelectedPreview = ({ image }) => (

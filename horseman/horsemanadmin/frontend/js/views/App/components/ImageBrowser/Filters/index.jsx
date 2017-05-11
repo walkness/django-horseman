@@ -9,7 +9,7 @@ import './styles.css';
 const Filters = ({ filters, handleFiltersChange, display, toggleDisplay }) => (
   <div styleName='filters'>
 
-    <button type='button' className='btn' styleName='show-button' onClick={toggleDisplay}>
+    <button type='button' className='link' styleName='show-button' onClick={toggleDisplay}>
       {display ? 'Hide filters' : 'Show filters'}
     </button>
 

@@ -1,3 +1,7 @@
+@import '../../../../../scss/variables';
+
+$selected-image-width: 20rem;
+
 .ImageChooser {
 	display: flex;
 	flex-flow: column;
@@ -28,6 +32,18 @@
 	flex-flow: row;
 	width: 100%;
 	height: 100%;
+
+  :global(.image-browser-grid) {
+    :global(.image) {
+      $min-width: 8rem;
+      $max-columns: 8;
+      @for $i from 2 through $max-columns {
+        @media (min-width: ($selected-image-width + $i * $min-width) / ($modal-width-large / 100%)) {
+          width: percentage(1/$i);
+        }
+      }
+    }
+  }
 }
 
 .browser {
@@ -35,8 +51,8 @@
 }
 
 .selectedImage {
-	flex: 0 0 20rem;
-	width: 20rem;
+	flex: 0 0 $selected-image-width;
+	width: $selected-image-width;
 	border-left: 1px solid gray(95%);
 	padding: 2%;
 	overflow-y: auto;

@@ -8,7 +8,7 @@
 
 .main-wrapper {
 	flex: 1 100%;
-	padding: 1rem 2rem 3rem;
+	padding: 1rem $main-padding-x 3rem;
 	background-color: gray(98%);
 	border-color: gray(92%);
 	border-style: solid;

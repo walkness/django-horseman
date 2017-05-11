@@ -2,7 +2,7 @@ import React, { PropTypes } from 'react';
 import { Link } from 'react-router';
 import titleCase from 'title-case';
 
-import styles from './styles.css';
+import styles from './styles.scss';
 
 
 const Sidebar = ({ nodes, currentUser, usersById, isLoggedIn, logoutRequest, adminBase }) => {

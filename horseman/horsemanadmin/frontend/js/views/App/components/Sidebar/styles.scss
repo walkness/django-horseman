@@ -1,6 +1,8 @@
+@import '../../../../../scss/variables';
+
 .sidebar-wrapper {
 	order: -1;
-	flex: 0 0 15rem;
+	flex: 0 0 $sidebar-width;
 }
 
 .sidebar {
@@ -11,7 +13,7 @@
 	top: 0;
 	bottom: 0;
 	left: 0;
-	width: 15rem;
+	width: $sidebar-width;
 	color: gray(90%);
 	background-color: gray(30%);
 	font-size: .9rem;

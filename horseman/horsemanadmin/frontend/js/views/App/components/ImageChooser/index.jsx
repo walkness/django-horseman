@@ -7,7 +7,7 @@ import ImageUploader from '../ImageUploader';
 
 import SelectedPreview from './SelectedPreview';
 
-import styles from './styles.css';
+import styles from './styles.scss';
 
 
 class ImageChooser extends Component {

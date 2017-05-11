@@ -4,7 +4,7 @@ import { Link } from 'react-router';
 
 import Image from '../../Image';
 
-import styles from './styles.css';
+import styles from './styles.scss';
 
 
 const Item = ({ image, getLink, onClick, selected }) => {
