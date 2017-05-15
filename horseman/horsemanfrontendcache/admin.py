@@ -9,6 +9,7 @@ class InvalidationAdmin(admin.ModelAdmin):
         'created_at', 'completed_at', 'cache_name', 'invalidated_objects', 'num_paths', 'status'
     ]
     list_filter = ['cache_name', 'status']
+    ordering = ['-created_at']
     actions = ['update_status']
 
     def num_paths(self, obj):
