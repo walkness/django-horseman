@@ -1,3 +1,4 @@
+import sys
 import copy
 import boto3
 from datetime import datetime
@@ -73,29 +74,33 @@ class CloudFrontBackend(BaseBackend):
         obj = self.get_invalidation_model()
         obj.paths = paths
 
-        response = client.create_invalidation(
-            DistributionId=self.distribution_id,
-            InvalidationBatch={
-                'Paths': {
-                    'Quantity': len(paths),
-                    'Items': paths,
+        try:
+            response = client.create_invalidation(
+                DistributionId=self.distribution_id,
+                InvalidationBatch={
+                    'Paths': {
+                        'Quantity': len(paths),
+                        'Items': paths,
+                    },
+                    'CallerReference': str(obj.pk),
                 },
-                'CallerReference': str(obj.pk),
-            },
-        )
+            )
+        except:
+            obj.status = 'error'
+            obj.backend_details = {'exception': str(sys.exc_info()[0])}
+        else:
+            backend_details = copy.deepcopy(response)
 
-        backend_details = copy.deepcopy(response)
+            if (
+                'Invalidation' in backend_details and
+                'CreateTime' in backend_details['Invalidation']
+            ):
+                create_time = backend_details['Invalidation']['CreateTime']
+                if isinstance(create_time, datetime):
+                    backend_details['Invalidation']['CreateTime'] = create_time.isoformat()
 
-        if (
-            'Invalidation' in backend_details and
-            'CreateTime' in backend_details['Invalidation']
-        ):
-            create_time = backend_details['Invalidation']['CreateTime']
-            if isinstance(create_time, datetime):
-                backend_details['Invalidation']['CreateTime'] = create_time.isoformat()
-
-        obj.status = self.get_status_from_response(response)
-        obj.backend_details = backend_details
+            obj.status = self.get_status_from_response(response)
+            obj.backend_details = backend_details
 
         obj.save()
         if objects:
