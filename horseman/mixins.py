@@ -34,6 +34,7 @@ class AdminModelMixin(object):
 
 class SearchableMixin(object):
     search_query_param = 's'
+    search_regex = r'(?:^|\s|>)%s'
     search_fields = []
 
     def get_search_fields(self):
@@ -46,7 +47,7 @@ class SearchableMixin(object):
             queries = []
             for f in self.get_search_fields():
                 kwarg = {}
-                kwarg['%s__iregex' % f] = r'(?:^|\s|>)%s' % re.escape(search)
+                kwarg['%s__iregex' % f] = self.search_regex % re.escape(search)
                 queries.append(Q(**kwarg))
             if len(queries) > 0:
                 query = queries.pop()

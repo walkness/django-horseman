@@ -43,6 +43,7 @@ $spacing-y: 1rem;
 
   .count {
     font-size: 4em;
+    transition: color 300ms ease;
   }
 
   .label {

@@ -78,10 +78,18 @@ class ImageBrowser extends Component {
   }
 
   getImages(props) {
-    const { imagesRequest, filters, defaultOrder } = props || this.props;
+    const { imagesRequest, filters, defaultOrder, useWindowScroll } = props || this.props;
     const node = this.getOrderedNode(props);
-    if (!(node && node.ids) || (node && node.needsUpdate)) {
-      imagesRequest(Object.assign({}, { ordering: defaultOrder }, filters));
+    let limit = null;
+    if (useWindowScroll) {
+      const rows = Math.ceil((window.innerHeight - 150) / 150);
+      limit = rows * 8;
+    } else {
+      const rows = Math.ceil((window.innerHeight - 400) / 140);
+      limit = rows * 8;
+    }
+    if (!(node && node.ids) || (node && node.needsUpdate) || (filters.search && node.next)) {
+      imagesRequest(Object.assign({}, { ordering: defaultOrder }, filters, limit && { limit }));
     }
   }
 
@@ -121,8 +129,15 @@ class ImageBrowser extends Component {
   }
 
   getOrderedImages(props) {
+    const { selected } = props || this.props;
     const node = this.getOrderedNode(props);
-    return (node && node.ids) || [];
+    const ids = (node && node.ids) || [];
+    (selected || []).forEach((id) => {
+      if (ids.indexOf(id) === -1) {
+        ids.unshift(id);
+      }
+    });
+    return ids;
   }
 
   getSearchedImages(props) {
@@ -130,10 +145,15 @@ class ImageBrowser extends Component {
     const ids = this.getOrderedImages(props);
     const searchStr = filters.search;
     if (!searchStr) return ids;
-    const re = new RegExp(`(?:^|\s)${searchStr}`, 'ig');
+    const re = new RegExp(`(?:^|\s|-|_|>)${searchStr}`, 'ig');
     return ids.filter((id) => {
       const image = imagesById[id];
-      return image && image.title && image.title.match(re);
+      return (
+        image && (
+          (image.title && image.title.match(re)) ||
+          (image.original_filename && image.original_filename.match(re))
+        )
+      );
     });
   }
 

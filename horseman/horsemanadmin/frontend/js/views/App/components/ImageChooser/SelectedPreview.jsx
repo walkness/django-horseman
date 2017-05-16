@@ -1,4 +1,5 @@
 import React, { PropTypes } from 'react';
+import { Link } from 'react-router';
 
 import Image from '../Image';
 
@@ -7,12 +8,12 @@ import GPS from '../ImageDetails/GPS';
 import DateTime from '../ImageDetails/DateTime';
 import Row from '../ImageDetails/Row';
 
-import styles from './styles.scss';
+import './styles.scss';
 
 
 const SelectedPreview = ({ image }) => (
   <div>
-    <div styleName='styles.imagePreview'>
+    <div styleName='imagePreview'>
       <Image
         image={image}
         srcSize='thumbnail_300'
@@ -37,6 +38,10 @@ const SelectedPreview = ({ image }) => (
     <Exposure image={image} />
 
     <GPS image={image} />
+
+    <Link to={`/images/${image.pk}/`}>
+      View/edit image
+    </Link>
 
   </div>
 );

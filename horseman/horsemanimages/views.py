@@ -77,7 +77,8 @@ class ImageViewSet(BoolQueryParamMixin, SearchableMixin, viewsets.ModelViewSet):
     serializer_class = serializers.AdminImageSerializer
     queryset = models.Image.objects.prefetch_related('renditions').all()
     search_query_param = 'search'
-    search_fields = ['title']
+    search_fields = ['title', 'original_filename']
+    search_regex = r'(?:^|\s|-|_|>)%s'
     filter_backends = (IgnoreNullOrderingFilter, DjangoFilterBackend, )
     filter_class = ImageFilter
     ordering_fields = ('created_at', 'captured_at')
