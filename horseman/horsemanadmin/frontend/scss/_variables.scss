@@ -1,7 +1,6 @@
 $body-bg: gray(50%);
 $font-family: -apple-system, system-ui, BlinkMacSystemFont, Segoe UI, Roboto, Helvetica Neue, Arial, sans-serif;
 $body-color: gray(30%);
-$link-color: #6e9ab5;
 
 $white:  #fff;
 $black:  #000;
@@ -28,6 +27,8 @@ $color-info:                $teal;
 $color-warning:             $orange;
 $color-danger:              $red;
 $color-inverse:             $gray-dark;
+
+$link-color:                $color-primary;
 
 $state-success-text:             #3c763d;
 $state-success-bg:               #dff0d8;

@@ -1,6 +1,8 @@
 import * as types from '../constants/ActionTypes';
 import initialState from '../config/initialState';
 
+import { getPaginationParamsFromURI } from '../utils';
+
 
 export default function nodesReducer(state = initialState.nodes, action) {
   function processNodes(nodes, type, latestRevision = false, activeRevision = false) {
@@ -95,11 +97,22 @@ export default function nodesReducer(state = initialState.nodes, action) {
         });
         if (action.response.results) {
           const order = action.args.order || 'default';
-          const ordered = Object.assign({}, state[action.args.type].ordered, {
+          const { next, previous } = action.response;
+          let allIds = ids;
+          const existingState = state[action.args.type].ordered;
+          const existingStateOrder = existingState && existingState[order];
+          const oldNext = existingStateOrder && existingStateOrder.next;
+          if (
+            oldNext && oldNext.offset === action.args.offset &&
+            existingStateOrder && existingStateOrder.ids
+          ) {
+            allIds = [...existingStateOrder.ids, ...ids];
+          }
+          const ordered = Object.assign({}, existingState, {
             [order]: {
-              ids,
-              next: action.response.next,
-              previous: action.response.previous,
+              ids: allIds,
+              next: next && getPaginationParamsFromURI(next),
+              previous: previous && getPaginationParamsFromURI(previous),
             },
           });
           updates.ordered = ordered;

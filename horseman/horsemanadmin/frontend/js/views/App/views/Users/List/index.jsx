@@ -1,6 +1,7 @@
 import React, { Component, PropTypes } from 'react';
 import { connect } from 'react-redux';
 import { Link } from 'react-router';
+import Helmet from 'react-helmet';
 
 import { users as usersAction } from '../../../../../actions';
 
@@ -28,6 +29,8 @@ class UserList extends Component {
     const ids = (orderedUsers && orderedUsers.default || [this.props.currentUser]);
     return (
       <div styleName='styles.users'>
+
+        <Helmet title='Users' />
 
         <ul styleName='styles.users-list'>
           { ids.map((id) => {

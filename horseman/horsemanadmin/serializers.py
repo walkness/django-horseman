@@ -1,5 +1,6 @@
 from django.apps import apps
 from django.db.models import ForeignKey, ManyToManyField
+from django.urls import reverse
 
 from rest_framework import serializers
 
@@ -17,9 +18,18 @@ class AdminModelConfigurationSerializer(serializers.Serializer):
     field_config = serializers.SerializerMethodField()
     admin_fields = serializers.ListField()
     admin_order = serializers.IntegerField()
+    admin_path = serializers.SerializerMethodField()
+    admin_featured_image = serializers.SerializerMethodField()
 
     def get_app_admin_order(self, cls):
         return getattr(apps.get_app_config(cls._meta.app_label), 'admin_order', 0)
+
+    def get_admin_path(self, cls):
+        return '{}{}/{}/'.format(
+            reverse('horsemanadmin:home'), cls._meta.app_label, cls._meta.model_name)
+
+    def get_admin_featured_image(self, cls):
+        return getattr(cls, 'admin_featured_image', None)
 
     def get_field_config(self, cls):
         field_config = {}

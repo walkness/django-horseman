@@ -6,6 +6,7 @@ import { autobind } from 'core-decorators';
 import { FormattedMessage } from 'react-intl';
 import Dropzone from 'react-dropzone';
 import titleCase from 'title-case';
+import Helmet from 'react-helmet';
 
 import {
   image as imageAction,
@@ -120,6 +121,8 @@ class Image extends Component {
           noValidate
           styleName='root'
         >
+
+          <Helmet title='Edit image' />
 
           <main styleName='main'>
 

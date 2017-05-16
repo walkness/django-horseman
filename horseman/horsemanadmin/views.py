@@ -20,6 +20,7 @@ def render(request, _init_data=None):
             'adminURLBase': reverse('horsemanadmin:home'),
             'siteURL': settings.SITE_URL,
             'previewSiteURL': getattr(settings, 'PREVIEW_SITE_URL', settings.SITE_URL),
+            'siteName': settings.SITE_NAME,
         },
     }
     if request.user.is_authenticated():

@@ -1,0 +1,58 @@
+@import '../../../../../scss/variables';
+
+$spacing-x: 1rem;
+$spacing-y: 1rem;
+
+.root {
+
+}
+
+.node-overview {
+  display: flex;
+  flex-flow: row wrap;
+  margin: 0 (-$spacing-x);
+}
+
+.node {
+  width: 100%;
+  padding: $spacing-y $spacing-x;
+
+  $min-width: 15rem;
+  $max-columns: 8;
+  @for $i from 2 through $max-columns {
+    @media (min-width: $sidebar-width + $main-padding-x * 2 + $i * $min-width) {
+      width: percentage(1/$i);
+    }
+  }
+
+  .node-content {
+    $bg: rgba($black, 0);
+    display: block;
+    padding: 1rem;
+    background-color: $bg;
+    border: 1px solid $gray-lighter;
+    border-bottom: none;
+    text-align: center;
+    text-decoration: none;
+    transition: background-color 300ms ease;
+
+    &:hover {
+      background: opacify($bg, .05);
+    }
+  }
+
+  .count {
+    font-size: 4em;
+  }
+
+  .label {
+    margin: 0;
+    text-transform: lowercase;
+    color: gray(60%);
+    font-weight: normal;
+  }
+
+  .new {
+    display: block;
+  }
+}

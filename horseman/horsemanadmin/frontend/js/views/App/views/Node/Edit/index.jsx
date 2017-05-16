@@ -4,6 +4,7 @@ import { connect } from 'react-redux';
 import Formsy from 'formsy-react';
 import { autobind } from 'core-decorators';
 import slugify from 'slugify';
+import Helmet from 'react-helmet';
 
 import {
   nodes as nodesAction,
@@ -207,112 +208,116 @@ class EditNode extends Component {
     );
     const currentRevision = location.query.revision || (node && node.latest_revision);
 
-    if (params.id && !(revision && revision.pk)) return null;
+    const form = !(params.id && !(revision && revision.pk)) && (
+      <Formsy.Form
+        onValidSubmit={this.handleSubmit}
+        onChange={this.handleFormChange}
+        noValidate
+        styleName='styles.form'
+        ref={(c) => { this.form = c; }}
+      >
 
-    return (
-      <div className='edit-node'>
+        { nodeState.configuration.admin_fields.map((fieldName) => {
+          const field = nodeState.configuration.field_config[fieldName];
+          return (
+            <Field
+              key={fieldName}
+              config={field}
+              value={revision && revision[fieldName]}
+              wrappedComponentRef={(c) => { this.fieldRefs[fieldName] = c; }}
+              imagesById={this.props.imagesById}
+              orderedImages={this.props.orderedImages}
+              imagesRequest={this.props.imagesRequest}
+              imageUploaded={this.props.imageUploaded}
+              nodes={nodes}
+              nodesRequest={this.props.nodesRequest}
+              onChange={(value) => this.handleFormChange(fieldName, value)}
+              imageFilters={this.state.imageFilters}
+              handleImageFiltersChange={this.handleImageFiltersChange}
+            />
+          );
+        }) }
 
-        <Formsy.Form
-          onValidSubmit={this.handleSubmit}
-          onChange={this.handleFormChange}
-          noValidate
-          styleName='styles.form'
-          ref={(c) => { this.form = c; }}
-        >
-
-          { nodeState.configuration.admin_fields.map((fieldName) => {
-            const field = nodeState.configuration.field_config[fieldName];
-            return (
-              <Field
-                key={fieldName}
-                config={field}
-                value={revision && revision[fieldName]}
-                wrappedComponentRef={(c) => { this.fieldRefs[fieldName] = c; }}
-                imagesById={this.props.imagesById}
-                orderedImages={this.props.orderedImages}
-                imagesRequest={this.props.imagesRequest}
-                imageUploaded={this.props.imageUploaded}
-                nodes={nodes}
-                nodesRequest={this.props.nodesRequest}
-                onChange={(value) => this.handleFormChange(fieldName, value)}
-                imageFilters={this.state.imageFilters}
-                handleImageFiltersChange={this.handleImageFiltersChange}
-              />
-            );
-          }) }
-
-          <div styleName='styles.node-actions'>
-            <div styleName='styles.left'>
-              <div styleName='styles.action-buttons'>
-                <button
-                  type='submit'
-                  className='btn'
-                  disabled={!changed || saving}
-                  styleName='styles.primary-action'
-                >
-                  Save draft
-                </button>
-                <Dropdown>
-                  <DropdownToggle>▲</DropdownToggle>
-                  <DropdownMenu styleName='extra-actions-menu' up>
-                    { node ?
-                      <li>
-                        <button
-                          type='button'
-                          className='btn'
-                          onClick={this.handleDelete}
-                          disabled={saving}
-                        >
-                          Delete permanently
-                        </button>
-                      </li>
-                    : null }
-                    { node && node.published ?
-                      <li>
-                        <button
-                          type='button'
-                          className='btn'
-                          onClick={this.handleUnpublish}
-                          disabled={saving}
-                        >
-                          Unpublish
-                        </button>
-                      </li>
-                    : null }
+        <div styleName='styles.node-actions'>
+          <div styleName='styles.left'>
+            <div styleName='styles.action-buttons'>
+              <button
+                type='submit'
+                className='btn'
+                disabled={!changed || saving}
+                styleName='styles.primary-action'
+              >
+                Save draft
+              </button>
+              <Dropdown>
+                <DropdownToggle>▲</DropdownToggle>
+                <DropdownMenu styleName='extra-actions-menu' up>
+                  { node ?
                     <li>
                       <button
                         type='button'
                         className='btn'
-                        onClick={this.handlePublish}
-                        disabled={!((!(node && node.published) || changed) && !saving)}
+                        onClick={this.handleDelete}
+                        disabled={saving}
                       >
-                        Save and publish
+                        Delete permanently
                       </button>
                     </li>
-                  </DropdownMenu>
-                </Dropdown>
+                  : null }
+                  { node && node.published ?
+                    <li>
+                      <button
+                        type='button'
+                        className='btn'
+                        onClick={this.handleUnpublish}
+                        disabled={saving}
+                      >
+                        Unpublish
+                      </button>
+                    </li>
+                  : null }
+                  <li>
+                    <button
+                      type='button'
+                      className='btn'
+                      onClick={this.handlePublish}
+                      disabled={!((!(node && node.published) || changed) && !saving)}
+                    >
+                      Save and publish
+                    </button>
+                  </li>
+                </DropdownMenu>
+              </Dropdown>
 
-              </div>
-
-              <a
-                href={`${this.props.previewSiteURL}/?preview=${currentRevision}`}
-                target='_blank'
-              >
-                Preview
-              </a>
             </div>
 
-            <RevisionsList
-              revisions={node && node.revisions}
-              revisionsById={node && node.revisionsById}
-              current={currentRevision}
-              latest={node && node.latest_revision}
-              usersById={this.props.usersById}
-              saving={saving}
-            />
+            <a
+              href={`${this.props.previewSiteURL}/?preview=${currentRevision}`}
+              target='_blank'
+            >
+              Preview
+            </a>
           </div>
 
-        </Formsy.Form>
+          <RevisionsList
+            revisions={node && node.revisions}
+            revisionsById={node && node.revisionsById}
+            current={currentRevision}
+            latest={node && node.latest_revision}
+            usersById={this.props.usersById}
+            saving={saving}
+          />
+        </div>
+
+      </Formsy.Form>
+    );
+
+    return (
+      <div className='edit-node'>
+
+        <Helmet title={`${params.id ? 'Edit' : 'New'} ${nodeState.configuration.name}`} />
+
+        { form || 'Loading…' }
 
       </div>
     );

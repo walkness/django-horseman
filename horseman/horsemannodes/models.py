@@ -130,6 +130,7 @@ class AbstractNode(mixins.AdminModelMixin, models.Model):
     ]
     search_fields = ['slug']
     autopopulate_fields = {}
+    admin_featured_image = None
 
     class Meta:
         abstract = True
@@ -250,6 +251,16 @@ class Node(AbstractNode):
             elif isinstance(field, models.ForeignKey) and issubclass(field.related_model, Image):
                 ids.append(getattr(self, field.column))
         return ids, renditions
+
+    def get_featured_image_renditions(self):
+        if not self.admin_featured_image:
+            return [], {}
+        field = self._meta.get_field(self.admin_featured_image)
+        ids, renditions = field.get_image_ids(getattr(self, field.name))
+        return renditions
+
+    def get_featured_image(self):
+        return getattr(self, self.admin_featured_image), self.get_featured_image_renditions()
 
     def get_related_images(self):
         ids, renditions = self.get_related_image_ids()

@@ -35,6 +35,8 @@ class NodeViewSet(BoolQueryParamMixin, SearchableMixin, viewsets.ModelViewSet):
             kwargs['related_nodes'] = True
             kwargs['active_revision'] = True
             kwargs['latest_revision'] = True
+        if self.action == 'list':
+            kwargs['featured_image'] = True
         if self.get_query_param_bool('async_renditions'):
             kwargs['async_renditions'] = True
         return super(NodeViewSet, self).get_serializer(*args, **kwargs)
@@ -65,6 +67,9 @@ class NodeViewSet(BoolQueryParamMixin, SearchableMixin, viewsets.ModelViewSet):
             qs = qs.prefetch_related(*prefetch_fields)
         if len(select_related_fields) > 0:
             qs = qs.select_related(*select_related_fields)
+
+        if self.action == 'list' and node_class.admin_featured_image:
+            qs = qs.prefetch_related('{}__renditions'.format(node_class.admin_featured_image))
 
         return qs
 

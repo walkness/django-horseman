@@ -9,6 +9,7 @@ from rest_framework.exceptions import ValidationError
 from rest_framework.status import (
     HTTP_201_CREATED, HTTP_400_BAD_REQUEST)
 from rest_framework.filters import OrderingFilter
+from rest_framework.pagination import LimitOffsetPagination
 
 from django_filters import (
     rest_framework as filters, DateFilter, BaseInFilter, UUIDFilter, BooleanFilter, CharFilter

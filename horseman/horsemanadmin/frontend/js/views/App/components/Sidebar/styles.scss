@@ -25,7 +25,8 @@
 
 .apps {
 	list-style-type: none;
-	padding: 0;
+	padding: 3rem 0;
+  margin: 0;
 	overflow-y: auto;
 
 	ul {
@@ -82,6 +83,11 @@
 
 	> a {
 		text-decoration: none;
+
+    &:hover {
+      color: gray(80%);
+      text-decoration: underline;
+    }
 	}
 }
 

@@ -1,18 +1,36 @@
+/* globals window */
+
 import React, { Component, PropTypes } from 'react';
 import { connect } from 'react-redux';
 import { Link } from 'react-router';
 import { FormattedMessage } from 'react-intl';
+import Helmet from 'react-helmet';
+import titleCase from 'title-case';
+import classNames from 'classnames';
+import { autobind } from 'core-decorators';
 
 import { nodes as nodesAction } from '../../../../../actions';
 import { getNodeTypeFromURLComponents } from '../../../../../utils';
+import Image from '../../../components/Image';
 
-import styles from './styles.css';
+import './styles.scss';
 
 
 class NodeList extends Component {
 
+  constructor(props, context) {
+    super(props, context);
+    this.pastThreshold = false;
+    this.scrollThreshold = .25;
+  }
+
   componentWillMount() {
     this.maybeGetNodes();
+  }
+
+  componentDidMount() {
+    window.addEventListener('scroll', this.handleScroll);
+    this.setDimensions();
   }
 
   componentWillReceiveProps(nextProps) {
@@ -22,6 +40,14 @@ class NodeList extends Component {
     ) {
       this.maybeGetNodes(nextProps);
     }
+  }
+
+  componentDidUpdate() {
+    this.setDimensions();
+  }
+
+  componentWillUnmount() {
+    window.removeEventListener('scroll', this.handleScroll);
   }
 
   maybeGetNodes(props) {
@@ -37,61 +63,107 @@ class NodeList extends Component {
     return getNodeTypeFromURLComponents(nodes, app, model);
   }
 
+  setDimensions() {
+    this._containerHeight = window.innerHeight;
+    this._contentHeight = document.documentElement.scrollHeight;
+  }
+
+  @autobind
+  handleScroll() {
+    const pct = window.scrollY / (this._contentHeight - this._containerHeight);
+    if (pct >= (1 - this.scrollThreshold) && !this.pastThreshold) {
+      this.pastThreshold = true;
+      this.handleLoadNext();
+    } else if (pct < (1 - this.scrollThreshold)) {
+      this.pastThreshold = false;
+    }
+  }
+
+  handleLoadNext() {
+    const { nodes } = this.props;
+    const nodeType = this.getNodeType();
+    const nodeState = nodes[nodeType];
+    const ordered = nodeState && nodeState.ordered && nodeState.ordered.default;
+    if (ordered && ordered.next && !ordered.loading) {
+      this.props.nodesRequest(Object.assign({}, ordered.next, { type: nodeType }));
+    }
+  }
+
   render() {
     const { nodes, location } = this.props;
     const nodeType = this.getNodeType();
     const nodeState = nodes[nodeType];
     const orderedNodes = nodeState && nodeState.ordered && nodeState.ordered.default;
+    const hasFeaturedImage = nodeState.configuration.admin_featured_image;
     return (
-      <div styleName='styles.node-list'>
+      <div styleName='node-list'>
+
+        <Helmet title={titleCase(nodeState.configuration.name_plural)} />
 
         <Link className='btn' to={`${location.pathname}new/`}>
           Create new { nodeState.configuration.name }
         </Link>
 
-        <ul styleName='styles.nodes'>
+        <ul
+          className={classNames({ 'has-featured-image': hasFeaturedImage })}
+          styleName='nodes'
+        >
 
-          <li styleName='styles.header'>
-            <div styleName='styles.column styles.title'>Title</div>
-            <div styleName='styles.column'>Status</div>
-            <div styleName='styles.column'>Last updated</div>
+          <li styleName='header'>
+            { hasFeaturedImage ?
+              <div styleName='column featured-image' />
+            : null }
+            <div styleName='column title'>Title</div>
+            <div styleName='column'>Status</div>
+            <div styleName='column'>Last updated</div>
           </li>
 
           { orderedNodes && orderedNodes.ids && orderedNodes.ids.map((pk) => {
             const node = nodeState.byId[pk];
+            const featuredImage = this.props.imagesById[
+              node[nodeState.configuration.admin_featured_image]
+            ];
             if (!node) return null;
             return (
-              <li key={pk} styleName='styles.node'>
+              <li key={pk} styleName='node'>
 
-                <div styleName='styles.column styles.title'>
-                  <Link to={`${location.pathname}${pk}/`}>
-                    { node.title }
-                  </Link>
-                </div>
+                <Link to={`${nodeState.configuration.admin_path}${pk}/`}>
 
-                <div styleName='styles.column'>
-                  <FormattedMessage
-                    id='nodes.list.status'
-                    values={{
-                      published: node.published ? 'yes' : 'no',
-                      publishedDate: node.published_at && new Date(node.published_at),
-                    }}
-                    defaultMessage='{published, select,
-                      yes {Published on {publishedDate, date, long}}
-                      no {Draft}
-                    }'
-                  />
-                </div>
+                  { hasFeaturedImage ?
+                    <div styleName='column featured-image'>
+                      { featuredImage ?
+                        <Image image={featuredImage} srcSize='thumbnail_150' sizes='6rem' />
+                      : null }
+                    </div>
+                  : null }
 
-                <div styleName='styles.column'>
-                  <FormattedMessage
-                    id='nodes.list.date'
-                    values={{ date: new Date(node.modified_at) }}
-                    defaultMessage='{date, date, long} at {date, time, short}'
-                  >
-                    { (formatted) => <time dateTime={node.modified_at}>{ formatted }</time> }
-                  </FormattedMessage>
-                </div>
+                  <div styleName='column title'>{ node.title }</div>
+
+                  <div styleName='column'>
+                    <FormattedMessage
+                      id='nodes.list.status'
+                      values={{
+                        published: node.published ? 'yes' : 'no',
+                        publishedDate: node.published_at && new Date(node.published_at),
+                      }}
+                      defaultMessage='{published, select,
+                        yes {Published on {publishedDate, date, long}}
+                        no {Draft}
+                      }'
+                    />
+                  </div>
+
+                  <div styleName='column'>
+                    <FormattedMessage
+                      id='nodes.list.date'
+                      values={{ date: new Date(node.modified_at) }}
+                      defaultMessage='{date, date, long} at {date, time, short}'
+                    >
+                      { (formatted) => <time dateTime={node.modified_at}>{ formatted }</time> }
+                    </FormattedMessage>
+                  </div>
+
+                </Link>
 
               </li>
             );
@@ -105,6 +177,7 @@ class NodeList extends Component {
 
 const mapStateToProps = state => ({
   nodes: state.nodes,
+  imagesById: state.images.byId,
 });
 
 const nodesRequest = nodesAction.request;

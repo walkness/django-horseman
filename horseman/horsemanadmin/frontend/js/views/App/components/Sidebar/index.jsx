@@ -2,7 +2,7 @@ import React, { PropTypes } from 'react';
 import { Link } from 'react-router';
 import titleCase from 'title-case';
 
-import styles from './styles.scss';
+import './styles.scss';
 
 
 const Sidebar = ({ nodes, currentUser, usersById, isLoggedIn, logoutRequest, adminBase }) => {
@@ -35,21 +35,32 @@ const Sidebar = ({ nodes, currentUser, usersById, isLoggedIn, logoutRequest, adm
   };
 
   return (
-    <div className='sidebar' styleName='styles.sidebar-wrapper'>
+    <div className='sidebar' styleName='sidebar-wrapper'>
 
-      <div styleName='styles.sidebar'>
+      <div styleName='sidebar'>
 
-        <ul styleName='styles.apps'>
-          { appLabels.map(appLabel => {
+        <ul styleName='apps'>
+
+          <li>
+            <ul>
+              <li>
+                <Link to={adminBase} activeClassName='active' onlyActiveOnIndex>
+                  Dashboard
+                </Link>
+              </li>
+            </ul>
+          </li>
+
+          { appLabels.map((appLabel) => {
             const appNodes = apps[appLabel];
             return (
               <li key={appLabel}>
-                <div styleName='styles.section-header'>{ titleCase(appLabel) }</div>
+                <div styleName='section-header'>{ titleCase(appLabel) }</div>
                 <ul>
                   { appNodes.map(({ configuration }) => (
                     <li key={configuration.node_type} className='node'>
                       <Link
-                        to={`${adminBase}${configuration.app_label}/${configuration.model_name}/`}
+                        to={configuration.admin_path}
                         activeClassName='active'
                       >
                         { titleCase(configuration.name_plural) }
@@ -62,7 +73,7 @@ const Sidebar = ({ nodes, currentUser, usersById, isLoggedIn, logoutRequest, adm
           }) }
 
           <li className='images'>
-            <div styleName='styles.section-header'>Images</div>
+            <div styleName='section-header'>Images</div>
             <ul>
               <li><Link to={`${adminBase}images/`} activeClassName='active' onlyActiveOnIndex>Library</Link></li>
               <li><Link to={`${adminBase}images/upload/`} activeClassName='active'>Upload</Link></li>
@@ -70,7 +81,7 @@ const Sidebar = ({ nodes, currentUser, usersById, isLoggedIn, logoutRequest, adm
           </li>
 
           <li className='settings'>
-            <div styleName='styles.section-header'>Settings</div>
+            <div styleName='section-header'>Settings</div>
             <ul>
               <li><Link to={`${adminBase}users/`} activeClassName='active'>Users</Link></li>
             </ul>
@@ -78,12 +89,12 @@ const Sidebar = ({ nodes, currentUser, usersById, isLoggedIn, logoutRequest, adm
 
         </ul>
 
-        <div styleName='styles.user'>
-          <div styleName='styles.section-header'>Logged In As</div>
+        <div styleName='user'>
+          <div styleName='section-header'>Logged In As</div>
           <Link to={`${adminBase}users/${currentUserObj.pk}/`}>
             { currentUserObj.first_name || currentUserObj.email }
           </Link>
-          <div styleName='styles.logout'>
+          <div styleName='logout'>
             <a href={`${adminBase}logout/`} onClick={handleLogoutClick}>Logout</a>
           </div>
         </div>

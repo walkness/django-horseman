@@ -2,6 +2,7 @@ import React, { Component, PropTypes } from 'react';
 import { connect } from 'react-redux';
 import Formsy from 'formsy-react';
 import { autobind } from 'core-decorators';
+import Helmet from 'react-helmet';
 
 import { user as userAction, userUpdated } from '../../../../../actions';
 import { updateUser } from '../../../../../services/api';
@@ -47,6 +48,8 @@ class UserEdit extends Component {
     const user = this.props.usersById[this.props.params.id];
     return (
       <div>
+
+        <Helmet title='Edit user' />
 
         <Formsy.Form
           onValidSubmit={this.handleSubmit}

@@ -34,10 +34,11 @@ class NodeSerializer(TaggitSerializer, serializers.ModelSerializer):
         fields = models.Node.api_fields
 
     def __init__(self, *args, **kwargs):
-        include_related_images = kwargs.pop('related_images', False)
-        include_related_nodes = kwargs.pop('related_nodes', False)
-        include_active_revision = kwargs.pop('active_revision', False)
-        include_latest_revision = kwargs.pop('latest_revision', False)
+        self.include_related_images = kwargs.pop('related_images', False)
+        self.include_featured_image = kwargs.pop('featured_image', False)
+        self.include_related_nodes = kwargs.pop('related_nodes', False)
+        self.include_active_revision = kwargs.pop('active_revision', False)
+        self.include_latest_revision = kwargs.pop('latest_revision', False)
 
         super(NodeSerializer, self).__init__(*args, **kwargs)
 
@@ -49,18 +50,21 @@ class NodeSerializer(TaggitSerializer, serializers.ModelSerializer):
         if 'tags' in generic_model.api_fields:
             self.fields['tags'] = TagListSerializerField(required=False)
 
-        if include_related_images:
+        if self.include_related_images or (
+            self.include_featured_image and generic_model.admin_featured_image
+        ):
             get_related_images = getattr(generic_model, 'get_related_images', None)
-            if callable(get_related_images):
+            get_featured_image = getattr(generic_model, 'get_featured_image', None)
+            if callable(get_related_images) or callable(get_featured_image):
                 self.fields['related_images'] = serializers.SerializerMethodField()
 
-        if include_related_nodes:
+        if self.include_related_nodes:
             self.fields['related_nodes'] = RelatedNodesField(source='get_related_node_ids')
 
-        if include_active_revision:
+        if self.include_active_revision:
             self.fields['active_revision'] = NodeRevisionSerializer(read_only=True)
 
-        if include_latest_revision:
+        if self.include_latest_revision:
             self.fields['latest_revision'] = NodeRevisionSerializer(read_only=True)
 
         self.fields['revision'] = NodeRevisionSerializer(read_only=True)
@@ -127,7 +131,13 @@ class NodeSerializer(TaggitSerializer, serializers.ModelSerializer):
         return attrs
 
     def get_related_images(self, obj):
-        images, renditions = obj.get_related_images()
+        images = []
+        if self.include_related_images:
+            images, renditions = obj.get_related_images()
+        elif self.include_featured_image:
+            image, renditions = obj.get_featured_image()
+            if image:
+                images = [image]
         return AdminImageSerializer(
             images, many=True, extra_image_sizes=renditions,
             async_renditions=getattr(self, 'async_renditions', False)

@@ -2,6 +2,7 @@ import React, { Component, PropTypes } from 'react';
 import { connect } from 'react-redux';
 import { routerShape } from 'react-router/lib/PropTypes';
 import { autobind } from 'core-decorators';
+import Helmet from 'react-helmet';
 
 import { images as imagesAction } from '../../../../../actions';
 
@@ -45,6 +46,8 @@ class ImageLibrary extends Component {
     const { imagesById, orderedImages } = this.props;
     return (
       <div>
+
+        <Helmet title='Image library' />
 
         <ImageBrowser
           orderedImages={orderedImages}

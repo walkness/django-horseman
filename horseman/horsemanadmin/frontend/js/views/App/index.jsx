@@ -1,6 +1,7 @@
 import React, { Component, PropTypes } from 'react';
 import { connect } from 'react-redux';
 import { routerShape } from 'react-router/lib/PropTypes';
+import Helmet from 'react-helmet';
 
 import { logout as logoutAction } from '../../actions';
 
@@ -15,6 +16,7 @@ class App extends Component {
   static propTypes = {
     isLoggedIn: PropTypes.bool.isRequired,
     children: PropTypes.node.isRequired,
+    siteName: PropTypes.string.isRequired,
   };
 
   static contextTypes = {
@@ -44,6 +46,11 @@ class App extends Component {
     return (
       <div id='app' styleName='app'>
 
+        <Helmet
+          title='Admin'
+          titleTemplate={`%s | ${this.props.siteName}`}
+        />
+
         <main styleName='main-wrapper'>
           <div styleName='main'>
             { children }
@@ -63,6 +70,7 @@ const mapStateToProps = state => ({
   currentUser: state.users.current,
   usersById: state.users.byId,
   adminBase: state.config.adminURLBase,
+  siteName: state.config.siteName,
 });
 
 const logoutRequest = logoutAction.request;
