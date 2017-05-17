@@ -11,6 +11,9 @@ class InvalidationAdmin(admin.ModelAdmin):
     list_filter = ['cache_name', 'status']
     ordering = ['-created_at']
     actions = ['update_status']
+    readonly_fields = [
+        'created_at', 'completed_at', 'cache_name', 'backend', 'backend_details', 'paths'
+    ]
 
     def num_paths(self, obj):
         return len(obj.paths)
@@ -31,3 +34,4 @@ class InvalidationAdmin(admin.ModelAdmin):
 @admin.register(models.InvalidationObject)
 class InvalidationObjectAdmin(admin.ModelAdmin):
     list_display = ['item', 'invalidation']
+    readonly_fields = ['invalidation', 'content_type', 'object_id']

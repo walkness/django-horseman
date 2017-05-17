@@ -114,7 +114,7 @@ class Comment(BaseComment):
 
     def __str__(self):
         return '{name} on {created_at}'.format(
-            name=self.author['name'], created_at=localize(self.created_at))
+            name=self.author['name'], created_at=localize(timezone.localtime(self.created_at)))
 
     @classmethod
     def is_approved_email(cls, email):

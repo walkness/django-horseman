@@ -5,6 +5,7 @@ from django.utils import timezone
 from django.contrib.postgres.fields import ArrayField, JSONField
 from django.contrib.contenttypes.fields import GenericForeignKey
 from django.contrib.contenttypes.models import ContentType
+from django.utils.formats import localize
 
 from .utils import update_invalidation_status
 
@@ -36,19 +37,19 @@ class Invalidation(models.Model):
     )
 
     id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
-    created_at = models.DateTimeField(default=timezone.now)
-    completed_at = models.DateTimeField(blank=True, null=True)
-    cache_name = models.CharField(max_length=50)
-    backend = models.CharField(max_length=255)
-    backend_details = JSONField(blank=True, null=True)
-    paths = ArrayField(models.CharField(max_length=4000))
+    created_at = models.DateTimeField(default=timezone.now, editable=False)
+    completed_at = models.DateTimeField(blank=True, null=True, editable=False)
+    cache_name = models.CharField(max_length=50, editable=False)
+    backend = models.CharField(max_length=255, editable=False)
+    backend_details = JSONField(blank=True, null=True, editable=False)
+    paths = ArrayField(models.CharField(max_length=4000), editable=False)
     status = models.CharField(max_length=11, choices=STATUS_CHOICES, default=STATUS_CHOICES[0][0])
 
     objects = InvalidationQuerySet.as_manager()
 
     def __str__(self):
-        return '{cache_name} invalidation started at {created_at}'.format(
-            cache_name=self.cache_name, created_at=self.created_at.isoformat())
+        return '{cache_name} invalidation started on {created_at}'.format(
+            cache_name=self.cache_name, created_at=localize(timezone.localtime(self.created_at)))
 
     def invalidated_objects(self):
         return Invalidation.objects.filter(pk=self.pk).invalidated_objects()
@@ -59,9 +60,9 @@ class Invalidation(models.Model):
 
 class InvalidationObject(models.Model):
     id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
-    invalidation = models.ForeignKey(Invalidation, on_delete=models.CASCADE)
-    content_type = models.ForeignKey(ContentType, on_delete=models.CASCADE)
-    object_id = models.UUIDField()
+    invalidation = models.ForeignKey(Invalidation, on_delete=models.CASCADE, editable=False)
+    content_type = models.ForeignKey(ContentType, on_delete=models.CASCADE, editable=False)
+    object_id = models.UUIDField(editable=False)
     item = GenericForeignKey('content_type', 'object_id')
 
     def __str__(self):
