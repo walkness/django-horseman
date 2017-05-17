@@ -13,6 +13,10 @@ class CommentAdmin(MPTTModelAdmin):
     ]
     search_fields = ['name', 'email', 'url', 'body']
 
+    def delete_selected_tree(self, modeladmin, request, queryset):
+        for obj in queryset:
+            obj.delete()
+
     def approve(self, request, queryset):
         queryset.approve()
 
