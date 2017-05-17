@@ -12,6 +12,16 @@ class CommentAdmin(MPTTModelAdmin):
         'invalidate'
     ]
     search_fields = ['name', 'email', 'url', 'body']
+    readonly_fields = [
+        'created_at', 'name', 'email', 'approved_at', 'akismet_spam', 'ip_address', 'user_agent',
+        'body', 'url',
+    ]
+    fieldsets = (
+        ('Author', {'fields': ['name', 'email', 'url', 'user']}),
+        ('Comment', {'fields': ['created_at', 'body']}),
+        ('Status', {'fields': ['approved', 'approved_at', 'spam', 'akismet_spam']}),
+        ('Meta', {'fields': ['ip_address', 'user_agent']}),
+    )
 
     def delete_selected_tree(self, modeladmin, request, queryset):
         for obj in queryset:

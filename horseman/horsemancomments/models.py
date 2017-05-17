@@ -91,8 +91,9 @@ class BaseComment(AdminModelMixin, MPTTModel):
 class Comment(BaseComment):
     created_at = models.DateTimeField(default=timezone.now)
     email = models.EmailField(blank=True, null=True)
-    url = models.URLField(blank=True, null=True)
-    ip_address = models.GenericIPAddressField(blank=True, null=True, editable=False)
+    url = models.URLField(blank=True, null=True, verbose_name='URL')
+    ip_address = models.GenericIPAddressField(
+        blank=True, null=True, editable=False, verbose_name='IP address')
     user_agent = models.TextField(blank=True, null=True, editable=False)
     name = models.CharField(max_length=100, blank=True, null=True)
     body = MarkupField(markup_type='markdown', markup_choices=MARKUP_CHOICES)
