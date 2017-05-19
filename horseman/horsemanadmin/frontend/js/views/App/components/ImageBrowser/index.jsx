@@ -131,9 +131,9 @@ class ImageBrowser extends Component {
   getOrderedImages(props) {
     const { selected } = props || this.props;
     const node = this.getOrderedNode(props);
-    const ids = (node && node.ids) || [];
+    const ids = ((node && node.ids) || []).slice(0);
     (selected || []).forEach((id) => {
-      if (ids.indexOf(id) === -1) {
+      if (id && ids.indexOf(id) === -1) {
         ids.unshift(id);
       }
     });

@@ -56,8 +56,10 @@ export default function imagesReducer(state = initialState.nodes, action) {
         action.response.previous);
 
       const isNextPage = existing => (
+        (action.args && action.args.offset > 0) && (
           (action.args && action.args.offset) ===
           (existing && existing.next && existing.next.offset)
+        )
       );
 
       if (action.args && action.args.search) {

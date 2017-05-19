@@ -74,7 +74,7 @@ class ImageChooser extends Component {
             imagesRequest={this.props.imagesRequest}
             onSubmit={this.handleChange}
             imageUploaded={this.props.imageUploaded}
-            selected={[image.pk]}
+            selected={image ? [image.pk] : []}
             modalProps={{
               closeModal: () => this.setState({ showModal: false }),
             }}

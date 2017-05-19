@@ -5,6 +5,7 @@ const threshold = 100;
 
 
 const Image = ({ image, srcSize, alt, sizes, ...props }) => {
+  if (!image) return null;
   const rendition = image.renditions[srcSize];
   const src = rendition || image;
   const aspect = src.width / src.height;
