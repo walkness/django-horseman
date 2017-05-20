@@ -54,7 +54,7 @@ class NodeQuerySet(models.QuerySet):
     def get_from_revision_relation_value(self, value):
         if isinstance(value, (list, tuple)):
             return self.filter(pk__in=value)
-        return self.filter(pk=value)
+        return self.filter(pk=value).first()
 
     def published(self):
         return self.filter(published=True)
