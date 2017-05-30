@@ -10,8 +10,13 @@ export const cssModulesGeneratedScopedName = '[local]__[hash:base64:5]';
 export default {
   context,
 
+  devtool: 'source-map',
+
   entry: {
-    main: path.resolve(__dirname, '../js/main.jsx'),
+    main: [
+      'babel-polyfill',
+      path.resolve(__dirname, '../js/main'),
+    ],
   },
 
   output: {
@@ -21,6 +26,23 @@ export default {
 
   module: {
     rules: [
+      {
+        test: /js\/.*\.(js|jsx)$/,
+        exclude: /node_modules/,
+        loader: 'babel-loader',
+        query: {
+          plugins: [
+            ['react-css-modules', {
+              context,
+              generateScopedName: cssModulesGeneratedScopedName,
+              filetypes: {
+                '.scss': 'postcss-scss',
+              },
+              webpackHotModuleReloading: true,
+            }],
+          ],
+        },
+      },
       {
         test: /.*\.(gif|png|jpe?g|svg)$/i,
         use: [

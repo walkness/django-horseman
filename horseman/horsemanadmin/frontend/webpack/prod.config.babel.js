@@ -27,6 +27,7 @@ config.plugins = config.plugins.concat([
 
   // minifies code
   new webpack.optimize.UglifyJsPlugin({
+    sourceMap: true,
     output: {
       comments: false,
     },
@@ -36,7 +37,7 @@ config.plugins = config.plugins.concat([
   }),
 
   new ExtractTextPlugin({
-    filename: 'styles/[name]-[hash].css',
+    filename: 'styles/[name]-[contenthash].css',
     allChunks: true,
   }),
 
@@ -47,58 +48,87 @@ config.plugins = config.plugins.concat([
 ]);
 
 const cssNano = {
+  autoprefixer: false,
   discardComments: { removeAll: true },
 };
 
 config.module.rules.push(
   {
-    test: /js\/.*\.(js|jsx)$/,
-    exclude: /node_modules/,
-    loader: 'babel-loader',
-    query: {
-      plugins: [
-        ['react-css-modules', {
-          context: config.context,
-          generateScopedName: cssModulesGeneratedScopedName,
-          filetypes: {
-            '.scss': 'postcss-scss',
-          },
-          webpackHotModuleReloading: true,
-        }],
-      ],
-    },
-  },
-  {
     test: /\.scss$/,
     use: ExtractTextPlugin.extract({
-      use: [
-        `css-loader?${JSON.stringify(cssNano)}&modules&importLoaders=2&localIdentName=${cssModulesGeneratedScopedName}`,
-        'postcss-loader',
-        'sass-loader',
-      ],
       fallback: 'style-loader',
+      use: [
+        {
+          loader: 'css-loader',
+          options: {
+            minimize: cssNano,
+            sourceMap: true,
+            importLoaders: 2,
+            modules: true,
+            localIdentName: cssModulesGeneratedScopedName,
+          },
+        },
+        {
+          loader: 'postcss-loader',
+          options: {
+            sourceMap: true,
+          },
+        },
+        {
+          loader: 'sass-loader',
+          options: {
+            sourceMap: true,
+          },
+        },
+      ],
     }),
   },
   {
     test: /\.css$/,
     exclude: /node_modules/,
     use: ExtractTextPlugin.extract({
-      use: [
-        `css-loader?${JSON.stringify(cssNano)}&modules&importLoaders=2&localIdentName=${cssModulesGeneratedScopedName}`,
-        'postcss-loader',
-      ],
       fallback: 'style-loader',
+      use: [
+        {
+          loader: 'css-loader',
+          options: {
+            minimize: cssNano,
+            sourceMap: true,
+            importLoaders: 1,
+            modules: true,
+            localIdentName: cssModulesGeneratedScopedName,
+          },
+        },
+        {
+          loader: 'postcss-loader',
+          options: {
+            sourceMap: true,
+          },
+        },
+      ],
     }),
   },
   {
     test: /\.css$/,
     include: /node_modules/,
     use: ExtractTextPlugin.extract({
-      use: [
-        'css-loader?sourceMap&importLoaders=1',
-        'postcss-loader',
-      ],
       fallback: 'style-loader',
+      use: [
+        {
+          loader: 'css-loader',
+          options: {
+            minimize: cssNano,
+            sourceMap: true,
+            importLoaders: 1,
+          },
+        },
+        {
+          loader: 'postcss-loader',
+          options: {
+            sourceMap: true,
+          },
+        },
+      ],
     }),
   },
 );

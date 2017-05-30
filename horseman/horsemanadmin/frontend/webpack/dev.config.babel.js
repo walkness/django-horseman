@@ -8,7 +8,9 @@ import BundleTracker from 'webpack-bundle-tracker';
 import config, { cssModulesGeneratedScopedName } from './base.config.babel';
 
 // Use webpack dev server
-config.entry = [
+config.entry.main = [
+  'babel-polyfill',
+  'react-hot-loader/patch',
   'webpack-dev-server/client?http://0.0.0.0:3010',
   'webpack/hot/only-dev-server',
   path.resolve(__dirname, '../js/main'),
@@ -34,49 +36,105 @@ config.plugins = config.plugins.concat([
 
 config.module.rules.push(
   {
-    test: /js\/.*\.(js|jsx)$/,
-    exclude: /node_modules/,
-    loader: 'babel-loader',
-    query: {
-      plugins: [
-        ['react-css-modules', {
-          context: config.context,
-          generateScopedName: cssModulesGeneratedScopedName,
-          filetypes: {
-            '.scss': 'postcss-scss',
-          },
-          webpackHotModuleReloading: true,
-        }],
-      ],
-    },
-  },
-  {
     test: /\.scss$/,
     use: [
-      'style-loader',
-      `css-loader?sourceMap&modules&importLoaders=2&localIdentName=${cssModulesGeneratedScopedName}`,
-      'postcss-loader',
-      'sass-loader',
+      {
+        loader: 'style-loader',
+      },
+      {
+        loader: 'css-loader',
+        options: {
+          sourceMap: true,
+          importLoaders: 2,
+          modules: true,
+          localIdentName: cssModulesGeneratedScopedName,
+        },
+      },
+      {
+        loader: 'postcss-loader',
+        options: {
+          sourceMap: true,
+        },
+      },
+      {
+        loader: 'sass-loader',
+        options: {
+          sourceMap: true,
+        },
+      },
     ],
   },
   {
     test: /\.css$/,
     exclude: /node_modules/,
     use: [
-      'style-loader',
-      `css-loader?sourceMap&modules&importLoaders=1&localIdentName=${cssModulesGeneratedScopedName}`,
-      'postcss-loader',
+      {
+        loader: 'style-loader',
+      },
+      {
+        loader: 'css-loader',
+        options: {
+          sourceMap: true,
+          importLoaders: 1,
+          modules: true,
+          localIdentName: cssModulesGeneratedScopedName,
+        },
+      },
+      {
+        loader: 'postcss-loader',
+        options: {
+          sourceMap: true,
+        },
+      },
     ],
   },
   {
     test: /\.css$/,
     include: /node_modules/,
     use: [
-      'style-loader',
-      'css-loader?sourceMap&importLoaders=1',
-      'postcss-loader',
+      {
+        loader: 'style-loader',
+      },
+      {
+        loader: 'css-loader',
+        options: {
+          sourceMap: true,
+          importLoaders: 1,
+        },
+      },
+      {
+        loader: 'postcss-loader',
+        options: {
+          sourceMap: true,
+        },
+      },
     ],
   },
 );
+
+config.devtool = 'inline-source-map';
+
+config.devServer = {
+  host: '0.0.0.0',
+  port: 3010,
+
+  publicPath: config.output.publicPath,
+
+  historyApiFallback: true,
+
+  hot: true,
+
+  stats: {
+    colors: true,
+  },
+
+  disableHostCheck: true,
+
+  headers: {
+    'Access-Control-Allow-Origin': '*',
+    'Access-Control-Allow-Methods': 'GET, POST, PUT, DELETE, PATCH, OPTIONS',
+    'Access-Control-Allow-Headers': 'X-Requested-With, content-type, Authorization',
+  },
+};
 
 export default config;
