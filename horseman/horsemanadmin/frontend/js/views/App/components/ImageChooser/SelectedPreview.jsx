@@ -22,14 +22,16 @@ const SelectedPreview = ({ image }) => (
 
     <h3>{ image.title }</h3>
 
-    <Row label='Captured at'>
-      <DateTime
-        value={image.captured_at}
-        timezone={image.captured_at_tz}
-        defaultTimezone='UTC'
-        displayTimezone={!!image.captured_at_tz}
-      />
-    </Row>
+    { image.captured_at ?
+      <Row label='Captured at'>
+        <DateTime
+          value={image.captured_at}
+          timezone={image.captured_at_tz}
+          defaultTimezone='UTC'
+          displayTimezone={!!image.captured_at_tz}
+        />
+      </Row>
+    : null }
 
     <Row label='Uploaded at'>
       <DateTime value={image.created_at} />

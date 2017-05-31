@@ -21,10 +21,12 @@ import { updateImage, replaceImageFile } from '../../../../../services/api';
 import { Input, TimezoneSelect } from '../../../components/Forms';
 import { default as Img } from '../../../components/Image';
 
+import FileDetails from '../../../components/ImageDetails/File';
 import Exposure from '../../../components/ImageDetails/Exposure';
 import GPS from '../../../components/ImageDetails/GPS';
 import DateTime from '../../../components/ImageDetails/DateTime';
 import Row from '../../../components/ImageDetails/Row';
+import Filesize from '../../../components/Filesize';
 
 import styles from './styles.css';
 
@@ -149,24 +151,28 @@ class Image extends Component {
 
           <aside styleName='sidebar'>
 
-            <Row label='Captured at'>
-              <DateTime
-                value={image.captured_at}
-                timezone={image.captured_at_tz}
-                defaultTimezone='UTC'
-                displayTimezone={!!image.captured_at_tz}
-              />
+            { image.captured_at ?
+              <Row label='Captured at'>
+                <DateTime
+                  value={image.captured_at}
+                  timezone={image.captured_at_tz}
+                  defaultTimezone='UTC'
+                  displayTimezone={!!image.captured_at_tz}
+                />
 
-              <TimezoneSelect
-                name='captured_at_tz'
-                value={image.captured_at_tz}
-                timezones={this.props.timezones}
-              />
-            </Row>
+                <TimezoneSelect
+                  name='captured_at_tz'
+                  value={image.captured_at_tz}
+                  timezones={this.props.timezones}
+                />
+              </Row>
+            : null }
 
             <Row label='Uploaded at'>
               <DateTime value={image.created_at} />
             </Row>
+
+            <FileDetails image={image} />
 
             <Exposure image={image} />
 
@@ -208,9 +214,9 @@ class Image extends Component {
                       values={{
                         width: rendition.width,
                         height: rendition.height,
-                        filesize: rendition.filesize / 1000,
+                        filesize: <Filesize size={rendition.filesize} showDecimals={false} />,
                       }}
-                      defaultMessage='{width}x{height} ({filesize, number, noDecimals} KB)'
+                      defaultMessage='{width} × {height} ({filesize})'
                     />
                   </a>
                 </li>

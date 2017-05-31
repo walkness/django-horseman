@@ -5,6 +5,7 @@ import moment from 'moment-timezone';
 
 const DateTime = ({ value, timezone, defaultTimezone, displayTimezone, ...props }) => {
   let date = value && moment(value);
+  if (!date) return null;
   if (timezone) {
     date = date.tz(timezone);
   } else if (defaultTimezone) {

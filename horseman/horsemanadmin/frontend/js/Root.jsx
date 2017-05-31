@@ -32,10 +32,19 @@ const Root = ({ store, adminBase }) => (
             minimumFractionDigits: 0,
             maximumFractionDigits: 1,
           },
+          noSeparator: {
+            style: 'decimal',
+            useGrouping: false,
+          },
           noDecimals: {
             style: 'decimal',
             minimumFractionDigits: 0,
             maximumFractionDigits: 0,
+          },
+          oneDecimal: {
+            style: 'decimal',
+            minimumFractionDigits: 0,
+            maximumFractionDigits: 1,
           },
         },
       }}

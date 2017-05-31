@@ -33,7 +33,7 @@ const Coordinate = ({ value, lng }) => {
 
 
 const GPS = ({ image }) => {
-  const { gps } = image.meta;
+  const { gps } = (image && image.meta) || {};
   if (!gps) return null;
   const { lat, lng, altitude } = gps;
   return (
