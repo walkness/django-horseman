@@ -47,7 +47,7 @@ class ImageBrowser extends Component {
       showFilters: !!Object.keys(filtersWithoutSearchAndOrder).length,
     };
     this.pastThreshold = false;
-    this.scrollThreshold = 0.25;
+    this.scrollThreshold = 250;
   }
 
   componentWillMount() {
@@ -172,11 +172,12 @@ class ImageBrowser extends Component {
   @autobind
   handleScroll(e) {
     const scrollTop = this.props.useWindowScroll ? window.scrollY : e.target.scrollTop;
-    const pct = scrollTop / (this._contentHeight - this._containerHeight);
-    if (pct >= (1 - this.scrollThreshold) && !this.pastThreshold) {
+    const delta = (this._contentHeight - this._containerHeight) - scrollTop;
+    if (delta <= this.scrollThreshold && !this.pastThreshold) {
+      console.log('load!');
       this.pastThreshold = true;
       this.handleLoadNext();
-    } else if (pct < (1 - this.scrollThreshold)) {
+    } else if (delta > this.scrollThreshold) {
       this.pastThreshold = false;
     }
   }
