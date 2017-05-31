@@ -65,16 +65,16 @@ class AbstractImage(models.Model):
 
     hash = models.CharField(max_length=32, editable=False)
 
-    filesize = models.PositiveIntegerField(blank=True, null=True)
+    filesize = models.PositiveIntegerField(blank=True, null=True, editable=False)
     mime_type = models.CharField(max_length=50, blank=True)
 
     created_at = models.DateTimeField(default=timezone.now)
     created_by = models.ForeignKey(django_settings.AUTH_USER_MODEL)
 
     captured_at = models.DateTimeField(null=True, blank=True, editable=False)
-    captured_at_tz = TimeZoneField(null=True)
+    captured_at_tz = TimeZoneField(null=True, verbose_name='Captured in timezone')
 
-    exif_data = JSONField(blank=True, null=True)
+    exif_data = JSONField(blank=True, null=True, editable=False)
 
     wp_id = models.PositiveIntegerField(blank=True, null=True, editable=False)
 
