@@ -5,6 +5,7 @@ from django.apps import apps
 from django.conf import settings
 from django.utils import timezone
 from django.utils.formats import localize
+from django.core.mail import EmailMessage
 
 import markdown
 from mptt.models import MPTTModel, TreeForeignKey
@@ -205,3 +206,25 @@ class Comment(BaseComment):
             akismet.submit_ham(self.ip_address, self.user_agent, **self.get_akismet_check_kwargs())
         if save:
             self.save()
+
+    def get_email_subject(self):
+        return 'Comment from {}'.format(self.name)
+
+    def get_email_message(self):
+        return self.body.raw
+
+    def get_email_headers(self):
+        return {}
+
+    def send_email(self):
+        reply_to = self.email
+        if self.name:
+            reply_to = '{name} <{email}>'.format(name=self.name, email=self.email)
+        email = EmailMessage(
+            subject=self.get_email_subject(),
+            body=self.get_email_message(),
+            to=settings.ACTIVITY_EMAILS,
+            reply_to=[reply_to],
+            headers=self.get_email_headers(),
+        )
+        email.send()
