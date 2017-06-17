@@ -15,20 +15,20 @@ import {
   clearImageRenditions,
   timezones as timezonesAction,
   imageUpdated,
-} from '../../../../../actions';
-import { updateImage, replaceImageFile } from '../../../../../services/api';
+} from 'actions';
+import { updateImage, replaceImageFile } from 'services/api';
 
-import { Input, TimezoneSelect } from '../../../components/Forms';
-import { default as Img } from '../../../components/Image';
+import { Input, TimezoneSelect } from 'Components/Forms';
+import Img from 'Components/Image';
 
-import FileDetails from '../../../components/ImageDetails/File';
-import Exposure from '../../../components/ImageDetails/Exposure';
-import GPS from '../../../components/ImageDetails/GPS';
-import DateTime from '../../../components/ImageDetails/DateTime';
-import Row from '../../../components/ImageDetails/Row';
-import Filesize from '../../../components/Filesize';
+import FileDetails from 'Components/ImageDetails/File';
+import Exposure from 'Components/ImageDetails/Exposure';
+import GPS from 'Components/ImageDetails/GPS';
+import DateTime from 'Components/ImageDetails/DateTime';
+import Row from 'Components/ImageDetails/Row';
+import Filesize from 'Components/Filesize';
 
-import styles from './styles.css';
+import './styles.css';
 
 
 class Image extends Component {

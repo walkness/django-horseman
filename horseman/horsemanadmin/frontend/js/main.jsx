@@ -6,7 +6,7 @@ import { AppContainer } from 'react-hot-loader';
 
 import 'normalize.css';
 
-import store from './store';
+import store from 'store';
 
 import Root from './Root';
 

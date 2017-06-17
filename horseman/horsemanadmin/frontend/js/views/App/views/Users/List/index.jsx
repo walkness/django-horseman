@@ -3,9 +3,9 @@ import { connect } from 'react-redux';
 import { Link } from 'react-router';
 import Helmet from 'react-helmet';
 
-import { users as usersAction } from '../../../../../actions';
+import { users as usersAction } from 'actions';
 
-import styles from './styles.css';
+import './styles.css';
 
 
 class UserList extends Component {
@@ -28,19 +28,19 @@ class UserList extends Component {
     const { orderedUsers } = this.props;
     const ids = (orderedUsers && orderedUsers.default || [this.props.currentUser]);
     return (
-      <div styleName='styles.users'>
+      <div styleName='users'>
 
         <Helmet title='Users' />
 
-        <ul styleName='styles.users-list'>
+        <ul styleName='users-list'>
           { ids.map((id) => {
             const user = this.props.usersById[id];
             return (
-              <li key={id} styleName='styles.user'>
+              <li key={id} styleName='user'>
 
-                <div styleName='styles.name'>
+                <div styleName='name'>
 
-                  <div styleName='styles.gravatar'>
+                  <div styleName='gravatar'>
                     <img src={user.gravatar} role='presentation' />
                   </div>
 

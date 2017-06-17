@@ -4,7 +4,7 @@ import { FormattedMessage } from 'react-intl';
 
 import Row from './Row';
 
-import styles from './styles.css';
+import './styles.css';
 
 
 const Marker = () => (

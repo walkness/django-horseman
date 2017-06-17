@@ -1,6 +1,5 @@
 import React, { PropTypes } from 'react';
 
-import { DatePicker } from '../../Forms/Date';
 import DateRange from './DateRange';
 
 import './styles.css';

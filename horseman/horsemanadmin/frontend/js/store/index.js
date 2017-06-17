@@ -3,16 +3,16 @@
 import { createStore, applyMiddleware, compose } from 'redux';
 import createSagaMiddleware, { END } from 'redux-saga';
 
-import defaultInitialState from '../config/initialState';
-import reducer from '../reducers';
-import usersReducer from '../reducers/UsersReducer';
-import nodesReducer from '../reducers/NodesReducer';
-import commentsReducer from '../reducers/CommentsReducer';
-import configReducer from '../reducers/ConfigReducer';
+import defaultInitialState from 'config/initialState';
+import reducer from 'reducers';
+import usersReducer from 'reducers/UsersReducer';
+import nodesReducer from 'reducers/NodesReducer';
+import commentsReducer from 'reducers/CommentsReducer';
+import configReducer from 'reducers/ConfigReducer';
 
-import { LOGIN, NODES_CONFIGURATION, COMMENTS_CONFIGURATION, UPDATE_CONFIG } from '../constants/ActionTypes';
+import { LOGIN, NODES_CONFIGURATION, COMMENTS_CONFIGURATION, UPDATE_CONFIG } from 'constants/ActionTypes';
 
-import rootSaga from '../sagas';
+import rootSaga from 'sagas';
 
 
 const initData = window.__INIT__; // eslint-disable-line no-underscore-dangle

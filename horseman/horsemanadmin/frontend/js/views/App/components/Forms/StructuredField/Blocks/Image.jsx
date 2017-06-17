@@ -1,12 +1,12 @@
 import React, { Component, PropTypes } from 'react';
 import { autobind } from 'core-decorators';
 
+import Image from 'Components/Image';
+import ImageChooserModal from 'Components/ImageChooser/Modal';
+
+import { Select } from 'Components/Forms/Select';
+
 import Block from './HOC';
-
-import Image from '../../../Image';
-import ImageChooserModal from '../../../ImageChooser/Modal';
-
-import { Select } from '../../../Forms/Select';
 
 import styles from './styles.scss';
 

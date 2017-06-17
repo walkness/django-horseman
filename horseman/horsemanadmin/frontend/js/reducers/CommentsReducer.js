@@ -1,5 +1,5 @@
-import * as types from '../constants/ActionTypes';
-import initialState from '../config/initialState';
+import * as types from 'constants/ActionTypes';
+import initialState from 'config/initialState';
 
 
 export default function commentsReducer(state = initialState.comments, action) {

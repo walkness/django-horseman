@@ -3,7 +3,7 @@
 
 import 'isomorphic-fetch';
 
-import store from '../store';
+import store from 'store';
 
 const API_ROOT = 'api/v1/';
 

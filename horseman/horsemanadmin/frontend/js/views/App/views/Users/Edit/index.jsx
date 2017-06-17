@@ -4,10 +4,10 @@ import Formsy from 'formsy-react';
 import { autobind } from 'core-decorators';
 import Helmet from 'react-helmet';
 
-import { user as userAction, userUpdated } from '../../../../../actions';
-import { updateUser } from '../../../../../services/api';
+import { user as userAction, userUpdated } from 'actions';
+import { updateUser } from 'services/api';
 
-import { Input, Select } from '../../../components/Forms';
+import { Input, Select } from 'Components/Forms';
 
 
 class UserEdit extends Component {

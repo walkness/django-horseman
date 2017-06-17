@@ -1,7 +1,7 @@
 import React, { Component, PropTypes } from 'react';
 import { autobind } from 'core-decorators';
 
-import Modal, { ModalHeader, ModalFooter } from '../Modal';
+import Modal, { ModalHeader, ModalFooter } from 'Components/Modal';
 import Body from './Body';
 
 

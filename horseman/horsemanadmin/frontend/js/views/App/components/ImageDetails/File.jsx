@@ -1,7 +1,7 @@
 import React, { PropTypes } from 'react';
 import { FormattedMessage } from 'react-intl';
 
-import Filesize from '../Filesize';
+import Filesize from 'Components/Filesize';
 
 import Row from './Row';
 

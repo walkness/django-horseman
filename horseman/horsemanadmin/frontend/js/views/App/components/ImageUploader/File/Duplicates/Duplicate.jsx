@@ -1,8 +1,8 @@
 import React, { PropTypes } from 'react';
 
-import Image from '../../../Image';
-import DateTime from '../../../ImageDetails/DateTime';
-import Exposure from '../../../ImageDetails/Exposure';
+import Image from 'Components/Image';
+import DateTime from 'Components/ImageDetails/DateTime';
+import Exposure from 'Components/ImageDetails/Exposure';
 
 import './styles.scss';
 

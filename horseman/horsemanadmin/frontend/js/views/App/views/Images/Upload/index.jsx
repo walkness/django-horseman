@@ -2,9 +2,9 @@ import React, { Component, PropTypes } from 'react';
 import { connect } from 'react-redux';
 import Helmet from 'react-helmet';
 
-import { imageUploaded, images as imagesAction, imagesUpdated } from '../../../../../actions';
+import { imageUploaded, images as imagesAction, imagesUpdated } from 'actions';
 
-import ImageUploader from '../../../components/ImageUploader';
+import ImageUploader from 'Components/ImageUploader';
 
 
 class ImageUpload extends Component {

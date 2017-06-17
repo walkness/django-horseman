@@ -5,9 +5,9 @@ import classNames from 'classnames';
 import { FormattedMessage } from 'react-intl';
 import { autobind } from 'core-decorators';
 
-import uploadStatus from '../../../../../constants/UploadTypes';
-import { uploadImage } from '../../../../../services/api';
-import { flattenErrors } from '../../../../../utils';
+import uploadStatus from 'constants/UploadTypes';
+import { uploadImage } from 'services/api';
+import { flattenErrors } from 'utils';
 
 import Status from './Status';
 import Duplicates from './Duplicates';

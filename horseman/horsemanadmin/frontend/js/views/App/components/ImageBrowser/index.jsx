@@ -5,13 +5,13 @@ import { autobind } from 'core-decorators';
 import { isEqual } from 'lodash';
 import classNames from 'classnames';
 
-import { Input } from '../Forms/Input';
+import { Input } from 'Components/Forms/Input';
 
 import Grid from './Grid';
 import Filters from './Filters';
 import Ordering from './Ordering';
 
-import styles from './styles.css';
+import './styles.css';
 
 
 const MODES = {
@@ -207,11 +207,11 @@ class ImageBrowser extends Component {
       <div
         className={classNames('image-browser', { 'scroll-container': !this.props.useWindowScroll })}
         onScroll={this.handleScroll}
-        styleName='styles.browser'
+        styleName='browser'
         ref={(c) => { this.browser = c; }}
       >
 
-        <div styleName='styles.filters'>
+        <div styleName='filters'>
           <div styleName='search-ordering'>
             <Input
               name='s'
@@ -233,7 +233,7 @@ class ImageBrowser extends Component {
           />
         </div>
 
-        <div styleName='styles.images' ref={(c) => { this.container = c; }}>
+        <div styleName='images' ref={(c) => { this.container = c; }}>
 
           { mode === MODES.GRID ?
             <Grid

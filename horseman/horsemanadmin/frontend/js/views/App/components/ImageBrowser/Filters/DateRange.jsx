@@ -1,8 +1,8 @@
 import React, { PropTypes } from 'react';
 import moment from 'moment';
 
-import InputWrapper from '../../Forms/InputWrapper';
-import { DatePicker } from '../../Forms/Date';
+import InputWrapper from 'Components/Forms/InputWrapper';
+import { DatePicker } from 'Components/Forms/Date';
 
 import styles from './styles.css';
 

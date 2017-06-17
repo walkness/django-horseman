@@ -9,9 +9,9 @@ import titleCase from 'title-case';
 import classNames from 'classnames';
 import { autobind } from 'core-decorators';
 
-import { nodes as nodesAction } from '../../../../../actions';
-import { getNodeTypeFromURLComponents } from '../../../../../utils';
-import Image from '../../../components/Image';
+import { nodes as nodesAction } from 'actions';
+import { getNodeTypeFromURLComponents } from 'utils';
+import Image from 'Components/Image';
 
 import './styles.scss';
 

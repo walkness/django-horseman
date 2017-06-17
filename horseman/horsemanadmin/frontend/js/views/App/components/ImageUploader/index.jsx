@@ -5,7 +5,7 @@ import uuidV4 from 'uuid/v4';
 
 import File from './File';
 
-import styles from './styles.scss';
+import './styles.scss';
 
 
 class ImageUploader extends Component {
@@ -105,7 +105,7 @@ class ImageUploader extends Component {
 
   render() {
     return (
-      <div styleName='styles.ImageUploader'>
+      <div styleName='ImageUploader'>
 
         <Dropzone
           onDrop={this.handleDrop}
@@ -116,7 +116,7 @@ class ImageUploader extends Component {
           <div>Drop files here (or click) to upload…</div>
         </Dropzone>
 
-        <ul styleName='styles.files'>
+        <ul styleName='files'>
           { this.state.files.map(id => (
             <File
               key={id}

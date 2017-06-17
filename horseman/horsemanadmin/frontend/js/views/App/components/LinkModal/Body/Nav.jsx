@@ -1,7 +1,7 @@
 import React, { PropTypes } from 'react';
 import classNames from 'classnames';
 
-import NavTabs from '../../NavTabs';
+import NavTabs from 'Components/NavTabs';
 
 
 const LinkModalBody = ({ modes, activeMode, changeMode }) => (

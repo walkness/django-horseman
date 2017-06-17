@@ -4,9 +4,9 @@ import { routerShape } from 'react-router/lib/PropTypes';
 import { autobind } from 'core-decorators';
 import Helmet from 'react-helmet';
 
-import { images as imagesAction } from '../../../../../actions';
+import { images as imagesAction } from 'actions';
 
-import ImageBrowser from '../../../components/ImageBrowser';
+import ImageBrowser from 'Components/ImageBrowser';
 
 
 class ImageLibrary extends Component {

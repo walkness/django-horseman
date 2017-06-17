@@ -2,12 +2,12 @@ import React, { Component, PropTypes } from 'react';
 import { HOC } from 'formsy-react';
 import classNames from 'classnames';
 import { autobind } from 'core-decorators';
-import { default as BaseDatePicker } from 'react-datepicker';
+import BaseDatePicker from 'react-datepicker';
 import moment from 'moment';
 
-import InputWrapper from './InputWrapper';
-
 import 'react-datepicker/dist/react-datepicker.css';
+
+import InputWrapper from './InputWrapper';
 
 
 class Input extends Component {

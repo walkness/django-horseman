@@ -1,12 +1,12 @@
 import React, { PropTypes } from 'react';
 import Helmet from 'react-helmet';
 
-import styles from './styles.css';
+import './styles.css';
 
 
 const LoginWrapper = ({ children }) => (
-  <main id='login' styleName='styles.main'>
-    <div className='container' styleName='styles.container'>
+  <main id='login' styleName='main'>
+    <div className='container' styleName='container'>
 
       <Helmet htmlAttributes={{ class: 'login' }} />
 

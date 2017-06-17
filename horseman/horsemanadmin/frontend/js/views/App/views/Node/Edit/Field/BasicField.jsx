@@ -1,6 +1,6 @@
 import React, { PropTypes } from 'react';
 
-import { Input } from '../../../../components/Forms';
+import { Input } from 'Components/Forms';
 
 
 const Field = ({ fieldType, ...props }) => (

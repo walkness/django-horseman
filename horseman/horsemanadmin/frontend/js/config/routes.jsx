@@ -1,17 +1,17 @@
 import React from 'react';
 import { IndexRoute, Route } from 'react-router';
 
-import App from '../views/App';
-import Home from '../views/App/views/Home';
-import NodeList from '../views/App/views/Node/List';
-import NodeEdit from '../views/App/views/Node/Edit';
-import Images from '../views/App/views/Images';
-import ImageLibrary from '../views/App/views/Images/Library';
-import ImageUpload from '../views/App/views/Images/Upload';
-import Image from '../views/App/views/Images/Image';
-import UserList from '../views/App/views/Users/List';
-import UserEdit from '../views/App/views/Users/Edit';
-import Login from '../views/App/views/Login';
+import App from 'views/App';
+import Home from 'Views/Home';
+import NodeList from 'Views/Node/List';
+import NodeEdit from 'Views/Node/Edit';
+import Images from 'Views/Images';
+import ImageLibrary from 'Views/Images/Library';
+import ImageUpload from 'Views/Images/Upload';
+import Image from 'Views/Images/Image';
+import UserList from 'Views/Users/List';
+import UserEdit from 'Views/Users/Edit';
+import Login from 'Views/Login';
 
 export default (adminBase) => (
   <Route path={adminBase} component={App}>

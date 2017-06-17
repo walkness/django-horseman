@@ -1,6 +1,6 @@
 import React, { PropTypes } from 'react';
 
-import { Input } from '../../Forms/Input';
+import { Input } from 'Components/Forms/Input';
 
 
 const URL = ({ atts, onAttsChange }) => (

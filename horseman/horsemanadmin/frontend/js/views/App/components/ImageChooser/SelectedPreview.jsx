@@ -1,12 +1,11 @@
 import React, { PropTypes } from 'react';
 import { Link } from 'react-router';
 
-import Image from '../Image';
-
-import Exposure from '../ImageDetails/Exposure';
-import GPS from '../ImageDetails/GPS';
-import DateTime from '../ImageDetails/DateTime';
-import Row from '../ImageDetails/Row';
+import Image from 'Components/Image';
+import Exposure from 'Components/ImageDetails/Exposure';
+import GPS from 'Components/ImageDetails/GPS';
+import DateTime from 'Components/ImageDetails/DateTime';
+import Row from 'Components/ImageDetails/Row';
 
 import './styles.scss';
 

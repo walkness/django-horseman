@@ -2,7 +2,7 @@ import React, { PropTypes } from 'react';
 import { Link } from 'react-router';
 import classNames from 'classnames';
 
-import styles from './style.css';
+import './style.css';
 
 const NavItem = ({ to, children, active, ...extraProps }) => {
   if (to) {
@@ -10,7 +10,7 @@ const NavItem = ({ to, children, active, ...extraProps }) => {
       <Link
         to={to}
         className='link'
-        styleName='styles.NavItem'
+        styleName='NavItem'
         activeClassName='active'
         {...extraProps}
       >
@@ -22,7 +22,7 @@ const NavItem = ({ to, children, active, ...extraProps }) => {
     <button
       type='button'
       className={classNames('link', { active })}
-      styleName='styles.NavItem'
+      styleName='NavItem'
       {...extraProps}
     >
       { children }

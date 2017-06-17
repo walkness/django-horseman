@@ -1,8 +1,8 @@
-import * as types from '../constants/ActionTypes';
-import initialState from '../config/initialState';
+import * as types from 'constants/ActionTypes';
+import initialState from 'config/initialState';
 
-import { getPaginationParamsFromURI } from '../utils';
-import { queryString } from '../services/api';
+import { getPaginationParamsFromURI } from 'utils';
+import { queryString } from 'services/api';
 
 
 export default function imagesReducer(state = initialState.nodes, action) {

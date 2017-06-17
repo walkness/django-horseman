@@ -1,7 +1,7 @@
 import React, { PropTypes } from 'react';
 import titleCase from 'title-case';
 
-import { Input, RichText, StructuredField, ImageChooser, SlugField, DatePicker, TextArea } from '../../../../components/Forms';
+import { Input, RichText, StructuredField, ImageChooser, SlugField, DatePicker, TextArea } from 'Components/Forms';
 import ForeignKey from './ForeignKey';
 
 

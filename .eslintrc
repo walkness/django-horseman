@@ -16,5 +16,13 @@
     "no-underscore-dangle": [2, {
       "allowAfterThis": true
     }]
+  },
+
+  "settings": {
+    "import/resolver": {
+      "webpack": {
+        "config": "./horseman/horsemanadmin/frontend/webpack/dev.config.babel.js"
+      }
+    }
   }
 }

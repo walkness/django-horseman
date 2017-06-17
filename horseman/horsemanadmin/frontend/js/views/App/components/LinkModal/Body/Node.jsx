@@ -3,9 +3,9 @@ import { connect } from 'react-redux';
 import { autobind } from 'core-decorators';
 import classNames from 'classnames';
 
-import { nodes as nodesAction } from '../../../../../actions';
+import { nodes as nodesAction } from 'actions';
 
-import { Input, Select } from '../../Forms/Select';
+import { Input, Select } from 'Components/Forms/Select';
 
 import './styles.css';
 

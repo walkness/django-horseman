@@ -1,13 +1,13 @@
 import React, { Component, PropTypes } from 'react';
 import { autobind } from 'core-decorators';
 
-import Nav, { NavItem } from '../Nav';
-import ImageBrowser from '../ImageBrowser';
-import ImageUploader from '../ImageUploader';
+import Nav, { NavItem } from 'Components/Nav';
+import ImageBrowser from 'Components/ImageBrowser';
+import ImageUploader from 'Components/ImageUploader';
 
 import SelectedPreview from './SelectedPreview';
 
-import styles from './styles.scss';
+import './styles.scss';
 
 
 class ImageChooser extends Component {
@@ -77,9 +77,9 @@ class ImageChooser extends Component {
     const lastSelected = this.props.imagesById[
       selected.length > 0 && selected[selected.length - 1]];
     return (
-      <div styleName='styles.ImageChooser'>
+      <div styleName='ImageChooser'>
 
-        <header styleName='styles.header'>
+        <header styleName='header'>
           <Nav>
             { [{ slug: 'library', name: 'Library' }, { slug: 'upload', name: 'Upload' }].map(({ slug, name }) => (
               <NavItem
@@ -96,9 +96,9 @@ class ImageChooser extends Component {
         <main styleName='contentWrapper'>
           <div styleName='content'>
             { mode === 'library' ?
-              <div styleName='styles.library'>
+              <div styleName='library'>
 
-                <div styleName='styles.browser'>
+                <div styleName='browser'>
                   <ImageBrowser
                     imagesById={this.props.imagesById}
                     orderedImages={this.props.orderedImages}
@@ -113,7 +113,7 @@ class ImageChooser extends Component {
                   />
                 </div>
 
-                <div styleName='styles.selectedImage'>
+                <div styleName='selectedImage'>
                   { lastSelected ?
                     <SelectedPreview image={lastSelected} />
                   : null }
@@ -128,7 +128,7 @@ class ImageChooser extends Component {
           </div>
         </main>
 
-        <footer styleName='styles.footer'>
+        <footer styleName='footer'>
           <button
             type='button'
             className='btn'

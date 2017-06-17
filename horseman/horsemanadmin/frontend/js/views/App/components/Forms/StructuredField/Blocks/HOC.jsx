@@ -1,6 +1,6 @@
 import React, { Component, PropTypes } from 'react';
 
-import CloseButton from '../../../CloseButton';
+import CloseButton from 'Components/CloseButton';
 
 import AddBlock from '../AddBlock';
 

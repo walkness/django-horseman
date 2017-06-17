@@ -1,12 +1,12 @@
 import React, { PropTypes } from 'react';
 
-import styles from './styles.css';
+import './styles.css';
 
 
 const Row = ({ label, children }) => (
-  <dl styleName='styles.row'>
-    <dt styleName='styles.label'>{ label }</dt>
-    <dd styleName='styles.value'>{ children }</dd>
+  <dl styleName='row'>
+    <dt styleName='label'>{ label }</dt>
+    <dd styleName='value'>{ children }</dd>
   </dl>
 );
 

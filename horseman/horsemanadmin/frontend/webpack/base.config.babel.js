@@ -85,5 +85,14 @@ export default {
 
   resolve: {
     extensions: ['.js', '.jsx'],
+    modules: [
+      'node_modules',
+      path.resolve(__dirname, '../js'),
+    ],
+    alias: {
+      Components: path.resolve(__dirname, '../js/views/App/components'),
+      Views: path.resolve(__dirname, '../js/views/App/views'),
+      Styles: path.resolve(__dirname, '../scss'),
+    },
   },
 };

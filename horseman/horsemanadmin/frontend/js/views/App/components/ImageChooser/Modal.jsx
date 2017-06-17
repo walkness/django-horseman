@@ -1,7 +1,8 @@
 import React, { PropTypes } from 'react';
 
+import Modal, { ModalHeader, ModalBody } from 'Components/Modal';
+
 import ImageChooser from './index';
-import Modal, { ModalHeader, ModalBody, ModalFooter } from '../Modal';
 
 
 const ImageChooserModal = ({ modalProps, ...props }) => (

@@ -1,6 +1,6 @@
 import React, { Component, PropTypes } from 'react';
 
-import { ModalBody } from '../../Modal';
+import { ModalBody } from 'Components/Modal';
 
 import Nav from './Nav';
 import URL from './URL';

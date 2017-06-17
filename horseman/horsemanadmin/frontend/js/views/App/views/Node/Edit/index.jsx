@@ -14,17 +14,18 @@ import {
   nodeCreated,
   images as imagesAction,
   imageUploaded,
-} from '../../../../../actions';
-import { updateNode, createNode } from '../../../../../services/api';
-import { Input } from '../../../components/Forms';
-import Field from './Field';
-import { getNodeTypeFromURLComponents } from '../../../../../utils';
+} from 'actions';
+import { updateNode, createNode } from 'services/api';
+import { getNodeTypeFromURLComponents } from 'utils';
 
-import Dropdown, { DropdownMenu, DropdownToggle } from '../../../components/Dropdown';
+import { Input } from 'Components/Forms';
+import Dropdown, { DropdownMenu, DropdownToggle } from 'Components/Dropdown';
+
+import Field from './Field';
 
 import RevisionsList from './RevisionsList';
 
-import styles from './styles.scss';
+import './styles.scss';
 
 
 class EditNode extends Component {
@@ -213,7 +214,7 @@ class EditNode extends Component {
         onValidSubmit={this.handleSubmit}
         onChange={this.handleFormChange}
         noValidate
-        styleName='styles.form'
+        styleName='form'
         ref={(c) => { this.form = c; }}
       >
 
@@ -238,14 +239,14 @@ class EditNode extends Component {
           );
         }) }
 
-        <div styleName='styles.node-actions'>
-          <div styleName='styles.left'>
-            <div styleName='styles.action-buttons'>
+        <div styleName='node-actions'>
+          <div styleName='left'>
+            <div styleName='action-buttons'>
               <button
                 type='submit'
                 className='btn'
                 disabled={!changed || saving}
-                styleName='styles.primary-action'
+                styleName='primary-action'
               >
                 Save draft
               </button>

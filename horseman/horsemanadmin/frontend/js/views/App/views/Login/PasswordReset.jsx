@@ -3,9 +3,9 @@ import { autobind } from 'core-decorators';
 import Formsy from 'formsy-react';
 import { FormattedMessage } from 'react-intl';
 
-import { resetPassword } from '../../../../services/api';
-import { Input } from '../../components/Forms';
-import Modal, { ModalBody, ModalFooter } from '../../components/Modal';
+import { resetPassword } from 'services/api';
+import { Input } from 'Components/Forms';
+import Modal, { ModalBody, ModalFooter } from 'Components/Modal';
 
 
 class PasswordReset extends Component {

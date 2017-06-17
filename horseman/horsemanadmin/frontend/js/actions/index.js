@@ -1,6 +1,6 @@
 /* eslint-disable import/prefer-default-export, max-len */
 
-import * as types from '../constants/ActionTypes';
+import * as types from 'constants/ActionTypes';
 
 function action(type, payload = {}) {
   return { type, ...payload };

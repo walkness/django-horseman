@@ -2,8 +2,8 @@ import React, { Component, PropTypes } from 'react';
 import { HOC } from 'formsy-react';
 import { autobind } from 'core-decorators';
 
-import Image from '../Image';
-import ImageChooserModal from '../ImageChooser/Modal';
+import Image from 'Components/Image';
+import ImageChooserModal from 'Components/ImageChooser/Modal';
 
 import InputWrapper from './InputWrapper';
 

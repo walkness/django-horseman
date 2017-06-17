@@ -4,9 +4,9 @@ import { routerShape } from 'react-router/lib/PropTypes';
 import { FormattedMessage, FormattedRelative } from 'react-intl';
 import classNames from 'classnames';
 
-import Dropdown, { DropdownMenu, DropdownToggle } from '../../../components/Dropdown';
+import Dropdown, { DropdownMenu, DropdownToggle } from 'Components/Dropdown';
 
-import styles from './styles.scss';
+import './styles.scss';
 
 
 class RevisionsList extends Component {
@@ -28,10 +28,10 @@ class RevisionsList extends Component {
     const currentRevision = revisionsById && revisionsById[current];
     const currentRevisionUser = currentRevision && usersById[currentRevision.revision.created_by];
     return (
-      <div styleName='styles.revisions'>
+      <div styleName='revisions'>
 
         { currentRevision ?
-          <div styleName='styles.current-revision'>
+          <div styleName='current-revision'>
             { saving ?
               <FormattedMessage id='node.edit.saving' defaultMessage='Saving…' />
             :
@@ -59,7 +59,7 @@ class RevisionsList extends Component {
 
         <Dropdown>
           <DropdownToggle>▲</DropdownToggle>
-          <DropdownMenu styleName='styles.revisions-list'>
+          <DropdownMenu styleName='revisions-list'>
             { (revisions || []).map((id) => {
               const revision = revisionsById[id];
               const revisionUser = revision && usersById[revision.revision.created_by];
@@ -72,7 +72,7 @@ class RevisionsList extends Component {
                       query: id !== latest && { revision: id },
                     }}
                     className={classNames({ active })}
-                    styleName='styles.revision'
+                    styleName='revision'
                   >
                     { revisionUser ?
                       <img src={revisionUser.gravatar} role='presentation' />
@@ -92,7 +92,7 @@ class RevisionsList extends Component {
                       defaultMessage='{revisionDateRelative} by {revisedBy}'
                     />
                     { revision.revision.active ?
-                      <span styleName='styles.tag'>Live</span>
+                      <span styleName='tag'>Live</span>
                     : null }
                   </Link>
                 </li>

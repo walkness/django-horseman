@@ -1,7 +1,7 @@
 import React, { Component, PropTypes } from 'react';
 import { autobind } from 'core-decorators';
 
-import { TypedSelect } from '../../../../components/Forms';
+import { TypedSelect } from 'Components/Forms';
 
 
 class ForeignKey extends Component {

@@ -1,10 +1,10 @@
 import React, { PropTypes } from 'react';
 
-import styles from './style.css';
+import './style.css';
 
 
 const Nav = ({ children }) => (
-  <ul styleName='styles.Nav'>
+  <ul styleName='Nav'>
 
     { children }
 

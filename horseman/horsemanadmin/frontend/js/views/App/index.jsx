@@ -3,7 +3,7 @@ import { connect } from 'react-redux';
 import { routerShape } from 'react-router/lib/PropTypes';
 import Helmet from 'react-helmet';
 
-import { logout as logoutAction } from '../../actions';
+import { logout as logoutAction } from 'actions';
 
 import LoginWrapper from './components/LoginWrapper';
 import Sidebar from './components/Sidebar';

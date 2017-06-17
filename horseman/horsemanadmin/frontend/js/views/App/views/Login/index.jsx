@@ -5,12 +5,13 @@ import { autobind } from 'core-decorators';
 import Helmet from 'react-helmet';
 import Formsy from 'formsy-react';
 
-import { login } from '../../../../actions';
+import { login } from 'actions';
 
-import { Input } from '../../components/Forms';
+import { Input } from 'Components/Forms';
+
 import PasswordReset from './PasswordReset';
 
-import styles from './styles.css';
+import './styles.css';
 
 
 class Login extends Component {

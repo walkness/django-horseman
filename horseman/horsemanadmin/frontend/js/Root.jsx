@@ -5,7 +5,7 @@ import { Router, browserHistory } from 'react-router';
 import { Provider } from 'react-redux';
 import { IntlProvider } from 'react-intl';
 
-import getRoutes from './config/routes';
+import getRoutes from 'config/routes';
 
 
 const Root = ({ store, adminBase }) => (
