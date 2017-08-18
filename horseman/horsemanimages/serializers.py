@@ -1,4 +1,5 @@
 import os.path
+from io import BytesIO
 from rest_framework import serializers
 from rest_framework.exceptions import APIException
 import pytz
@@ -183,7 +184,7 @@ class ImageSerializer(serializers.ModelSerializer):
             instance.update_capture_time_from_exif(self.file_exif)
             instance.exif_updated = True
         else:
-            instance.update_exif(file)
+            instance.update_exif(instance.file_bytes)
 
         instance.save()
         return instance
@@ -194,7 +195,8 @@ class ImageSerializer(serializers.ModelSerializer):
             setattr(instance, attr, value)
 
         if file:
-            instance.file_bytes = file.file
+            file.seek(0)
+            instance.file_bytes = BytesIO(file.read())
 
             if not hasattr(self, 'file_hash'):
                 self.file_hash = models.compute_hash(instance.file_bytes)
