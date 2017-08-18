@@ -72,6 +72,10 @@ class EditNode extends Component {
     }
   }
 
+  componentDidMount() {
+    this.context.router.setRouteLeaveHook(this.props.route, this.routerWillLeave);
+  }
+
   componentWillReceiveProps(nextProps) {
     if (
       (this.props.params.id !== nextProps.params.id) ||
@@ -195,6 +199,12 @@ class EditNode extends Component {
   handleImageFiltersChange(newFilters) {
     const imageFilters = Object.assign({}, this.state.imageFilters, newFilters);
     this.setState({ imageFilters });
+  }
+
+  @autobind
+  routerWillLeave() {
+    if (this.state.changed) return 'You have unsaved changes. Are you sure you want to leave?';
+    return null;
   }
 
   render() {
