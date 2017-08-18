@@ -162,8 +162,12 @@ class ImageSerializer(serializers.ModelSerializer):
         if self.replace_images:
             instances = models.Image.objects.filter(pk__in=self.replace_images)
             updated = []
+            file.seek(0)
             for instance in instances:
-                updated.append(self.update(instance, {'file': file}))
+                updated.append(self.update(instance, {
+                    'file': file,
+                    'file_bytes': BytesIO(file.read()),
+                }))
             return updated
 
         if 'title' not in validated_data:
@@ -191,17 +195,18 @@ class ImageSerializer(serializers.ModelSerializer):
 
     def update(self, instance, validated_data):
         file = validated_data.pop('file', None)
+        file_bytes = validated_data.pop('file_bytes', None)
         for attr, value in validated_data.items():
             setattr(instance, attr, value)
 
         if file:
-            if getattr(file, 'closed', False) and hasattr(file, 'open'):
-                file.open('rb')
-            file.seek(0)
-            instance.file_bytes = BytesIO(file.read())
+            if not file_bytes:
+                file.seek(0)
+                file_bytes = BytesIO(file.read())
+            instance.file_bytes = file_bytes
 
             if not hasattr(self, 'file_hash'):
-                self.file_hash = models.compute_hash(instance.file_bytes)
+                self.file_hash = models.compute_hash(file_bytes)
             instance.hash = self.file_hash
 
             if 'title' not in validated_data:
@@ -216,7 +221,7 @@ class ImageSerializer(serializers.ModelSerializer):
             instance.file.save(file.name, file, save=False)
 
             if not hasattr(self, 'file_exif'):
-                self.file_exif = models.get_exif_json(instance.file_bytes)
+                self.file_exif = models.get_exif_json(file_bytes)
 
             instance.exif_data = self.file_exif
             instance.update_capture_time_from_exif(self.file_exif)
