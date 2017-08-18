@@ -195,6 +195,8 @@ class ImageSerializer(serializers.ModelSerializer):
             setattr(instance, attr, value)
 
         if file:
+            if getattr(file, 'closed', False) and hasattr(file, 'open'):
+                file.open('rb')
             file.seek(0)
             instance.file_bytes = BytesIO(file.read())
 
