@@ -162,6 +162,8 @@ class ImageSerializer(serializers.ModelSerializer):
         if self.replace_images:
             instances = models.Image.objects.filter(pk__in=self.replace_images)
             updated = []
+            if getattr(file, 'closed', False) and hasattr(file, 'open'):
+                file.open('rb')
             file.seek(0)
             for instance in instances:
                 updated.append(self.update(instance, {
