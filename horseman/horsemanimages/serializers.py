@@ -158,17 +158,15 @@ class ImageSerializer(serializers.ModelSerializer):
 
     def create(self, validated_data):
         file = validated_data.pop('file')
+        file_bytes = validated_data.pop('file_bytes', None)
 
         if self.replace_images:
             instances = models.Image.objects.filter(pk__in=self.replace_images)
             updated = []
-            if getattr(file, 'closed', False) and hasattr(file, 'open'):
-                file.open('rb')
-            file.seek(0)
             for instance in instances:
                 updated.append(self.update(instance, {
                     'file': file,
-                    'file_bytes': BytesIO(file.read()),
+                    'file_bytes': file_bytes,
                 }))
             return updated
 
@@ -180,7 +178,7 @@ class ImageSerializer(serializers.ModelSerializer):
         if hasattr(self, 'file_hash'):
             instance.hash = self.file_hash
 
-        instance.file_bytes = file.file
+        instance.file_bytes = file_bytes
         instance.filesize = file.size
         instance.original_filename = file.name
         instance.file.save(file.name, file, save=False)
@@ -190,7 +188,7 @@ class ImageSerializer(serializers.ModelSerializer):
             instance.update_capture_time_from_exif(self.file_exif)
             instance.exif_updated = True
         else:
-            instance.update_exif(instance.file_bytes)
+            instance.update_exif(file_bytes)
 
         instance.save()
         return instance

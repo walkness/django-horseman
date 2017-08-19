@@ -1,3 +1,5 @@
+from io import BytesIO
+
 from django.forms import CheckboxInput
 from django.db.models import Case, When, IntegerField
 
@@ -93,6 +95,8 @@ class ImageViewSet(BoolQueryParamMixin, SearchableMixin, viewsets.ModelViewSet):
     def create(self, request, *args, **kwargs):
         file = request.data.get('file', None)
         data = request.data.get('data', {})
+        data['file_bytes'] = BytesIO(file.read())
+        file.seek(0)
         data['file'] = file
 
         filterset = ImageUploadParams(request.query_params)
