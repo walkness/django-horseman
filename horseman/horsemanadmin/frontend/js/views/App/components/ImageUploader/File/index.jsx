@@ -26,6 +26,7 @@ class File extends Component {
     onUploadSuccess: PropTypes.func,
     onUploadError: PropTypes.func,
     onReplaceSuccess: PropTypes.func,
+    onDuplicate: PropTypes.func,
     addToQueue: PropTypes.func.isRequired,
     id: PropTypes.string.isRequired,
     imagesById: PropTypes.object.isRequired,
@@ -80,6 +81,7 @@ class File extends Component {
           ].indexOf(uploadError && uploadError.code) !== -1;
           const replaceIds = this.state.replaceIds.slice(0);
           if (isDuplicate) {
+            this.props.onDuplicate(id);
             ((uploadError && uploadError.duplicates) || []).forEach((duplicate) => {
               const index = replaceIds.indexOf(duplicate);
               if (index === -1) {
@@ -141,7 +143,7 @@ class File extends Component {
   }
 
   @autobind
-  handleUploadAnyway() {
+  handleUploadAnyway(addToQueue = true) {
     const uploadError = this.state.uploadErrors[0];
 
     const ignore_duplicates = (this.state.uploadArgs.ignore_duplicates || []).slice(0); // eslint-disable-line camelcase, max-len
@@ -158,12 +160,12 @@ class File extends Component {
 
     uploadArgs[`ignore_${uploadError.code}`] = true;
     this.setState({ uploadArgs }, () => {
-      this.props.addToQueue(this.props.id);
+      if (addToQueue) this.props.addToQueue(this.props.id);
     });
   }
 
   @autobind
-  handleReplace() {
+  handleReplace(addToQueue = true) {
     const { replaceIds, ignoreIds } = this.state;
 
     const ignore_duplicates = (this.state.uploadArgs.ignore_duplicates || []).slice(0); // eslint-disable-line camelcase, max-len
@@ -188,7 +190,7 @@ class File extends Component {
     uploadArgs[`ignore_${uploadError.code}`] = true;
 
     this.setState({ uploadArgs }, () => {
-      this.props.addToQueue(this.props.id);
+      if (addToQueue) this.props.addToQueue(this.props.id);
     });
   }
 
