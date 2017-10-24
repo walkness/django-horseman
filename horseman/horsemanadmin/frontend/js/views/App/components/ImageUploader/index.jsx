@@ -4,6 +4,8 @@ import Dropzone from 'react-dropzone';
 import uuidV4 from 'uuid/v4';
 import { FormattedMessage } from 'react-intl';
 
+import { Checkbox } from 'react-formsy-bootstrap-components';
+
 import File from './File';
 
 import './styles.scss';
@@ -34,6 +36,7 @@ class ImageUploader extends Component {
       queue: [],
       allowUpload: [],
       duplicates: [],
+      invalidateCaches: true,
     };
     this.fileComponents = {};
   }
@@ -166,9 +169,21 @@ class ImageUploader extends Component {
   }
 
   render() {
-    const { duplicates, allowUpload } = this.state;
+    const { duplicates, allowUpload, invalidateCaches } = this.state;
     return (
       <div styleName='ImageUploader'>
+
+        <div styleName='options'>
+
+          <Checkbox
+            name='invalidate_caches'
+            label='Invalidate caches?'
+            help='When selected, any nodes referencing replaced images will have their frontend caches invalidated.'
+            value={invalidateCaches}
+            onChange={v => this.setState({ invalidateCaches: v })}
+          />
+
+        </div>
 
         <Dropzone
           onDrop={this.handleDrop}
@@ -194,6 +209,7 @@ class ImageUploader extends Component {
               imagesById={this.props.imagesById}
               imagesRequest={this.props.imagesRequest}
               onDuplicate={this.addToDuplicates}
+              invalidateCaches={invalidateCaches}
             />
           )) }
         </ul>

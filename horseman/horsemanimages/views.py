@@ -68,6 +68,7 @@ class ImageUploadParams(filters.FilterSet):
     ignore_duplicate_hash = BooleanFilter(widget=CheckboxInput)
     ignore_duplicate_name = BooleanFilter(widget=CheckboxInput)
     ignore_duplicate_exif = BooleanFilter(widget=CheckboxInput)
+    invalidate_caches = BooleanFilter(widget=CheckboxInput)
 
     class Meta:
         model = models.Image

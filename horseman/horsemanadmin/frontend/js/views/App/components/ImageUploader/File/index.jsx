@@ -31,6 +31,7 @@ class File extends Component {
     id: PropTypes.string.isRequired,
     imagesById: PropTypes.object.isRequired,
     imagesRequest: PropTypes.func.isRequired,
+    invalidateCaches: PropTypes.bool.isRequired,
   };
 
   static defaultProps = {
@@ -68,11 +69,14 @@ class File extends Component {
   }
 
   handleUpload(props) {
-    const { file, id } = props || this.props;
+    const { file, id, invalidateCaches } = props || this.props;
     this.setState({ status: uploadStatus.UPLOADING }, () => {
       const data = new FormData();
       data.append('file', file);
-      uploadImage(data, this.state.uploadArgs, ({ error, response }) => {
+      const uploadArgs = Object.assign({}, this.state.uploadArgs, {
+        invalidate_caches: invalidateCaches,
+      });
+      uploadImage(data, uploadArgs, ({ error, response }) => {
         if (error) {
           const uploadErrors = flattenErrors(error);
           const uploadError = uploadErrors[0];

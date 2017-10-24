@@ -22,8 +22,9 @@ def handle_comment_post_save(instance, **kwargs):
 
 
 def handle_image_post_save(instance, **kwargs):
+    invalidate_caches = getattr(instance, '_invalidate_caches', True)
     changed_fields = list(getattr(instance, '_changed_fields', set()))
-    if len(changed_fields) > 0:
+    if invalidate_caches and len(changed_fields) > 0:
         invalidate_item(instance)
 
 

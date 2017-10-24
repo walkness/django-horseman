@@ -1,3 +1,6 @@
 [submodule "horseman/horsemanadmin/frontend/js/views/App/components/RTE"]
 	path = horseman/horsemanadmin/frontend/js/views/App/components/RTE
 	url = https://github.com/walkness/react-rte.git
+[submodule "horseman/horsemanadmin/frontend/js/modules/react-formsy-bootstrap-components"]
+	path = horseman/horsemanadmin/frontend/js/modules/react-formsy-bootstrap-components
+	url = https://github.com/walkness/react-formsy-bootstrap-components.git

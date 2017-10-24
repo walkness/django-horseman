@@ -121,6 +121,11 @@ class CloudFrontBackend(BaseBackend):
 class ConsoleBackend(BaseBackend):
 
     def perform_invalidation(self, paths, objects=None):
+        # import inspect
+        # print('\nCalled from:')
+        # for frame in inspect.stack():
+        #     print('\n{1}, line {2}: {3}'.format(*frame))
+
         print('\nInvalidating paths for cache "{name}":\n{paths}\n'.format(
             paths='\n'.join(paths), name=self.name))
         obj = self.get_invalidation_model()

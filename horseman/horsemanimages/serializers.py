@@ -107,6 +107,7 @@ class ImageSerializer(serializers.ModelSerializer):
         self.ignore_duplicate_hash = kwargs.pop('ignore_duplicate_hash', False)
         self.ignore_duplicate_name = kwargs.pop('ignore_duplicate_name', False)
         self.ignore_duplicate_exif = kwargs.pop('ignore_duplicate_exif', False)
+        self.invalidate_caches = kwargs.pop('invalidate_caches', False)
         super(ImageSerializer, self).__init__(*args, **kwargs)
         self.fields['renditions'].async_renditions = self.async_renditions
         self.file_hash = None
@@ -197,6 +198,8 @@ class ImageSerializer(serializers.ModelSerializer):
         instance.update_capture_time_from_exif(self.file_exif)
         instance.exif_updated = True
 
+        instance._invalidate_caches = self.invalidate_caches
+
         instance.save()
         return instance
 
@@ -225,6 +228,8 @@ class ImageSerializer(serializers.ModelSerializer):
             instance.exif_data = self.file_exif
             instance.update_capture_time_from_exif(self.file_exif)
             instance.exif_updated = True
+
+        instance._invalidate_caches = self.invalidate_caches
 
         instance.save()
 

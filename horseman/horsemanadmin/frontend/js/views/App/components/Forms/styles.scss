@@ -98,3 +98,17 @@
     }
   }
 }
+
+:global {
+  .help-block {
+    font-size: .8em;
+    color: gray(60%);
+    margin-top: .5em;
+  }
+
+  .form-check {
+    .custom-control-description {
+      margin-left: .5em;
+    }
+  }
+}
