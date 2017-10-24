@@ -89,10 +89,10 @@ class AbstractImage(models.Model):
         abstract = True
 
     @classmethod
-    def get_tzwhere(cls):
+    def get_tzwhere(cls, *args, **kwargs):
         if not getattr(cls, '_tzwhere', None):
             from tzwhere import tzwhere
-            cls._tzwhere = tzwhere.tzwhere()
+            cls._tzwhere = tzwhere.tzwhere(*args, **kwargs)
         return cls._tzwhere
 
     @property
@@ -241,15 +241,15 @@ class AbstractImage(models.Model):
                 aware = tz.localize(naive)
                 self.captured_at = aware
 
-    def update_captured_at_tz_from_gps(self, default=None):
+    def update_captured_at_tz_from_gps(self, default=None, force=True):
         tz = default
         gps = self.gps_data
         if gps:
             lat = gps.get('lat', None)
             lng = gps.get('lng', None)
             if lat and lng:
-                where = self.__class__.get_tzwhere()
-                tzName = where.tzNameAt(lat, lng)
+                where = self.__class__.get_tzwhere(forceTZ=force)
+                tzName = where.tzNameAt(lat, lng, forceTZ=force)
                 if tzName:
                     tz = pytz.timezone(tzName)
                     self.captured_at_tz = tz
@@ -302,7 +302,7 @@ class AbstractImage(models.Model):
         base_filename_wo_ext, ext = os.path.splitext(base_filename)
 
         filename = '{}-{}{}'.format(base_filename_wo_ext, filter_.get_filename_extension(), ext)
-        
+
         generated_image = filter_.run(self, BytesIO())
         rendition.file.save(filename, generated_image.f, save=False)
         rendition.filesize = rendition.file.size

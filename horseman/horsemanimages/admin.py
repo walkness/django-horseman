@@ -1,4 +1,4 @@
-from django.contrib import admin
+from django.contrib import admin, messages
 from django.urls import reverse
 from django.db.models import Count
 
@@ -13,6 +13,7 @@ class ImageAdmin(admin.ModelAdmin):
     list_filter = ['mime_type']
     search_fields = ['title', 'original_filename']
     ordering = ['-created_at']
+    actions = ['update_timezone']
 
     def get_queryset(self, request):
         queryset = super(ImageAdmin, self).get_queryset(request)
@@ -38,6 +39,30 @@ class ImageAdmin(admin.ModelAdmin):
             image=obj.pk,
         )
     renditions.allow_tags = True
+
+    def update_timezone(self, request, queryset):
+        set_timezones = []
+        for image in queryset:
+            tz = image.update_captured_at_tz_from_gps()
+            if tz:
+                image.update_capture_time_from_exif()
+            image.save()
+            if tz:
+                set_timezones.append(image.pk)
+        if len(set_timezones) > 0:
+            self.message_user(
+                request,
+                'Updated timezones for {} of {} images.'.format(
+                    len(set_timezones), len(queryset)),
+                messages.SUCCESS,
+            )
+        else:
+            self.message_user(
+                request,
+                'Unable to update timezones for {} images.'.format(
+                    len(queryset)),
+                messages.ERROR,
+            )
 
 
 @admin.register(models.Rendition)
