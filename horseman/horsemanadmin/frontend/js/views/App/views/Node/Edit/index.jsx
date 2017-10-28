@@ -132,7 +132,7 @@ class EditNode extends Component {
         } else {
           const action = params.id ? this.props.nodeUpdated : this.props.nodeCreated;
           action(response, nodeType);
-          this.setState({ saving: false, error: null });
+          this.setState({ saving: false, error: null, changed: false });
           if (!params.id) {
             const { adminURLBase } = this.props;
             const { app_label, model_name } = nodeState.configuration;
