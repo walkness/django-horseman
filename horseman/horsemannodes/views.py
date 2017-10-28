@@ -77,7 +77,7 @@ class NodeViewSet(BoolQueryParamMixin, SearchableMixin, viewsets.ModelViewSet):
         obj = super(NodeViewSet, self).get_object()
         revision = self.get_revision()
         if revision:
-            obj = obj.as_revision(revision)
+            return obj.as_revision(revision)
         return obj
 
     def perform_create(self, serializer):

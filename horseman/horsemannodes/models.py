@@ -1,5 +1,6 @@
 import uuid
 import datetime
+from copy import deepcopy
 
 from django.db import models, connection
 from django.conf import settings as django_settings
@@ -318,10 +319,11 @@ class Node(AbstractNode):
         return self.revisions.create(content=self.get_revision_content(), **kwargs)
 
     def as_revision(self, revision):
+        new_obj = deepcopy(self)
         for att, value in revision.content_as_internal_value(self.__class__).items():
-            setattr(self, att, value)
-        self.revision = revision
-        return self
+            setattr(new_obj, att, value)
+        new_obj.revision = revision
+        return new_obj
 
     def create_renditions(self, handle_create_rendition=None, async_renditions=False):
         images, renditions = self.get_related_images()
