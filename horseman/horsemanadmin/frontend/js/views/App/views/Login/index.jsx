@@ -8,6 +8,7 @@ import Formsy from 'formsy-react';
 import { login } from 'actions';
 
 import { Input } from 'Components/Forms';
+import FormMessages from 'Components/FormMessages';
 
 import PasswordReset from './PasswordReset';
 
@@ -22,10 +23,12 @@ class Login extends Component {
     loginRequest: PropTypes.func.isRequired,
     location: locationShape.isRequired,
     adminBase: PropTypes.string.isRequired,
+    error: PropTypes.shape({ field_errors: PropTypes.object, non_field_errors: PropTypes.array }),
   };
 
   static defaultProps = {
     isLoggedIn: false,
+    error: null,
   };
 
   static contextTypes = {
@@ -46,9 +49,8 @@ class Login extends Component {
       this.context.router.push(this.props.location.query.next || this.props.adminBase);
     }
     if (nextProps.error) {
-      // const { fields, other } = processServerError(nextProps.error, ['email', 'password']);
-      // this.form.updateInputsWithError(fields);
-      // this.setState({ serverError: other });
+      this.form.updateInputsWithError(nextProps.error.field_errors);
+      this.setState({ serverError: nextProps.error.non_field_errors });
     }
   }
 
@@ -78,9 +80,7 @@ class Login extends Component {
 
           <h1 styleName='heading'>Please Sign In</h1>
 
-          <div className='error'>
-            { serverError.map((error, i) => <p key={i}>{error}</p>) }
-          </div>
+          <FormMessages errors={serverError} />
 
           <Input
             name='username'

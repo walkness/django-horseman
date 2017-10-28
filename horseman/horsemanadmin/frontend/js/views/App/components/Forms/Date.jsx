@@ -37,14 +37,18 @@ class Input extends Component {
   }
 
   render() {
-    const { onChange, value: dateStr, className, type, ...inputProps } = this.props;
+    const { onChange, value: dateStr, className, type, renderFeedback, ...inputProps } = this.props;
     return (
-      <BaseDatePicker
-        className={classNames('control', className)}
-        onChange={this.handleChange}
-        selected={dateStr && moment(dateStr)}
-        {...inputProps}
-      />
+      <div>
+        <BaseDatePicker
+          className={classNames('control', className)}
+          onChange={this.handleChange}
+          selected={dateStr && moment(dateStr)}
+          {...inputProps}
+        />
+
+        { renderFeedback && renderFeedback() }
+      </div>
     );
   }
 }

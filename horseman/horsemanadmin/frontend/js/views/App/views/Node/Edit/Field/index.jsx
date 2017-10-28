@@ -7,7 +7,7 @@ import { StructuredField } from 'Components/Forms/StructuredField';
 import ForeignKey from './ForeignKey';
 
 
-const Field = ({ config, fieldRef, ...props }) => {
+const Field = ({ config, fieldRef, nonFormsyFieldErrors, ...props }) => {
   const inputProps = {
     name: config.name,
     label: titleCase(config.verbose_name),
@@ -17,6 +17,18 @@ const Field = ({ config, fieldRef, ...props }) => {
     heading: !!config.title_field,
     ...props,
   };
+
+  if ([
+    'horseman.horsemannodes.fields.StructuredField',
+    'horseman.horsemannodes.fields.RichTextField',
+  ].indexOf(config.type) !== -1) {
+    inputProps.isValid = () => !nonFormsyFieldErrors[config.name];
+    inputProps.isPristine = () => false;
+  }
+
+  if (nonFormsyFieldErrors[config.name]) {
+    inputProps.getErrorMessages = () => nonFormsyFieldErrors[config.name];
+  }
 
   if (
     [

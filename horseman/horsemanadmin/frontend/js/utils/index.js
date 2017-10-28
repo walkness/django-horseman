@@ -58,3 +58,24 @@ export const flattenErrors = (errors, fieldMessage = (fieldName, error) => `${fi
   }
   return [];
 };
+
+export function processServerError(error, fieldNames) {
+  let fields = Object.assign({}, error.field_errors);
+  const other = (error.non_field_errors || []).slice(0);
+  if (fieldNames) {
+    fields = {};
+    Object.keys(error.field_errors).forEach((fieldName) => {
+      const fieldError = error.field_errors[fieldName];
+      if (fieldNames.indexOf(fieldName) !== -1) {
+        fields[fieldName] = fieldError;
+      } else {
+        const otherError = {
+          message: `${fieldName}: ${fieldError.message || fieldError}`,
+        };
+        if (fieldError.code) otherError.code = `${fieldName}_${fieldError.code}`;
+        other.push(otherError);
+      }
+    });
+  }
+  return { fields, other };
+}

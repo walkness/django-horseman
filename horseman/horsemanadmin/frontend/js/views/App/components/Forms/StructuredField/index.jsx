@@ -119,66 +119,71 @@ class _StructuredField extends Component {
   }
 
   render() {
+    const { renderFeedback } = this.props;
     return (
-      <div styleName='styles.structured-field'>
-        { this.state.value.map((block, i) => {
-          const blockProps = {
-            key: block.key,
-            index: i,
-            onChange: (v, update) => this.updateBlock(i, v, update),
-            deleteBlock: this.deleteBlock,
-            ref: c => { this.blockRefs[i] = c; },
-            block,
-            blocks: this.props.fieldConfig.blocks,
-            onAddBeforeClick: newBlock => this.addNewBlock(newBlock, i),
-            onMoveUp: () => this.moveBlockUp(i),
-            onMoveDown: () => this.moveBlockDown(i),
-            isNew: this.state.newest === i,
-            blockChanging: this.blockChanging === null ? null : this.blockChanging === i,
-          };
-          if (block.type === 'richtext') {
-            return <RichText {...blockProps} />;
-          }
-          if (block.type === 'image' || block.type === 'gallery') {
-            let sizeOptions;
-            let defaultSize;
-            let minCols = 2;
-            let maxCols = 5;
-            if (block.type === 'gallery') {
-              const { fieldConfig } = this.props;
-              const blockConfig = getBlockConfig(fieldConfig, block.type);
-              sizeOptions = ((
-                blockConfig && blockConfig.fields.size && blockConfig.fields.size.size_options
-              ) || []).map(opt => ({ value: opt[0], label: opt[1] }));
-              defaultSize = (
-                (blockConfig.fields.size && blockConfig.fields.size.default)
-              ) || (sizeOptions.length > 0 ? sizeOptions[0].value : null);
+      <div>
+        <div styleName='styles.structured-field'>
+          { this.state.value.map((block, i) => {
+            const blockProps = {
+              key: block.key,
+              index: i,
+              onChange: (v, update) => this.updateBlock(i, v, update),
+              deleteBlock: this.deleteBlock,
+              ref: c => { this.blockRefs[i] = c; },
+              block,
+              blocks: this.props.fieldConfig.blocks,
+              onAddBeforeClick: newBlock => this.addNewBlock(newBlock, i),
+              onMoveUp: () => this.moveBlockUp(i),
+              onMoveDown: () => this.moveBlockDown(i),
+              isNew: this.state.newest === i,
+              blockChanging: this.blockChanging === null ? null : this.blockChanging === i,
+            };
+            if (block.type === 'richtext') {
+              return <RichText {...blockProps} />;
             }
-            return (
-              <Image
-                {...blockProps}
-                imagesById={this.props.imagesById}
-                orderedImages={this.props.orderedImages}
-                imagesRequest={this.props.imagesRequest}
-                imageUploaded={this.props.imageUploaded}
-                gallery={block.type === 'gallery'}
-                sizeOptions={sizeOptions}
-                defaultSize={defaultSize}
-                minColumns={minCols}
-                maxColumns={maxCols}
-                imageFilters={this.props.imageFilters}
-                handleImageFiltersChange={this.props.handleImageFiltersChange}
-              />
-            );
-          }
+            if (block.type === 'image' || block.type === 'gallery') {
+              let sizeOptions;
+              let defaultSize;
+              let minCols = 2;
+              let maxCols = 5;
+              if (block.type === 'gallery') {
+                const { fieldConfig } = this.props;
+                const blockConfig = getBlockConfig(fieldConfig, block.type);
+                sizeOptions = ((
+                  blockConfig && blockConfig.fields.size && blockConfig.fields.size.size_options
+                ) || []).map(opt => ({ value: opt[0], label: opt[1] }));
+                defaultSize = (
+                  (blockConfig.fields.size && blockConfig.fields.size.default)
+                ) || (sizeOptions.length > 0 ? sizeOptions[0].value : null);
+              }
+              return (
+                <Image
+                  {...blockProps}
+                  imagesById={this.props.imagesById}
+                  orderedImages={this.props.orderedImages}
+                  imagesRequest={this.props.imagesRequest}
+                  imageUploaded={this.props.imageUploaded}
+                  gallery={block.type === 'gallery'}
+                  sizeOptions={sizeOptions}
+                  defaultSize={defaultSize}
+                  minColumns={minCols}
+                  maxColumns={maxCols}
+                  imageFilters={this.props.imageFilters}
+                  handleImageFiltersChange={this.props.handleImageFiltersChange}
+                />
+              );
+            }
 
-          return null;
-        }) }
+            return null;
+          }) }
 
-        <AddBlock
-          blocks={this.props.fieldConfig.blocks}
-          onClick={this.addNewBlock}
-        />
+          <AddBlock
+            blocks={this.props.fieldConfig.blocks}
+            onClick={this.addNewBlock}
+          />
+        </div>
+
+        { renderFeedback && renderFeedback() }
       </div>
     );
   }

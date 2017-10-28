@@ -46,6 +46,7 @@ class EditNode extends Component {
       imageFilters: {},
       saving: false,
       error: null,
+      nonFormsyFieldErrors: {},
     };
     this.fieldRefs = {};
     const nodeConfig = props.nodes[this.getNodeType()].configuration;
@@ -127,7 +128,17 @@ class EditNode extends Component {
         Object.assign({}, { type: nodeType }, query),
       ).then(({ response, error }) => {
         if (error) {
-          this.setState({ saving: false, error });
+          const formsyFieldErrors = Object.assign({}, error.field_errors);
+          const nonFormsyFieldErrors = {};
+          missingValues.forEach((fieldName) => {
+            const err = error.field_errors[fieldName];
+            if (err) {
+              delete formsyFieldErrors[fieldName];
+              nonFormsyFieldErrors[fieldName] = err;
+            }
+          });
+          this.setState({ saving: false, error: error.non_field_errors, nonFormsyFieldErrors });
+          invalidateForm(formsyFieldErrors);
         } else {
           const action = params.id ? this.props.nodeUpdated : this.props.nodeCreated;
           action(response, nodeType);
@@ -244,6 +255,7 @@ class EditNode extends Component {
               onChange={(value) => this.handleFormChange(fieldName, value)}
               imageFilters={this.state.imageFilters}
               handleImageFiltersChange={this.handleImageFiltersChange}
+              nonFormsyFieldErrors={this.state.nonFormsyFieldErrors}
             />
           );
         }) }

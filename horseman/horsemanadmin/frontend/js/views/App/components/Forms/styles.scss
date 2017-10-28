@@ -24,12 +24,14 @@
 
   }
 
+  &:global(.has-danger),
   &:global(.error) {
-    :global {
-      & .input-label {
-        color: red;
-      }
+    .label,
+    :global(.form-control-feedback) {
+      color: red;
+    }
 
+    :global {
       & input,
       & textarea {
         border-bottom-color: red;
@@ -109,6 +111,16 @@
   .form-check {
     .custom-control-description {
       margin-left: .5em;
+    }
+  }
+
+  .form-control-feedback {
+    list-style-type: none;
+    margin: 0;
+    padding: 1em 0;
+
+    &:empty {
+      display: none;
     }
   }
 }
