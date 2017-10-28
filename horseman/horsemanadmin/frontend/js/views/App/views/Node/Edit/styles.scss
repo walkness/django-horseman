@@ -7,10 +7,10 @@ $extra-actions-width: 14rem;
 .form {
     padding-bottom: 4.5rem;
 
-    > :global(.input-wrapper) {
+    > :global(.form-group) {
         > :global(.control-wrapper) {
-            > input:not(:global(.slug-field)),
-            > textarea {
+            input:not(:global(.slug-field)),
+            textarea {
                 font-family: 'Georgia', serif;
             }
         }

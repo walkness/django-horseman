@@ -18,7 +18,6 @@ import {
 import { updateNode, createNode } from 'services/api';
 import { getNodeTypeFromURLComponents } from 'utils';
 
-import { Input } from 'Components/Forms';
 import Dropdown, { DropdownMenu, DropdownToggle } from 'Components/Dropdown';
 
 import Field from './Field';
@@ -174,9 +173,9 @@ class EditNode extends Component {
         if (fieldConfig.autopopulate) {
           const components = [];
           const oldComponents = [];
-          const oldSlug = this.fieldRefs[autoField].props.getValue();
+          const oldSlug = this.fieldRefs[autoField].props.formsy.getValue();
           fieldConfig.autopopulate.forEach((source) => {
-            const oldValue = this.fieldRefs[source].props.getValue();
+            const oldValue = this.fieldRefs[source].props.formsy.getValue();
             oldComponents.push(oldValue);
             if (source === field) {
               components.push(value);
@@ -185,7 +184,7 @@ class EditNode extends Component {
             }
           });
           if (!oldSlug || slugify(oldComponents.join('-')).toLowerCase() === oldSlug.toLowerCase()) {
-            this.fieldRefs[autoField].props.setValue(slugify(components.join('-')).toLowerCase());
+            this.fieldRefs[autoField].props.formsy.setValue(slugify(components.join('-')).toLowerCase());
           }
         }
       });

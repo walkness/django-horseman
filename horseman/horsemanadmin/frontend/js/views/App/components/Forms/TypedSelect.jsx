@@ -6,10 +6,13 @@ import Select from 'react-select';
 
 import 'react-select/dist/react-select.css';
 
+import BaseInputWrapper from 'react-formsy-bootstrap-components/InputWrapper';
+import FormGroup from 'react-formsy-bootstrap-components/FormGroup';
+
 import InputWrapper from './InputWrapper';
 
 
-class TypedSelect extends Component {
+class _TypedSelect extends Component {
 
   static propTypes = {
     onChange: PropTypes.func,
@@ -23,27 +26,32 @@ class TypedSelect extends Component {
 
   @autobind
   handleChange(e) {
-    let value;
-    if (this.props.multi) {
-      value = (e || []).map(opt => opt.value);
-    } else {
-      value = e && e.value;
+    const { formsy, onChange } = this.props;
+    const { setValue } = formsy;
+    if (setValue || onChange) {
+      let value;
+      if (this.props.multi) {
+        value = (e || []).map(opt => opt.value);
+      } else {
+        value = e && e.value;
+      }
+      if (setValue) setValue(value);
+      if (onChange) onChange(value, e);
     }
-    this.props.setValue(value);
-    this.props.onChange(value);
   }
 
   render() {
-    const { setValue, getValue, onChange, value, className, type, ...inputProps } = this.props;
+    const { formsy, onChange, className, type, ...inputProps } = this.props;
     return (
       <Select
         className={classNames('control', className)}
         onChange={this.handleChange}
-        value={getValue()}
         {...inputProps}
       />
     );
   }
 }
 
-export default HOC(InputWrapper(TypedSelect));
+const TypedSelect = InputWrapper(BaseInputWrapper(_TypedSelect, FormGroup));
+
+export default HOC(TypedSelect);

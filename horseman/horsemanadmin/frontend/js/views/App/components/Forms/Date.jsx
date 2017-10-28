@@ -7,6 +7,9 @@ import moment from 'moment';
 
 import 'react-datepicker/dist/react-datepicker.css';
 
+import BaseInputWrapper from 'react-formsy-bootstrap-components/InputWrapper';
+import FormGroup from 'react-formsy-bootstrap-components/FormGroup';
+
 import InputWrapper from './InputWrapper';
 
 
@@ -14,21 +17,27 @@ class Input extends Component {
 
   static propTypes = {
     onChange: PropTypes.func,
+    formsy: PropTypes.shape({ setValue: PropTypes.func }),
   };
 
   static defaultProps = {
     onChange: () => {},
+    formsy: {},
   };
 
   @autobind
   handleChange(value) {
-    this.props.setValue(value && value.format('YYYY-MM-DD'));
-    this.props.onChange(value);
+    const { formsy, onChange } = this.props;
+    const { setValue } = formsy;
+    if (setValue || onChange) {
+      const dateStr = value && value.format('YYYY-MM-DD');
+      if (setValue) setValue(dateStr);
+      if (onChange) onChange(dateStr, value);
+    }
   }
 
   render() {
-    const { setValue, getValue, onChange, value, className, type, ...inputProps } = this.props;
-    const dateStr = getValue();
+    const { onChange, value: dateStr, className, type, ...inputProps } = this.props;
     return (
       <BaseDatePicker
         className={classNames('control', className)}
@@ -40,6 +49,6 @@ class Input extends Component {
   }
 }
 
-export const DatePicker = InputWrapper(Input);
+export const DatePicker = InputWrapper(BaseInputWrapper(Input, FormGroup));
 
 export default HOC(DatePicker);

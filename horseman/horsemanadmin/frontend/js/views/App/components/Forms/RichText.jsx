@@ -1,13 +1,17 @@
 import React, { Component, PropTypes } from 'react';
 import classNames from 'classnames';
 import { autobind } from 'core-decorators';
+import { HOC } from 'formsy-react';
+
+import BaseInputWrapper from 'react-formsy-bootstrap-components/InputWrapper';
+import FormGroup from 'react-formsy-bootstrap-components/FormGroup';
 
 import RichTextEditor from 'Components/RTE/src/RichTextEditor';
 
 import InputWrapper from './InputWrapper';
 
 
-class RichText extends Component {
+class _RichText extends Component {
 
   static propTypes = {
     type: PropTypes.string,
@@ -25,7 +29,7 @@ class RichText extends Component {
       value: null,
     };
     if (props.value) {
-      this.state.value = RichTextEditor.createValueFromString(props.value, 'html');      
+      this.state.value = RichTextEditor.createValueFromString(props.value, 'html');
     } else {
       this.state.value = RichTextEditor.createEmptyValue();
     }
@@ -54,4 +58,6 @@ class RichText extends Component {
   }
 }
 
-export default InputWrapper(RichText);
+export const RichText = InputWrapper(BaseInputWrapper(_RichText, FormGroup));
+
+export default HOC(RichText);

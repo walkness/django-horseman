@@ -2,6 +2,9 @@ import React, { Component, PropTypes } from 'react';
 import { HOC } from 'formsy-react';
 import { autobind } from 'core-decorators';
 
+import BaseInputWrapper from 'react-formsy-bootstrap-components/InputWrapper';
+import FormGroup from 'react-formsy-bootstrap-components/FormGroup';
+
 import Image from 'Components/Image';
 import ImageChooserModal from 'Components/ImageChooser/Modal';
 
@@ -10,7 +13,7 @@ import InputWrapper from './InputWrapper';
 import './styles.scss';
 
 
-class ImageChooser extends Component {
+class _ImageChooser extends Component {
 
   static propTypes = {
     onChange: PropTypes.func,
@@ -31,15 +34,17 @@ class ImageChooser extends Component {
 
   @autobind
   handleChange(id) {
-    this.props.setValue(id);
-    this.props.onChange(id);
+    const { formsy, onChange } = this.props;
+    const { setValue } = formsy;
+    if (setValue) setValue(id);
+    if (onChange) onChange(id);
     this.setState({ showModal: false });
   }
 
   render() {
     const { imagesById } = this.props;
     const { showModal } = this.state;
-    const image = imagesById[this.props.getValue()];
+    const image = imagesById[this.props.value];
     return (
       <div styleName='image-chooser'>
 
@@ -89,4 +94,6 @@ class ImageChooser extends Component {
   }
 }
 
-export default HOC(InputWrapper(ImageChooser));
+export const ImageChooser = InputWrapper(BaseInputWrapper(_ImageChooser, FormGroup));
+
+export default HOC(ImageChooser);

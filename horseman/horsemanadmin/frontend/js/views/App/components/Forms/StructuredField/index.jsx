@@ -1,7 +1,11 @@
 import React, { Component, PropTypes } from 'react';
+import { HOC } from 'formsy-react';
 import { autobind } from 'core-decorators';
 import { isEqual } from 'lodash';
 import uuidV4 from 'uuid/v4';
+
+import BaseInputWrapper from 'react-formsy-bootstrap-components/InputWrapper';
+import FormGroup from 'react-formsy-bootstrap-components/FormGroup';
 
 import InputWrapper from '../InputWrapper';
 
@@ -23,7 +27,7 @@ const getInitialValue = (value) => {
 };
 
 
-class StructuredField extends Component {
+class _StructuredField extends Component {
 
   static propTypes = {
     onChange: PropTypes.func,
@@ -180,4 +184,6 @@ class StructuredField extends Component {
   }
 }
 
-export default InputWrapper(StructuredField);
+export const StructuredField = InputWrapper(BaseInputWrapper(_StructuredField, FormGroup));
+
+export default HOC(StructuredField);
