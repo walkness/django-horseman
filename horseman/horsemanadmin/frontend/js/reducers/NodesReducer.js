@@ -161,6 +161,19 @@ export default function nodesReducer(state = initialState.nodes, action) {
       });
     }
 
+    case types.NODE_DELETED: {
+      const byId = Object.assign({}, state[action.nodeType].byId);
+      delete byId[action.nodeType];
+      const ordered = Object.assign({}, state[action.nodeType].ordered);
+      Object.keys(ordered).forEach((order) => {
+        const index = ordered[order].ids.indexOf(action.pk);
+        if (index !== -1) ordered[order].ids.splice(index, 1);
+      });
+      return Object.assign({}, state, {
+        [action.nodeType]: Object.assign({}, state[action.nodeType], { byId, ordered }),
+      });
+    }
+
     case types.NODES_CONFIGURATION: {
       const nodes = {};
       action.nodes.forEach(node => {

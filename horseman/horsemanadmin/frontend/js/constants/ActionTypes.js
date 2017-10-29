@@ -14,6 +14,7 @@ export const NODES = createRequestTypes('NODES');
 export const NODE = createRequestTypes('NODE');
 export const NODE_UPDATED = 'NODE_UPDATED';
 export const NODE_CREATED = 'NODE_CREATED';
+export const NODE_DELETED = 'NODE_DELETED';
 export const NODE_REVISIONS = createRequestTypes('NODE_REVISIONS');
 
 export const NODES_CONFIGURATION = 'NODES_CONFIGURATION';

@@ -12,17 +12,19 @@ import {
   nodeRevisions as nodeRevisionsAction,
   nodeUpdated,
   nodeCreated,
+  nodeDeleted,
   images as imagesAction,
   imageUploaded,
 } from 'actions';
-import { updateNode, createNode } from 'services/api';
-import { getNodeTypeFromURLComponents } from 'utils';
+import { updateNode, createNode, deleteNode } from 'services/api';
+import { getNodeTypeFromURLComponents, flattenErrors } from 'utils';
 
 import Dropdown, { DropdownMenu, DropdownToggle } from 'Components/Dropdown';
 
 import Field from './Field';
 
 import RevisionsList from './RevisionsList';
+import Delete from './Delete';
 
 import './styles.scss';
 
@@ -47,6 +49,8 @@ class EditNode extends Component {
       saving: false,
       error: null,
       nonFormsyFieldErrors: {},
+      showDeleteConfirm: false,
+      deleteErrors: [],
     };
     this.fieldRefs = {};
     const nodeConfig = props.nodes[this.getNodeType()].configuration;
@@ -157,7 +161,24 @@ class EditNode extends Component {
 
   @autobind
   handleDelete() {
-
+    const { params, nodes } = this.props;
+    const pk = params.id;
+    const nodeType = this.getNodeType();
+    const nodeConfig = nodes[nodeType].configuration;
+    deleteNode(pk).then(({ response, error }) => {
+      if (error) {
+        this.setState({ deleteErrors: flattenErrors(error) });
+      } else {
+        this.setState({ deleteErrors: [], showDeleteConfirm: false }, () => {
+          const { adminURLBase } = this.props;
+          const { app_label, model_name } = nodeConfig;
+          this.props.nodeDeleted(pk, nodeType);
+          this.context.router.replace(
+            `${adminURLBase}${app_label}/${model_name}/`, // eslint-disable-line camelcase
+          );
+        });
+      }
+    });
   }
 
   apiCall(...args) {
@@ -218,7 +239,7 @@ class EditNode extends Component {
   }
 
   render() {
-    const { changed, saving } = this.state;
+    const { changed, saving, showDeleteConfirm } = this.state;
     const { nodes, params, location } = this.props;
     const nodeType = this.getNodeType();
     const nodeState = nodes[nodeType];
@@ -279,7 +300,7 @@ class EditNode extends Component {
                       <button
                         type='button'
                         className='btn'
-                        onClick={this.handleDelete}
+                        onClick={() => this.setState({ showDeleteConfirm: true })}
                         disabled={saving}
                       >
                         Delete permanently
@@ -315,7 +336,7 @@ class EditNode extends Component {
 
             <a
               href={`${this.props.previewSiteURL}/?preview=${currentRevision}`}
-              target='_blank'
+              target='_blank' // eslint-disable-line react/jsx-no-target-blank
             >
               Preview
             </a>
@@ -340,6 +361,14 @@ class EditNode extends Component {
         <Helmet title={`${params.id ? 'Edit' : 'New'} ${nodeState.configuration.name}`} />
 
         { form || 'Loading…' }
+
+        { showDeleteConfirm ?
+          <Delete
+            nodeName={nodeState.configuration.name}
+            onClose={() => this.setState({ showDeleteConfirm: false })}
+            onConfirm={this.handleDelete}
+          />
+        : null }
 
       </div>
     );
@@ -367,6 +396,7 @@ export default connect(
     nodeRevisionsRequest,
     nodeUpdated,
     nodeCreated,
+    nodeDeleted,
     imagesRequest,
     imageUploaded,
   })(EditNode);

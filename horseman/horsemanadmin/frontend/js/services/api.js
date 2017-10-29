@@ -129,6 +129,7 @@ export const getNodes = (args) => callApi(`nodes/?${queryString(args)}`);
 export const getNode = (pk, args) => callApi(`nodes/${pk}/?${queryString(args)}`);
 export const updateNode = (pk, data, args) => sendApi(`nodes/${pk}/?${queryString(args)}`, 'PATCH', data);
 export const createNode = (data, args) => sendApi(`nodes/?${queryString(args)}`, 'POST', data);
+export const deleteNode = pk => sendApi(`nodes/${pk}/`, 'DELETE', {});
 export const getNodeRevisions = (pk, args) => callApi(`nodes/${pk}/revisions/?${queryString(args)}`);
 
 export const getImages = (args) => callApi(`images/?${queryString(args)}`);

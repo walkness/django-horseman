@@ -164,3 +164,28 @@ $extra-actions-width: 14rem;
     font-size: .8em;
     margin-left: .5rem;
 }
+
+.delete-modal {
+
+  :global(.content) {
+    height: auto;
+  }
+
+  .delete-body {
+    padding: 1rem;
+  }
+
+  .delete-footer {
+    display: flex;
+    flex-flow: row;
+    justify-content: flex-end;
+
+    :global(.btn) {
+      margin-right: 1rem;
+
+      &:last-child {
+        margin-right: 0;
+      }
+    }
+  }
+}

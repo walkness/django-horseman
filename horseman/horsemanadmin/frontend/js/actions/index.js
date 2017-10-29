@@ -25,6 +25,7 @@ export const nodeRevisions = {
 };
 export const nodeUpdated = (data, nodeType) => action(types.NODE_UPDATED, { data, nodeType });
 export const nodeCreated = (data, nodeType) => action(types.NODE_CREATED, { data, nodeType });
+export const nodeDeleted = (pk, nodeType) => action(types.NODE_DELETED, { pk, nodeType });
 
 export const images = {
   request: (args) => action(types.IMAGES.REQUEST, { args }),

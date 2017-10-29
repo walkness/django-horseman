@@ -25,7 +25,7 @@ class Modal extends Component {
   }
 
   render() {
-    const { children, className, size, ...props } = this.props;
+    const { children, className, size, closeModal, ...props } = this.props;
     return (
       <div>
 
@@ -38,7 +38,7 @@ class Modal extends Component {
           {...props}
         >
 
-          <div styleName='styles.content'>
+          <div className='content' styleName='styles.content'>
             { children }
           </div>
 
