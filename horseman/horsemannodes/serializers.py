@@ -88,19 +88,12 @@ class NodeSerializer(TaggitSerializer, serializers.ModelSerializer):
         publish = validated_data.pop('publish', False)
         unpublish = validated_data.pop('unpublish', False)
         published = (publish or instance.published) and not unpublish
+
         if publish or not published:
             validated_data['published'] = published
             validated_data['modified_at'] = timezone.now()
             instance = super(NodeSerializer, self).update(instance, validated_data)
-        else:
-            for att in instance.get_revision_fields():
-                field = instance._meta.get_field(att)
-                if att in validated_data:
-                    value = validated_data[att]
-                    if field.many_to_many:
-                        getattr(instance, att).set(value)
-                    else:
-                        setattr(instance, att, value)
+
         revision = instance.create_revision(
             created_by=user,
             active=publish,
