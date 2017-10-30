@@ -30,7 +30,7 @@ class RichTextBlock extends Component {
 
   componentDidMount() {
     const { block, isNew } = this.props;
-    const { noFocusOnNew } = (block && block.options) || {};
+    const { noFocusOnNew } = block;
     if (isNew && !noFocusOnNew) {
       this.editor._focus();
     }
@@ -38,7 +38,7 @@ class RichTextBlock extends Component {
 
   componentWillReceiveProps(nextProps) {
     const { block, isNew } = nextProps;
-    const { noFocusOnNew } = (block && block.options) || {};
+    const { noFocusOnNew } = block;
     if (isNew && !noFocusOnNew) {
       this.editor._focus();
     }
