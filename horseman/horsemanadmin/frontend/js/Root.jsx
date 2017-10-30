@@ -1,6 +1,7 @@
 /* globals window document */
 
-import React, { PropTypes } from 'react';
+import React from 'react';
+import PropTypes from 'prop-types';
 import { Router, browserHistory } from 'react-router';
 import { Provider } from 'react-redux';
 import { IntlProvider } from 'react-intl';

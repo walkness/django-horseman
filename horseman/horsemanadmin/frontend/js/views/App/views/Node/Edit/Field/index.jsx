@@ -1,9 +1,11 @@
-import React, { PropTypes } from 'react';
+import React from 'react';
+import PropTypes from 'prop-types';
 import titleCase from 'title-case';
 
 import { Input, ImageChooser, SlugField, DatePicker, TextArea } from 'Components/Forms';
 import { RichText } from 'Components/Forms/RichText';
 import { StructuredField } from 'Components/Forms/StructuredField';
+
 import ForeignKey from './ForeignKey';
 
 

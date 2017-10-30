@@ -1,6 +1,7 @@
 /* eslint-disable react/no-array-index-key */
 
-import React, { PropTypes } from 'react';
+import React from 'react';
+import PropTypes from 'prop-types';
 
 import ErrorMessage from 'react-formsy-bootstrap-components/ErrorMessage';
 

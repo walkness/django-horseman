@@ -1,4 +1,5 @@
-import React, { Component, PropTypes } from 'react';
+import React, { Component } from 'react';
+import PropTypes from 'prop-types';
 import { routerShape, locationShape } from 'react-router/lib/PropTypes';
 import { connect } from 'react-redux';
 import { autobind } from 'core-decorators';

@@ -1,6 +1,7 @@
 /* eslint no-underscore-dangle: ["error", { "allow": ["_focus"] }] */
 
-import React, { Component, PropTypes } from 'react';
+import React, { Component } from 'react';
+import PropTypes from 'prop-types';
 import { autobind } from 'core-decorators';
 
 import RichTextEditor, { EditorValue, createValueFromString } from 'Components/RTE/src/RichTextEditor';
