@@ -1,5 +1,7 @@
 import React, { Component } from 'react';
 import PropTypes from 'prop-types';
+import { autobind } from 'core-decorators';
+import classNames from 'classnames';
 
 import CloseButton from 'Components/CloseButton';
 
@@ -8,8 +10,8 @@ import AddBlock from '../AddBlock';
 import './styles.scss';
 
 
-const BlockWrapper = ({ children, index, deleteBlock, blocks, onAddClick, onMoveUp, onMoveDown }) => (
-  <div className='block' styleName='block'>
+const BlockWrapper = ({ children, index, deleteBlock, blocks, onAddClick, onMoveUp, onMoveDown, className }) => (
+  <div className={classNames('block', className)} styleName='block'>
 
     <div styleName='add-block'>
       <AddBlock blocks={blocks} onClick={onAddClick} />
@@ -34,6 +36,11 @@ BlockWrapper.propTypes = {
   onAddClick: PropTypes.func.isRequired,
   onMoveUp: PropTypes.func.isRequired,
   onMoveDown: PropTypes.func.isRequired,
+  className: PropTypes.string,
+};
+
+BlockWrapper.defaultProps = {
+  className: null,
 };
 
 
@@ -49,6 +56,13 @@ export function Block(WrappedComponent) {
       onMoveDown: PropTypes.func.isRequired,
     };
 
+    constructor(props, context) {
+      super(props, context);
+      this.state = {
+        wrapperClassName: null,
+      };
+    }
+
     shouldComponentUpdate(nextProps) {
       const { blockChanging } = nextProps;
       if (blockChanging === null) return true;
@@ -57,6 +71,11 @@ export function Block(WrappedComponent) {
 
     getAPIValue() {
       return this.wrappedComponent.getAPIValue();
+    }
+
+    @autobind
+    setWrapperClassName(wrapperClassName) {
+      this.setState({ wrapperClassName });
     }
 
     render() {
@@ -69,9 +88,11 @@ export function Block(WrappedComponent) {
           onAddClick={this.props.onAddBeforeClick}
           onMoveUp={this.props.onMoveUp}
           onMoveDown={this.props.onMoveDown}
+          className={this.state.wrapperClassName}
         >
           <WrappedComponent
             ref={(c) => { this.wrappedComponent = c; }}
+            setWrapperClassName={this.setWrapperClassName}
             {...props}
           />
         </BlockWrapper>

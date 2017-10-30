@@ -21,6 +21,7 @@ class RichTextBlock extends Component {
       ]),
     }).isRequired,
     onChange: PropTypes.func.isRequired,
+    setWrapperClassName: PropTypes.func.isRequired,
   };
 
   static defaultProps = {
@@ -28,13 +29,17 @@ class RichTextBlock extends Component {
   };
 
   componentDidMount() {
-    if (this.props.isNew) {
+    const { block, isNew } = this.props;
+    const { noFocusOnNew } = (block && block.options) || {};
+    if (isNew && !noFocusOnNew) {
       this.editor._focus();
     }
   }
 
   componentWillReceiveProps(nextProps) {
-    if (nextProps.isNew) {
+    const { block, isNew } = nextProps;
+    const { noFocusOnNew } = (block && block.options) || {};
+    if (isNew && !noFocusOnNew) {
       this.editor._focus();
     }
   }
@@ -57,11 +62,12 @@ class RichTextBlock extends Component {
   @autobind
   handleSplit(content, callback) {
     const { onAddAfterClick, block } = this.props;
-    onAddAfterClick(block.type, content, callback);
+    onAddAfterClick(block.type, content, { noFocusOnNew: true }, callback);
   }
 
   render() {
-    const { value } = this.props.block;
+    const { block, setWrapperClassName } = this.props;
+    const { value } = block;
     return (
       <RichTextEditor
         value={(
@@ -72,6 +78,8 @@ class RichTextBlock extends Component {
         onChange={this.handleChange}
         ref={(c) => { this.editor = c; }}
         onSplitBlock={this.handleSplit}
+        onFocus={() => setWrapperClassName('hide-block-controls')}
+        onBlur={() => setWrapperClassName(null)}
       />
     );
   }

@@ -68,6 +68,15 @@ $block-border-color: $gray-lighter;
 	}
 }
 
+.block {
+  &:global(.hide-block-controls) {
+    .add-block,
+    .block-actions {
+      display: none;
+    }
+  }
+}
+
 .image {
 	display: flex;
 	flex-flow: row;
