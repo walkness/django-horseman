@@ -102,6 +102,7 @@ class ImageBlockMixin(object):
     def __init__(self, *args, **kwargs):
         sizes = kwargs.pop('sizes', None)
         size_options = kwargs.pop('size_options', None)
+        default_size = kwargs.pop('default_size', None)
         super(ImageBlockMixin, self).__init__(*args, **kwargs)
         self.sizes = sizes
         if sizes and size_options is None:
@@ -112,7 +113,8 @@ class ImageBlockMixin(object):
                 size_options=[
                     (opt, sizes.get(opt, {}).get('verbose_name', opt.replace('_', ' ')))
                     for opt in size_options
-                ]
+                ],
+                default_size=default_size
             )
 
     def deconstruct(self):

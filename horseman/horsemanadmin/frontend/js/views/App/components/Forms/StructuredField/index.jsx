@@ -71,7 +71,13 @@ class _StructuredField extends Component {
   addNewBlocks(type, before = null, blockOptions, callback) {
     const value = this.state.value.slice(0);
     const blockBase = { type, key: uuidV4() };
-    const blocks = blockOptions.map(options => Object.assign({}, options, blockBase));
+    let blocks = [blockBase];
+    if (blockOptions) {
+      blocks = (
+        Array.isArray(blockOptions) ? blockOptions : [blockOptions]
+      ).map(options => Object.assign({}, options, blockBase));
+    }
+    console.log(blocks);
     if (before || before === 0) {
       value.splice(before, 0, ...blocks);
     } else {
@@ -79,7 +85,7 @@ class _StructuredField extends Component {
     }
     this.setState({
       value,
-      newest: (before === 0 ? before : (before || value.length - 1)) + (blockOptions.length - 1),
+      newest: (before === 0 ? before : (before || value.length - 1)) + (blocks.length - 1),
     }, callback);
     if (this.props.onChange) {
       this.props.onChange(value);
@@ -88,7 +94,7 @@ class _StructuredField extends Component {
 
   @autobind
   addNewBlock(type, before = null, blockValue, options, callback) {
-    this.addNewBlocks(type, before, [{ value: blockValue, ...options }], callback);
+    this.addNewBlocks(type, before, { value: blockValue, ...options }, callback);
   }
 
   @autobind
@@ -143,10 +149,10 @@ class _StructuredField extends Component {
               block,
               blocks: this.props.fieldConfig.blocks,
               onAddBeforeClick: (
-                (newBlock, value, options, callback) => this.addNewBlock(newBlock, i, value, options, callback)
+                (newBlock, options, callback) => this.addNewBlocks(newBlock, i, options, callback)
               ),
               onAddAfterClick: (
-                (newBlock, value, options, callback) => this.addNewBlock(newBlock, i + 1, value, options, callback)
+                (newBlock, options, callback) => this.addNewBlocks(newBlock, i + 1, options, callback)
               ),
               onMoveUp: () => this.moveBlockUp(i),
               onMoveDown: () => this.moveBlockDown(i),
@@ -168,7 +174,7 @@ class _StructuredField extends Component {
                   blockConfig && blockConfig.fields.size && blockConfig.fields.size.size_options
                 ) || []).map(opt => ({ value: opt[0], label: opt[1] }));
                 defaultSize = (
-                  (blockConfig.fields.size && blockConfig.fields.size.default)
+                  (blockConfig.fields.size && blockConfig.fields.size.default_size)
                 ) || (sizeOptions.length > 0 ? sizeOptions[0].value : null);
               }
               return (
@@ -185,6 +191,7 @@ class _StructuredField extends Component {
                   maxColumns={maxCols}
                   imageFilters={this.props.imageFilters}
                   handleImageFiltersChange={this.props.handleImageFiltersChange}
+                  allowMultipleBlocks={block.type !== 'gallery'}
                 />
               );
             }

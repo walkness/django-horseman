@@ -35,8 +35,10 @@ class ImageBlock extends Component {
 
   constructor(props, context) {
     super(props, context);
+    const { block } = props;
+    const { autoCreated } = block;
     this.state = {
-      showModal: !!props.isNew,
+      showModal: !autoCreated && !!props.isNew,
     };
   }
 
@@ -48,8 +50,33 @@ class ImageBlock extends Component {
 
   @autobind
   handleChange(value) {
-    this.props.onChange(this.getBlock(value));
+    const { allowMultipleBlocks, gallery, onAddAfterClick, onChange, block } = this.props;
+    if (allowMultipleBlocks && !gallery) {
+      const otherIds = value.slice(0);
+      const first = otherIds.shift();
+      if (otherIds.length > 0) {
+        const otherBlocks = otherIds.map(id => ({ id, autoCreated: true }));
+        onAddAfterClick(block.type, otherBlocks, () => {
+          onChange(this.getBlock(first));
+        });
+      } else {
+        onChange(this.getBlock(first));
+      }
+    } else {
+      onChange(this.getBlock(value));
+    }
     this.setState({ showModal: false });
+  }
+
+  @autobind
+  handleCloseModal() {
+    const { isNew, index, deleteBlock, block } = this.props;
+    const value = block && block.images;
+    this.setState({ showModal: false }, () => {
+      if (isNew && (!value || value.length === 0)) {
+        deleteBlock(index);
+      }
+    });
   }
 
   @autobind
@@ -81,6 +108,7 @@ class ImageBlock extends Component {
   render() {
     const { imagesById, block, gallery, defaultSize, minColumns, maxColumns } = this.props;
     const multiple = gallery || this.props.multiple;
+    const allowMultiple = multiple || this.props.allowMultipleBlocks;
     const { showModal } = this.state;
     const { id, images, size, columns } = block;
     return (
@@ -101,7 +129,7 @@ class ImageBlock extends Component {
             className='btn'
             onClick={() => this.setState({ showModal: !showModal })}
           >
-            Select image{ multiple ? 's' : '' }
+            Select image{ allowMultiple ? 's' : '' }
           </button>
 
           { gallery ?
@@ -138,10 +166,10 @@ class ImageBlock extends Component {
             imagesRequest={this.props.imagesRequest}
             onSubmit={this.handleChange}
             imageUploaded={this.props.imageUploaded}
-            selected={multiple ? (images || []) : [id]}
-            multiple={multiple}
+            selected={multiple ? (images || []) : (id ? [id] : [])}
+            multiple={allowMultiple}
             modalProps={{
-              closeModal: () => this.setState({ showModal: false }),
+              closeModal: this.handleCloseModal,
             }}
             filters={this.props.imageFilters}
             handleFiltersChange={this.props.handleImageFiltersChange}

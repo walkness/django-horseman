@@ -11,11 +11,12 @@ class ImageSizeField(forms.ChoiceField):
 
     def __init__(self, *args, **kwargs):
         self.size_options = kwargs.pop('size_options', None)
+        self.default_size = kwargs.pop('default_size', None)
         kwargs['choices'] = self.size_options
         super(ImageSizeField, self).__init__(*args, **kwargs)
 
     def get_extra_config(self):
-        return {'size_options': self.size_options}
+        return {'size_options': self.size_options, 'default_size': self.default_size}
 
 
 class ImageFieldMixin(object):
