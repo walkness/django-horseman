@@ -55,9 +55,9 @@ class RichTextBlock extends Component {
   }
 
   @autobind
-  handleSplit(content) {
+  handleSplit(content, callback) {
     const { onAddAfterClick, block } = this.props;
-    onAddAfterClick(block.type, content);
+    onAddAfterClick(block.type, content, callback);
   }
 
   render() {
