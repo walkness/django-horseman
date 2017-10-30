@@ -68,9 +68,12 @@ class _StructuredField extends Component {
   }
 
   @autobind
-  addNewBlock(type, before = null) {
+  addNewBlock(type, before = null, blockValue) {
     const value = this.state.value.slice(0);
     const block = { type, key: uuidV4() };
+    if (blockValue) {
+      block.value = blockValue;
+    }
     if (before || before === 0) {
       value.splice(before, 0, block);
     } else {
@@ -133,7 +136,8 @@ class _StructuredField extends Component {
               ref: c => { this.blockRefs[i] = c; },
               block,
               blocks: this.props.fieldConfig.blocks,
-              onAddBeforeClick: newBlock => this.addNewBlock(newBlock, i),
+              onAddBeforeClick: (newBlock, options) => this.addNewBlock(newBlock, i, options),
+              onAddAfterClick: (newBlock, options) => this.addNewBlock(newBlock, i + 1, options),
               onMoveUp: () => this.moveBlockUp(i),
               onMoveDown: () => this.moveBlockDown(i),
               isNew: this.state.newest === i,

@@ -54,6 +54,12 @@ class RichTextBlock extends Component {
     this.props.onChange(this.getBlock(value));
   }
 
+  @autobind
+  handleSplit(content) {
+    const { onAddAfterClick, block } = this.props;
+    onAddAfterClick(block.type, content);
+  }
+
   render() {
     const { value } = this.props.block;
     return (
@@ -65,6 +71,7 @@ class RichTextBlock extends Component {
         )}
         onChange={this.handleChange}
         ref={(c) => { this.editor = c; }}
+        onSplitBlock={this.handleSplit}
       />
     );
   }
