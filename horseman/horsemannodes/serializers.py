@@ -101,7 +101,11 @@ class NodeSerializer(TaggitSerializer, serializers.ModelSerializer):
                         getattr(instance, att).set(value)
                     else:
                         setattr(instance, att, value)
-        revision = instance.create_revision(created_by=user, active=publish)
+        revision = instance.create_revision(
+            created_by=user,
+            active=publish,
+            validated_data=validated_data,
+        )
         instance.revision = revision
         return instance
 

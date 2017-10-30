@@ -296,27 +296,32 @@ class Node(AbstractNode):
         ]
         return base_fields + extra_fields
 
-    def get_revision_content(self):
+    def get_revision_content(self, validated_data=None):
         content = {}
+        validated_fields = validated_data or {}
         for field_name in self.get_revision_fields():
             field = self._meta.get_field(field_name)
+            new_value = validated_fields.get(field_name, getattr(self, field_name))
             if field.many_to_one:
-                content[field_name] = get_object_revision_relation_value(getattr(self, field_name))
+                content[field_name] = get_object_revision_relation_value(new_value)
             elif field.many_to_many:
-                qs = getattr(self, field_name).all()
+                objs = new_value
+                if not isinstance(new_value, (list, models.QuerySet)):
+                    objs = new_value.all()
                 if field.__class__.__name__ == 'TaggableManager':
-                    content[field_name] = [obj.name for obj in qs]
+                    content[field_name] = [obj.name for obj in objs]
                 else:
-                    content[field_name] = [get_object_revision_relation_value(obj) for obj in qs]
+                    content[field_name] = [get_object_revision_relation_value(obj) for obj in objs]
             else:
-                attr = getattr(self, field_name)
+                attr = new_value
                 if isinstance(attr, (datetime.date, datetime.datetime, datetime.time)):
                     attr = attr.isoformat()
                 content[field_name] = attr
         return content
 
-    def create_revision(self, **kwargs):
-        return self.revisions.create(content=self.get_revision_content(), **kwargs)
+    def create_revision(self, validated_data=None, **kwargs):
+        return self.revisions.create(
+            content=self.get_revision_content(validated_data=validated_data), **kwargs)
 
     def as_revision(self, revision):
         new_obj = deepcopy(self)
