@@ -77,7 +77,6 @@ class _StructuredField extends Component {
         Array.isArray(blockOptions) ? blockOptions : [blockOptions]
       ).map(options => Object.assign({}, options, blockBase, { key: uuidV4() }));
     }
-    // console.log(blocks);
     if (before || before === 0) {
       value.splice(before, 0, ...blocks);
     } else {
