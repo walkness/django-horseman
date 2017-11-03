@@ -6,6 +6,7 @@ from django.db import models, connection
 from django.conf import settings as django_settings
 from django.apps import apps
 from django.utils import timezone
+from django.core.exceptions import FieldDoesNotExist
 from django.contrib.postgres.fields import JSONField
 
 from exclusivebooleanfield.fields import ExclusiveBooleanField
@@ -384,17 +385,21 @@ class NodeRevision(models.Model):
         if not hasattr(self, '_content_internal_value'):
             content = {}
             for att, raw_value in self.content.items():
-                field = node_class._meta.get_field(att)
-                value = raw_value
-                if field.is_relation and field.__class__.__name__ is not 'TaggableManager':
-                    get_from_revision_relation_value = getattr(
-                        field.related_model.objects, 'get_from_revision_relation_value', None)
-                    if callable(get_from_revision_relation_value):
-                        value = get_from_revision_relation_value(raw_value)
-                    elif field.many_to_one:
-                        value = field.related_model.objects.filter(pk=raw_value).first()
-                    elif field.many_to_many and isinstance(raw_value, list):
-                        value = field.related_model.objects.filter(pk__in=raw_value)
-                content[att] = value
+                try:
+                    field = node_class._meta.get_field(att)
+                except FieldDoesNotExist:
+                    field = None
+                else:
+                    value = raw_value
+                    if field.is_relation and field.__class__.__name__ is not 'TaggableManager':
+                        get_from_revision_relation_value = getattr(
+                            field.related_model.objects, 'get_from_revision_relation_value', None)
+                        if callable(get_from_revision_relation_value):
+                            value = get_from_revision_relation_value(raw_value)
+                        elif field.many_to_one:
+                            value = field.related_model.objects.filter(pk=raw_value).first()
+                        elif field.many_to_many and isinstance(raw_value, list):
+                            value = field.related_model.objects.filter(pk__in=raw_value)
+                    content[att] = value
             self._content_internal_value = content
         return self._content_internal_value
