@@ -57,7 +57,9 @@ def register_signal_handlers():
         signals.node_m2m_removed.connect(handle_node_m2m_removed, sender=node_type)
         m2m_fields = [field for field in node_type._meta.get_fields() if field.many_to_many]
         for field in m2m_fields:
-            m2m_changed.connect(
-                handle_m2m_changed,
-                sender=getattr(node_type, field.name).through,
-            )
+            sender_model = getattr(node_type, field.name)
+            if hasattr(sender_model, 'through'):
+                m2m_changed.connect(
+                    handle_m2m_changed,
+                    sender=sender_model.through,
+                )
