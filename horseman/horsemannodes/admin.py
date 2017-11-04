@@ -11,7 +11,7 @@ class NodeAdmin(admin.ModelAdmin):
     actions = ['publish', 'unpublish', 'invalidate']
 
     def title(self, obj):
-        return self.title_display
+        return obj.title_display
 
     def publish(self, request, queryset):
         queryset.publish(user=request.user)
