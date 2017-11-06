@@ -70,6 +70,12 @@ class NodeQuerySet(models.QuerySet):
     def invalidate(self):
         invalidate_items(self)
 
+    def update_url_paths(self):
+        for obj in self:
+            obj.url_path = obj.get_url_path()
+            obj.save(update_fields=['url_path'])
+        return self
+
     def get_all_nodes_with_image(self, image):
         sub_node_types = Node.get_all_types()
         nodes_by_type = {}
@@ -205,9 +211,7 @@ class Node(AbstractNode):
     @classmethod
     def update_url_paths(cls):
         for node_type in cls.get_all_types():
-            for obj in node_type.objects.all():
-                obj.url_path = obj.get_url_path()
-                obj.save(update_fields=['url_path'])
+            node_type.objects.update_url_paths()
 
     @classmethod
     def get_image_fields(cls):
