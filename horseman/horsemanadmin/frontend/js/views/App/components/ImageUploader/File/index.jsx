@@ -33,12 +33,16 @@ class File extends Component {
     imagesById: PropTypes.object.isRequired,
     imagesRequest: PropTypes.func.isRequired,
     invalidateCaches: PropTypes.bool.isRequired,
+    cameraTimezone: PropTypes.string,
+    correctTimezone: PropTypes.string,
   };
 
   static defaultProps = {
     allowUpload: true,
     onUploadSuccess: () => {},
     onUploadError: () => {},
+    cameraTimezone: 'UTC',
+    correctTimezone: null,
   };
 
   constructor(props, context) {
@@ -70,12 +74,14 @@ class File extends Component {
   }
 
   handleUpload(props) {
-    const { file, id, invalidateCaches } = props || this.props;
+    const { file, id, invalidateCaches, cameraTimezone, correctTimezone } = props || this.props;
     this.setState({ status: uploadStatus.UPLOADING }, () => {
       const data = new FormData();
       data.append('file', file);
       const uploadArgs = Object.assign({}, this.state.uploadArgs, {
         invalidate_caches: invalidateCaches,
+        camera_timezone: cameraTimezone,
+        correct_timezone: correctTimezone,
       });
       uploadImage(data, uploadArgs, ({ error, response }) => {
         if (error) {

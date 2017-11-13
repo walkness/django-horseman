@@ -69,10 +69,20 @@ class ImageUploadParams(filters.FilterSet):
     ignore_duplicate_name = BooleanFilter(widget=CheckboxInput)
     ignore_duplicate_exif = BooleanFilter(widget=CheckboxInput)
     invalidate_caches = BooleanFilter(widget=CheckboxInput)
+    camera_timezone = CharFilter()
+    correct_timezone = CharFilter()
 
     class Meta:
         model = models.Image
         fields = ['replace', 'ignore_duplicates']
+
+
+class ImageUpdateParams(filters.FilterSet):
+    replace_tz = BooleanFilter(widget=CheckboxInput)
+
+    class Meta:
+        model = models.Image
+        fields = ['replace_tz']
 
 
 class ImageViewSet(BoolQueryParamMixin, SearchableMixin, viewsets.ModelViewSet):
@@ -90,6 +100,17 @@ class ImageViewSet(BoolQueryParamMixin, SearchableMixin, viewsets.ModelViewSet):
     def get_serializer(self, *args, **kwargs):
         if self.get_query_param_bool('async_renditions'):
             kwargs['async_renditions'] = True
+
+        if self.action == 'create':
+            filterset = ImageUploadParams(self.request.query_params)
+            if filterset.form.is_valid():
+                kwargs.update(filterset.form.cleaned_data)
+
+        if self.action in ['update', 'partial_update']:
+            filterset = ImageUpdateParams(self.request.query_params)
+            if filterset.form.is_valid():
+                kwargs.update(filterset.form.cleaned_data)
+
         return super(ImageViewSet, self).get_serializer(*args, **kwargs)
 
     @parser_classes((FormParser, MultiPartParser,))
@@ -100,16 +121,11 @@ class ImageViewSet(BoolQueryParamMixin, SearchableMixin, viewsets.ModelViewSet):
         file.seek(0)
         data['file'] = file
 
-        filterset = ImageUploadParams(request.query_params)
-        serializer_kwargs = {}
-        if filterset.form.is_valid():
-            serializer_kwargs.update(filterset.form.cleaned_data)
-
-        serializer = self.serializer_class(data=data, **serializer_kwargs)
+        serializer = self.get_serializer(data=data)
         if serializer.is_valid(raise_exception=True):
             instance = serializer.save(created_by=request.user)
             return Response(
-                self.serializer_class(instance, many=isinstance(instance, list)).data,
+                self.get_serializer(instance, many=isinstance(instance, list)).data,
                 status=HTTP_201_CREATED
             )
 

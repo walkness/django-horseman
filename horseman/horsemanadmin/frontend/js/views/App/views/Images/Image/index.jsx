@@ -19,6 +19,7 @@ import {
 } from 'actions';
 import { updateImage, replaceImageFile } from 'services/api';
 
+import { Checkbox } from 'react-formsy-bootstrap-components';
 import { Input, TimezoneSelect } from 'Components/Forms';
 import Img from 'Components/Image';
 
@@ -48,9 +49,12 @@ class Image extends Component {
 
   constructor(props, context) {
     super(props, context);
+    const image = props.imagesById[props.params.id];
     this.state = {
       submitting: false,
       progress: null,
+      timezone: (image && image.captured_at_tz) || null,
+      replaceTZ: true,
     };
   }
 
@@ -63,10 +67,23 @@ class Image extends Component {
     }
   }
 
+  componentWillReceiveProps(nextProps) {
+    const image = this.props.imagesById[this.props.params.id];
+    const nextImage = nextProps.imagesById[nextProps.params.id];
+    if (!(image && image.captured_at_tz) && !!(nextImage && nextImage.captured_at_tz)) {
+      this.setState({ timezone: nextImage.captured_at_tz });
+    }
+  }
+
   @autobind
   handleSubmit(data) {
+    const { replaceTZ } = this.state;
     this.setState({ submitting: true }, () => {
-      updateImage(this.props.params.id, data).then(({ response, error }) => {
+      updateImage(
+        this.props.params.id,
+        data,
+        { replace_tz: replaceTZ }
+      ).then(({ response, error }) => {
         if (error) {
 
         } else {
@@ -165,7 +182,21 @@ class Image extends Component {
                   name='captured_at_tz'
                   value={image.captured_at_tz}
                   timezones={this.props.timezones}
+                  onChange={v => this.setState({ timezone: v })}
+                  nullLabel='None'
+                  allowNull
                 />
+
+                { this.state.timezone !== image.captured_at_tz ?
+                  <Checkbox
+                    name='replace_tz'
+                    value={this.state.replaceTZ}
+                    label='Replace Timezone?'
+                    helpText='Check this box if the capture time is correct, but the timezone is wrong.'
+                    onChange={v => this.setState({ replaceTZ: v })}
+                  />
+                : null }
+
               </Row>
             : null }
 

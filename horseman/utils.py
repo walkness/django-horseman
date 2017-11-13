@@ -1,6 +1,12 @@
 from django.urls import reverse
 
 
+def convert_null_string(value):
+    if value and value.lower() in ['null', 'none']:
+        return None
+    return value
+
+
 def get_object_admin_url(obj, urlconf=None):
     return reverse(
         'admin:{app}_{model}_change'.format(

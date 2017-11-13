@@ -162,7 +162,6 @@ class AbstractImage(models.Model):
         self.old_filename = self.file.name
         self.old_hash = self.hash
         self.exif_updated = False
-        self.old_captured_at_tz = self.captured_at_tz
 
     def __str__(self):
         return self.title
@@ -175,15 +174,6 @@ class AbstractImage(models.Model):
         if file_changed and not self.exif_updated:
             self.update_exif()
             self.update_capture_time_from_exif()
-
-        if (
-            self.captured_at and
-            self.captured_at_tz and
-            self.captured_at_tz != self.old_captured_at_tz
-        ):
-            naive = self.captured_at.replace(tzinfo=None)
-            aware = self.captured_at_tz.localize(naive)
-            self.captured_at = aware
 
         if (file_changed or not self.mime_type) and self.file:
             self.mime_type = get_mime_type_from_file(self.file) or ''
@@ -226,19 +216,32 @@ class AbstractImage(models.Model):
             self.exif_data = exif
             self.exif_updated = True
 
-    def update_capture_time_from_exif(self, _exif=None):
-        exif = _exif or self.exif_data
-        capture_time = exif.get('EXIF', {}).get('DateTimeOriginal', None)
+    def update_capture_time_from_exif(self, camera_tz=None, correct_tz=None, exif=None):
+        _exif = exif or self.exif_data
+        capture_time = _exif.get('EXIF', {}).get('DateTimeOriginal', None)
         if capture_time:
             naive = datetime.strptime(capture_time, '%Y-%m-%dT%H:%M:%S')
             if naive:
-                tz = pytz.UTC
-                if self.captured_at_tz:
+                camera_tz_obj = None
+                if camera_tz:
+                    camera_tz_obj = pytz.timezone(camera_tz)
+
+                tz = camera_tz_obj or pytz.UTC
+                if correct_tz:
+                    correct_tz_obj = pytz.timezone(correct_tz)
+                    self.captured_at_tz = correct_tz_obj
+                    tz = correct_tz_obj
+                elif self.captured_at_tz:
                     tz = self.captured_at_tz
                 else:
                     tz = self.update_captured_at_tz_from_gps(tz)
 
-                aware = tz.localize(naive)
+                if camera_tz:
+                    camera_tz_obj = pytz.timezone(camera_tz)
+                    aware = camera_tz_obj.localize(naive)
+                else:
+                    aware = tz.localize(naive)
+
                 self.captured_at = aware
 
     def update_captured_at_tz_from_gps(self, default=None, force=True):

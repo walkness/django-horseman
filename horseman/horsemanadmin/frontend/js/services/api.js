@@ -136,7 +136,7 @@ export const getImages = (args) => callApi(`images/?${queryString(args)}`);
 export const getImage = (id) => callApi(`images/${id}/`);
 export const getImageRenditions = (id) => callApi(`images/${id}/renditions/`);
 export const getImageUsage = (id) => callApi(`images/${id}/usage/`);
-export const updateImage = (id, data) => sendApi(`images/${id}/`, 'PATCH', data);
+export const updateImage = (id, data, args) => sendApi(`images/${id}/?${queryString(args)}`, 'PATCH', data);
 export const replaceImageFile = (id, file, completion, onProgress) => {
   const data = new FormData();
   data.append('file', file);

@@ -5,6 +5,8 @@ from rest_framework import serializers
 from rest_framework.exceptions import APIException
 import pytz
 
+from horseman.utils import convert_null_string
+
 from . import models, tasks
 
 
@@ -108,6 +110,9 @@ class ImageSerializer(serializers.ModelSerializer):
         self.ignore_duplicate_name = kwargs.pop('ignore_duplicate_name', False)
         self.ignore_duplicate_exif = kwargs.pop('ignore_duplicate_exif', False)
         self.invalidate_caches = kwargs.pop('invalidate_caches', False)
+        self.camera_timezone = convert_null_string(kwargs.pop('camera_timezone', 'UTC'))
+        self.correct_timezone = convert_null_string(kwargs.pop('correct_timezone', None))
+        self.replace_tz = kwargs.pop('replace_tz', False)
         super(ImageSerializer, self).__init__(*args, **kwargs)
         self.fields['renditions'].async_renditions = self.async_renditions
         self.file_hash = None
@@ -195,7 +200,11 @@ class ImageSerializer(serializers.ModelSerializer):
         instance.file.save(file.name, file, save=False)
 
         instance.exif_data = self.file_exif
-        instance.update_capture_time_from_exif(self.file_exif)
+        instance.update_capture_time_from_exif(
+            camera_tz=self.camera_timezone,
+            correct_tz=self.correct_timezone,
+            exif=self.file_exif,
+        )
         instance.exif_updated = True
 
         instance._invalidate_caches = self.invalidate_caches
@@ -204,6 +213,7 @@ class ImageSerializer(serializers.ModelSerializer):
         return instance
 
     def update(self, instance, validated_data):
+        old_captured_at_tz = instance.captured_at_tz
         file = validated_data.pop('file', None)
 
         for attr, value in validated_data.items():
@@ -226,8 +236,24 @@ class ImageSerializer(serializers.ModelSerializer):
             instance.file.save(file.name, file, save=False)
 
             instance.exif_data = self.file_exif
-            instance.update_capture_time_from_exif(self.file_exif)
+            instance.update_capture_time_from_exif(
+                camera_tz=self.camera_timezone,
+                correct_tz=self.correct_timezone,
+                exif=self.file_exif,
+            )
             instance.exif_updated = True
+
+        if self.replace_tz and instance.captured_at:
+            captured_at = instance.captured_at
+            if old_captured_at_tz:
+                captured_at = instance.captured_at.astimezone(old_captured_at_tz)
+            naive = captured_at.replace(tzinfo=None)
+
+            if instance.captured_at_tz:
+                aware = instance.captured_at_tz.localize(naive)
+            else:
+                aware = pytz.UTC.localize(naive)
+            instance.captured_at = aware
 
         instance._invalidate_caches = self.invalidate_caches
 

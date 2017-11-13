@@ -6,6 +6,7 @@ import uuidV4 from 'uuid/v4';
 import { FormattedMessage } from 'react-intl';
 
 import { Checkbox } from 'react-formsy-bootstrap-components';
+import { TimezoneSelect } from 'Components/Forms/TimezoneSelect';
 
 import File from './File';
 
@@ -15,12 +16,13 @@ import './styles.scss';
 class ImageUploader extends Component {
 
   static propTypes = {
-    multiple: PropTypes.bool,
-    maxConcurrent: PropTypes.number,
-    onUploadSuccess: PropTypes.func,
-    onReplaceSuccess: PropTypes.func,
     imagesById: PropTypes.object.isRequired,
     imagesRequest: PropTypes.func.isRequired,
+    maxConcurrent: PropTypes.number,
+    multiple: PropTypes.bool,
+    onReplaceSuccess: PropTypes.func,
+    onUploadSuccess: PropTypes.func,
+    timezones: PropTypes.arrayOf(PropTypes.string).isRequired,
   };
 
   static defaultProps = {
@@ -38,6 +40,8 @@ class ImageUploader extends Component {
       allowUpload: [],
       duplicates: [],
       invalidateCaches: true,
+      cameraTimezone: null,
+      correctTimezone: null,
     };
     this.fileComponents = {};
   }
@@ -170,7 +174,9 @@ class ImageUploader extends Component {
   }
 
   render() {
-    const { duplicates, allowUpload, invalidateCaches } = this.state;
+    const {
+      duplicates, allowUpload, invalidateCaches, cameraTimezone, correctTimezone,
+    } = this.state;
     return (
       <div styleName='ImageUploader'>
 
@@ -182,6 +188,37 @@ class ImageUploader extends Component {
             help='When selected, any nodes referencing replaced images will have their frontend caches invalidated.'
             value={invalidateCaches}
             onChange={v => this.setState({ invalidateCaches: v })}
+          />
+
+          <TimezoneSelect
+            name='correct_timezone'
+            timezones={this.props.timezones}
+            label='Correct Timezone'
+            value={correctTimezone}
+            onChange={v => this.setState({ correctTimezone: v })}
+            nullLabel='Auto'
+            allowNull
+            helpText={(
+              <FormattedMessage
+                id='imageUploader.correctTimezone.helpText'
+                values={{ value: correctTimezone }}
+                defaultMessage='{value, select,
+                  null {When set to auto, the correct timezone will attempt to be interpreted from
+                    the embedded GPS data, if available.}
+                  other {&nbsp;}
+                }'
+              />
+            )}
+          />
+
+          <TimezoneSelect
+            name='camera_timezone'
+            timezones={this.props.timezones}
+            label='Camera Timezone'
+            value={cameraTimezone}
+            onChange={v => this.setState({ cameraTimezone: v })}
+            allowNull
+            nullLabel='Same'
           />
 
         </div>
@@ -211,6 +248,8 @@ class ImageUploader extends Component {
               imagesRequest={this.props.imagesRequest}
               onDuplicate={this.addToDuplicates}
               invalidateCaches={invalidateCaches}
+              cameraTimezone={cameraTimezone}
+              correctTimezone={correctTimezone}
             />
           )) }
         </ul>

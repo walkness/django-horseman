@@ -1,13 +1,13 @@
 import React from 'react';
 import PropTypes from 'prop-types';
+import { HOC } from 'formsy-react';
 
-import Select from './Select';
+import { Select } from './Select';
 
 
 const TimezoneSelect = ({ timezones, label, ...props }) => (
   <Select
     options={[
-      { value: null, label: 'None' },
       ...timezones.map(timezone => ({
         value: timezone,
         label: timezone.replace(/_/g, ' ').replace(/\//g, ' / '),
@@ -18,4 +18,6 @@ const TimezoneSelect = ({ timezones, label, ...props }) => (
   />
 );
 
-export default TimezoneSelect;
+export { TimezoneSelect };
+
+export default HOC(TimezoneSelect);
