@@ -1,16 +1,46 @@
 from django.contrib import admin, messages
 from django.urls import reverse
-from django.db.models import Count
+from django.db.models import Count, Q
 
-from horseman.utils import get_object_admin_url
+from horseman.utils import get_object_admin_url, convert_null_string
 
 from . import models
 
 
+class TimezoneFilter(admin.SimpleListFilter):
+    title = 'timezone'
+    parameter_name = 'timezone'
+
+    def lookups(self, request, model_admin):
+        tzs = models.Image.objects.all().values_list('captured_at_tz', flat=True).order_by(
+            'captured_at_tz').distinct()
+        lookups = []
+        for tz in tzs:
+            if tz:
+                name = str(tz).replace('_', ' ').replace('/', ' / ')
+                lookups.append((tz, name))
+            else:
+                lookups.append(('none', 'None'))
+        return lookups
+
+    def queryset(self, request, queryset):
+        value = self.value()
+        if value:
+            value = convert_null_string(value)
+            if value:
+                queryset = queryset.filter(captured_at_tz=value)
+            else:
+                queryset = queryset.filter(Q(captured_at_tz='') | Q(captured_at_tz=None))
+        return queryset
+
+
 @admin.register(models.Image)
 class ImageAdmin(admin.ModelAdmin):
-    list_display = ['title', 'shortened_filename', 'created_at', 'captured_at', 'renditions']
-    list_filter = ['mime_type']
+    list_display = [
+        'title', 'shortened_filename', 'created_at', 'captured_at', 'captured_at_tz',
+        'renditions'
+    ]
+    list_filter = ['mime_type', TimezoneFilter]
     search_fields = ['title', 'original_filename']
     ordering = ['-created_at']
     actions = ['update_timezone']
