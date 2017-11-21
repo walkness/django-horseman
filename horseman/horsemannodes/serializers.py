@@ -173,4 +173,4 @@ class NodeRevisionSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = models.NodeRevision
-        fields = ['pk', 'created_by', 'created_at', 'active', 'is_latest']
+        fields = ['pk', 'created_by', 'created_at', 'active', 'is_latest', 'preview_url']

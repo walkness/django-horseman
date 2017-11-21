@@ -184,6 +184,12 @@ class AbstractNode(mixins.AdminModelMixin, models.Model):
     def full_url(self):
         return getattr(django_settings, 'SITE_URL', '') + self.url_path
 
+    def revision_preview_url(self, revision):
+        return '{}/?preview={}'.format(
+            getattr(django_settings, 'PREVIEW_SITE_URL', ''),
+            str(revision.pk),
+        )
+
     def get_title(self):
         return self.slug
 
@@ -384,6 +390,10 @@ class NodeRevision(models.Model):
 
     def __str__(self):
         return self.created_at.isoformat()
+
+    @property
+    def preview_url(self):
+        return self.node.revision_preview_url(self)
 
     def content_as_internal_value(self, node_class=Node):
         if not hasattr(self, '_content_internal_value'):

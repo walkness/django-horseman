@@ -245,11 +245,10 @@ class EditNode extends Component {
     const nodeType = this.getNodeType();
     const nodeState = nodes[nodeType];
     const node = nodeState && nodeState.byId && nodeState.byId[params.id];
-    const revision = (
-      node && node.revisionsById &&
-      node.revisionsById[location.query.revision || node.latest_revision]
-    );
+
     const currentRevision = location.query.revision || (node && node.latest_revision);
+
+    const revision = node && node.revisionsById && node.revisionsById[currentRevision];
 
     const form = !(params.id && !(revision && revision.pk)) && (
       <Formsy.Form
@@ -335,12 +334,14 @@ class EditNode extends Component {
 
             </div>
 
-            <a
-              href={`${this.props.previewSiteURL}/?preview=${currentRevision}`}
-              target='_blank' // eslint-disable-line react/jsx-no-target-blank
-            >
-              Preview
-            </a>
+            { revision && revision.revision && revision.revision.preview_url ?
+              <a
+                href={revision.revision.preview_url}
+                target='_blank' // eslint-disable-line react/jsx-no-target-blank
+              >
+                Preview
+              </a>
+            : null }
           </div>
 
           <RevisionsList
