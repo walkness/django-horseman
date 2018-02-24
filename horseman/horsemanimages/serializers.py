@@ -160,10 +160,20 @@ class ImageSerializer(serializers.ModelSerializer):
         if not self.ignore_duplicate_exif:
             if len(self.file_exif.keys()) > 0:
                 exif = self.file_exif.get('EXIF', {})
-                duplicates = self.get_duplicate_queryset().filter(
-                    exif_data__EXIF__DateTimeDigitized=exif.get('DateTimeDigitized'),
-                    exif_data__EXIF__BodySerialNumber=exif.get('BodySerialNumber'),
-                ).values_list('pk', flat=True)
+                image_meta = self.file_exif.get('Image', {})
+                filters = {'exif_data__EXIF__DateTimeDigitized': exif.get('DateTimeDigitized')}
+                serial_no = exif.get('BodySerialNumber', None)
+                if serial_no:
+                    filters['exif_data__EXIF__BodySerialNumber'] = serial_no
+                else:
+                    make = image_meta.get('Make', None)
+                    if make:
+                        filters['exif_data__Image__Make'] = make
+                    model = image_meta.get('Model', None)
+                    if model:
+                        filters['exif_data__Image__Model'] = model
+
+                duplicates = self.get_duplicate_queryset().filter(**filters).values_list('pk', flat=True)
                 if len(duplicates) > 0:
                     raise DuplicateImageError(
                         'A file captured at the same time from the same camera has already been uploaded',
