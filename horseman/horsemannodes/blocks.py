@@ -141,3 +141,8 @@ class GalleryBlock(ImageBlockMixin, Block):
 
     def get_image_filter_kwargs(self, image):
         return [[{'type': self.name, 'images': [str(image.pk)]}]]
+
+
+class HTMLBlock(Block):
+    name = 'html'
+    verbose_name = 'HTML'
