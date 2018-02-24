@@ -1,3 +1,5 @@
+from pprint import pprint
+
 from django.contrib import admin, messages
 from django.urls import reverse
 from django.db.models import Count, Q
@@ -44,6 +46,18 @@ class ImageAdmin(admin.ModelAdmin):
     search_fields = ['title', 'original_filename']
     ordering = ['-created_at']
     actions = ['update_timezone']
+    fieldsets = (
+        (None, {
+            'fields': ['title', 'created_at', 'created_by'],
+        }),
+        ('Image Details', {
+            'fields': [
+                'file', 'original_filename', 'width', 'height', 'hash', 'filesize',
+                'mime_type', 'captured_at', 'captured_at_tz', 'pretty_exif',
+            ],
+        }),
+    )
+    readonly_fields = ['original_filename', 'width', 'height', 'hash', 'filesize', 'captured_at', 'pretty_exif']
 
     def get_queryset(self, request):
         queryset = super(ImageAdmin, self).get_queryset(request)
@@ -93,6 +107,16 @@ class ImageAdmin(admin.ModelAdmin):
                     len(queryset)),
                 messages.ERROR,
             )
+
+    def pretty_exif(self, obj):
+        html = '<table><tbody>'
+        for category, items in obj.exif_data.items():
+            html += '<tr><th colspan="2"><h3>{}</h3></th></tr>'.format(category)
+            for label, value in items.items():
+                html += '<tr><td>{}</td><td>{}</td></tr>'.format(label, value)
+        html += '</tbody></table>'
+        return html
+    pretty_exif.allow_tags = True
 
 
 @admin.register(models.Rendition)
