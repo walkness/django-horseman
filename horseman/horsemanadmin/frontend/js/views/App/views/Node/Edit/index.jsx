@@ -30,6 +30,9 @@ import Delete from './Delete';
 import './styles.scss';
 
 
+const convertTitleToSlug = v => slugify(v).replace('!', '').toLowerCase();
+
+
 class EditNode extends Component {
 
   static propTypes = {
@@ -216,8 +219,8 @@ class EditNode extends Component {
               components.push(oldValue);
             }
           });
-          if (!oldSlug || slugify(oldComponents.join('-')).toLowerCase() === oldSlug.toLowerCase()) {
-            this.fieldRefs[autoField].props.formsy.setValue(slugify(components.join('-')).toLowerCase());
+          if (!oldSlug || convertTitleToSlug(oldComponents.join('-')) === oldSlug.toLowerCase()) {
+            this.fieldRefs[autoField].props.formsy.setValue(convertTitleToSlug(components.join('-')));
           }
         }
       });
