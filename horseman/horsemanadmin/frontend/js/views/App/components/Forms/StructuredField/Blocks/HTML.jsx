@@ -37,14 +37,6 @@ class RichTextBlock extends Component {
     }
   }
 
-  componentWillReceiveProps(nextProps) {
-    const { block, isNew } = nextProps;
-    const { noFocusOnNew } = block;
-    if (isNew && !noFocusOnNew) {
-      this.editor.editor.focus();
-    }
-  }
-
   getBlock(value) {
     const { type } = this.props.block;
     return { type, value };
