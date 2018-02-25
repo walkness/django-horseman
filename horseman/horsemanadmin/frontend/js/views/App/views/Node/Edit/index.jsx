@@ -82,6 +82,14 @@ class EditNode extends Component {
 
   componentDidMount() {
     this.context.router.setRouteLeaveHook(this.props.route, this.routerWillLeave);
+    const focusableFields = Object.keys(this.fieldRefs || {}).filter((field) => {
+      const component = this.fieldRefs[field];
+      return component && component.focus;
+    });
+    const focusField = focusableFields[0];
+    if (!this.props.params.id && this.fieldRefs && this.fieldRefs[focusField]) {
+      this.fieldRefs[focusField].focus();
+    }
   }
 
   componentWillReceiveProps(nextProps) {
