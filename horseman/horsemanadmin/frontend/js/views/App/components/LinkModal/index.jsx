@@ -20,6 +20,12 @@ export default class LinkModal extends Component {
     };
   }
 
+  componentDidMount() {
+    if (this.linkInput && this.linkInput.focus) {
+      this.linkInput.focus();
+    }
+  }
+
   @autobind
   handleSubmit() {
     this.props.onSubmit(this.state.atts);
@@ -35,6 +41,7 @@ export default class LinkModal extends Component {
           atts={this.state.atts}
           onAttsChange={atts => this.setState({ atts })}
           onSubmit={this.handleSubmit}
+          inputRef={(c) => {this.linkInput = c;}}
         />
 
         <ModalFooter>

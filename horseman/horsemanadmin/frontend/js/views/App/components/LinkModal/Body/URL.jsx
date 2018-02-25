@@ -4,7 +4,7 @@ import PropTypes from 'prop-types';
 import { Input } from 'Components/Forms/Input';
 
 
-const URL = ({ atts, onAttsChange }) => (
+const URL = ({ atts, onAttsChange, inputRef }) => (
   <div>
 
     <Input
@@ -13,6 +13,7 @@ const URL = ({ atts, onAttsChange }) => (
       setValue={value => onAttsChange({ href: value })}
       label='Link to'
       placeholder='http://'
+      inputRef={inputRef}
     />
 
   </div>
@@ -23,6 +24,11 @@ URL.propTypes = {
     href: PropTypes.string,
   }).isRequired,
   onAttsChange: PropTypes.func.isRequired,
+  inputRef: PropTypes.func,
+};
+
+URL.defaultProps = {
+  inputRef: null,
 };
 
 export default URL;
