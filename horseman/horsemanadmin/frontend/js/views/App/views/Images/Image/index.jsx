@@ -136,7 +136,7 @@ class Image extends Component {
 
     return (
       <div>
-        <Formsy.Form
+        <Formsy
           onValidSubmit={this.handleSubmit}
           noValidate
           styleName='root'
@@ -214,7 +214,7 @@ class Image extends Component {
 
           </aside>
 
-        </Formsy.Form>
+        </Formsy>
 
         <div styleName='meta'>
 

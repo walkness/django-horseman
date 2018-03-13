@@ -70,7 +70,7 @@ class Login extends Component {
 
         <Helmet title='Login' />
 
-        <Formsy.Form
+        <Formsy
           ref={(c) => { this.form = c; }}
           className='form-signin'
           onValid={() => this.setState({ formValid: true })}
@@ -112,7 +112,7 @@ class Login extends Component {
             Forgot your password?
           </button>
 
-        </Formsy.Form>
+        </Formsy>
 
         { showPasswordReset ?
           <PasswordReset

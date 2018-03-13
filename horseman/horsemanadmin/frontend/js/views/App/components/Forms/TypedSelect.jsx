@@ -1,6 +1,6 @@
 import React, { Component } from 'react';
 import PropTypes from 'prop-types';
-import { HOC } from 'formsy-react';
+import { withFormsy } from 'formsy-react';
 import classNames from 'classnames';
 import { autobind } from 'core-decorators';
 import Select from 'react-select';
@@ -55,4 +55,4 @@ class _TypedSelect extends Component {
 
 const TypedSelect = InputWrapper(BaseInputWrapper(_TypedSelect, FormGroup));
 
-export default HOC(TypedSelect);
+export default withFormsy(TypedSelect);

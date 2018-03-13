@@ -112,6 +112,8 @@ config.module.rules.push(
   },
 );
 
+config.mode = 'development';
+
 config.devtool = 'inline-source-map';
 
 config.devServer = {

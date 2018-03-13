@@ -2,7 +2,7 @@ import React, { Component } from 'react';
 import PropTypes from 'prop-types';
 import classNames from 'classnames';
 import { autobind } from 'core-decorators';
-import { HOC } from 'formsy-react';
+import { withFormsy } from 'formsy-react';
 
 import BaseInputWrapper from 'react-formsy-bootstrap-components/InputWrapper';
 import FormGroup from 'react-formsy-bootstrap-components/FormGroup';
@@ -61,4 +61,4 @@ class _RichText extends Component {
 
 export const RichText = InputWrapper(BaseInputWrapper(_RichText, FormGroup));
 
-export default HOC(RichText);
+export default withFormsy(RichText);

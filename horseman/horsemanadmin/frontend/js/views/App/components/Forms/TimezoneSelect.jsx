@@ -1,6 +1,6 @@
 import React from 'react';
 import PropTypes from 'prop-types';
-import { HOC } from 'formsy-react';
+import { withFormsy } from 'formsy-react';
 
 import { Select } from './Select';
 
@@ -20,4 +20,4 @@ const TimezoneSelect = ({ timezones, label, ...props }) => (
 
 export { TimezoneSelect };
 
-export default HOC(TimezoneSelect);
+export default withFormsy(TimezoneSelect);

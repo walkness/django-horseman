@@ -262,7 +262,7 @@ class EditNode extends Component {
     const revision = node && node.revisionsById && node.revisionsById[currentRevision];
 
     const form = !(params.id && !(revision && revision.pk)) && (
-      <Formsy.Form
+      <Formsy
         onValidSubmit={this.handleSubmit}
         onChange={this.handleFormChange}
         noValidate
@@ -365,7 +365,7 @@ class EditNode extends Component {
           />
         </div>
 
-      </Formsy.Form>
+      </Formsy>
     );
 
     return (

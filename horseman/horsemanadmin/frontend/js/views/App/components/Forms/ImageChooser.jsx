@@ -1,6 +1,6 @@
 import React, { Component } from 'react';
 import PropTypes from 'prop-types';
-import { HOC } from 'formsy-react';
+import { withFormsy } from 'formsy-react';
 import { autobind } from 'core-decorators';
 
 import BaseInputWrapper from 'react-formsy-bootstrap-components/InputWrapper';
@@ -97,4 +97,4 @@ class _ImageChooser extends Component {
 
 export const ImageChooser = InputWrapper(BaseInputWrapper(_ImageChooser, FormGroup));
 
-export default HOC(ImageChooser);
+export default withFormsy(ImageChooser);

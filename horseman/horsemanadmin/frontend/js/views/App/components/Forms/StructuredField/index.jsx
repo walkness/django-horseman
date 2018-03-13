@@ -1,6 +1,6 @@
 import React, { Component } from 'react';
 import PropTypes from 'prop-types';
-import { HOC } from 'formsy-react';
+import { withFormsy } from 'formsy-react';
 import { autobind } from 'core-decorators';
 import { isEqual } from 'lodash';
 import uuidV4 from 'uuid/v4';
@@ -215,4 +215,4 @@ class _StructuredField extends Component {
 
 export const StructuredField = InputWrapper(BaseInputWrapper(_StructuredField, FormGroup));
 
-export default HOC(StructuredField);
+export default withFormsy(StructuredField);

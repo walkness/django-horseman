@@ -73,7 +73,7 @@ class PasswordReset extends Component {
         handleClose={handleClose}
       >
 
-        <Formsy.Form
+        <Formsy
           onValid={() => this.setState({ enableSubmit: true })}
           onInvalid={() => this.setState({ enableSubmit: false })}
           onValidSubmit={this.handleSubmit}
@@ -124,7 +124,7 @@ class PasswordReset extends Component {
             isSubmitting={isSubmitting}
           />
 
-        </Formsy.Form>
+        </Formsy>
 
       </Modal>
     );

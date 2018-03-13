@@ -1,6 +1,6 @@
 import React, { Component } from 'react';
 import PropTypes from 'prop-types';
-import { HOC } from 'formsy-react';
+import { withFormsy } from 'formsy-react';
 import classNames from 'classnames';
 import { autobind } from 'core-decorators';
 import BaseDatePicker from 'react-datepicker';
@@ -56,4 +56,4 @@ class Input extends Component {
 
 export const DatePicker = InputWrapper(BaseInputWrapper(Input, FormGroup));
 
-export default HOC(DatePicker);
+export default withFormsy(DatePicker);

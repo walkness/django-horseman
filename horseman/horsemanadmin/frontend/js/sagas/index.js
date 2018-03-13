@@ -1,6 +1,6 @@
 /* eslint no-constant-condition: ["error", { "checkLoops": false }]*/
 
-import { call, put, take, fork } from 'redux-saga/effects';
+import { call, put, take, fork, all } from 'redux-saga/effects';
 
 import * as types from 'constants/ActionTypes';
 import * as actions from 'actions';
@@ -101,7 +101,7 @@ function* watchTimezonesRequest() {
 }
 
 export default function* rootSaga() {
-  yield [
+  yield all([
     watchNodesRequest(),
     watchNodeRequest(),
     watchNodeRevisionsRequest(),
@@ -114,5 +114,5 @@ export default function* rootSaga() {
     watchLogin(),
     watchLogout(),
     watchTimezonesRequest(),
-  ];
+  ]);
 }

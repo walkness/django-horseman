@@ -52,7 +52,7 @@ class UserEdit extends Component {
 
         <Helmet title='Edit user' />
 
-        <Formsy.Form
+        <Formsy
           onValidSubmit={this.handleSubmit}
           noValidate
         >
@@ -105,7 +105,7 @@ class UserEdit extends Component {
             Update
           </button>
 
-        </Formsy.Form>
+        </Formsy>
 
       </div>
     );

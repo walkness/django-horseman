@@ -36,7 +36,9 @@ export default {
               context,
               generateScopedName: cssModulesGeneratedScopedName,
               filetypes: {
-                '.scss': 'postcss-scss',
+                '.scss': {
+                  syntax: 'postcss-scss',
+                },
               },
               webpackHotModuleReloading: true,
             }],

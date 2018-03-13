@@ -133,4 +133,6 @@ config.module.rules.push(
   },
 );
 
+config.mode = 'production';
+
 export default config;
