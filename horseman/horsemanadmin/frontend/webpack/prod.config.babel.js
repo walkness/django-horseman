@@ -5,6 +5,7 @@ import webpack from 'webpack';
 import ExtractTextPlugin from 'extract-text-webpack-plugin';
 import BundleTracker from 'webpack-bundle-tracker';
 import CleanWebpackPlugin from 'clean-webpack-plugin';
+import UglifyJSPlugin from 'uglifyjs-webpack-plugin';
 
 import config, { cssModulesGeneratedScopedName } from './base.config.babel';
 
@@ -25,17 +26,6 @@ config.plugins = config.plugins.concat([
     },
   }),
 
-  // minifies code
-  new webpack.optimize.UglifyJsPlugin({
-    sourceMap: true,
-    output: {
-      comments: false,
-    },
-    compressor: {
-      warnings: false,
-    },
-  }),
-
   new ExtractTextPlugin({
     filename: 'styles/[name]-[contenthash].css',
     allChunks: true,
@@ -46,6 +36,14 @@ config.plugins = config.plugins.concat([
     filename: 'webpack-stats.json',
   }),
 ]);
+
+config.optimization = {
+  minimizer: [
+    new UglifyJSPlugin({
+      sourceMap: true,
+    }),
+  ],
+};
 
 const cssNano = {
   autoprefixer: false,
