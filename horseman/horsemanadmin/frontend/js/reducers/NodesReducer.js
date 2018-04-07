@@ -101,9 +101,12 @@ export default function nodesReducer(state = initialState.nodes, action) {
           const order = action.args.order || 'default';
           const { next, previous } = action.response;
           let allIds = ids;
+          let newNext = next && getPaginationParamsFromURI(next);
+          let newPrevious = previous && getPaginationParamsFromURI(previous);
           const existingState = state[action.args.type].ordered;
           const existingStateOrder = existingState && existingState[order];
           const oldNext = existingStateOrder && existingStateOrder.next;
+          const oldPrevious = existingStateOrder && existingStateOrder.next;
           if (
             oldNext && action.args.offset && oldNext.offset === action.args.offset &&
             existingStateOrder && existingStateOrder.ids
@@ -116,13 +119,15 @@ export default function nodesReducer(state = initialState.nodes, action) {
             );
             if (isEqual(existingSlice, ids)) {
               allIds = existingStateOrder.ids.slice(0);
+              newNext = oldNext;
+              newPrevious = oldPrevious;
             }
           }
           const ordered = Object.assign({}, existingState, {
             [order]: {
               ids: allIds,
-              next: next && getPaginationParamsFromURI(next),
-              previous: previous && getPaginationParamsFromURI(previous),
+              next: newNext,
+              previous: newPrevious,
             },
           });
           updates.ordered = ordered;
