@@ -1,4 +1,4 @@
-/* globals window */
+/* globals window document */
 
 import React, { Component } from 'react';
 import PropTypes from 'prop-types';
@@ -22,7 +22,7 @@ class NodeList extends Component {
   constructor(props, context) {
     super(props, context);
     this.pastThreshold = false;
-    this.scrollThreshold = .25;
+    this.scrollThreshold = 0.25;
   }
 
   componentWillMount() {
@@ -71,11 +71,12 @@ class NodeList extends Component {
 
   @autobind
   handleScroll() {
-    const pct = window.scrollY / (this._contentHeight - this._containerHeight);
-    if (pct >= (1 - this.scrollThreshold) && !this.pastThreshold) {
+    const distanceFromBottom = this._contentHeight - (window.scrollY + this._containerHeight);
+    const distanceThreshold = this.scrollThreshold * this._containerHeight
+    if (distanceFromBottom <= distanceThreshold && !this.pastThreshold) {
       this.pastThreshold = true;
       this.handleLoadNext();
-    } else if (pct < (1 - this.scrollThreshold)) {
+    } else if (distanceFromBottom > distanceThreshold) {
       this.pastThreshold = false;
     }
   }
