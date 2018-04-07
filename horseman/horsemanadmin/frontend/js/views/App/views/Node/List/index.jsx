@@ -98,7 +98,7 @@ class NodeList extends Component {
     const nodeState = nodes[nodeType];
     const ordered = nodeState && nodeState.ordered && nodeState.ordered.default;
     if (ordered && ordered.next && !ordered.loading) {
-      this.props.nodesRequest(Object.assign({}, ordered.next, { type: nodeType }));
+      this.props.nodesRequest({ ...ordered.next, type: nodeType });
     }
   }
 

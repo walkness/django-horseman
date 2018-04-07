@@ -1,3 +1,5 @@
+import { isEqual } from 'lodash';
+
 import * as types from 'constants/ActionTypes';
 import initialState from 'config/initialState';
 
@@ -107,6 +109,14 @@ export default function nodesReducer(state = initialState.nodes, action) {
             existingStateOrder && existingStateOrder.ids
           ) {
             allIds = [...existingStateOrder.ids, ...ids];
+          } else if (existingStateOrder && existingStateOrder.ids) {
+            const existingSlice = existingStateOrder.ids.slice(
+              action.args.offset || 0,
+              ids.length,
+            );
+            if (isEqual(existingSlice, ids)) {
+              allIds = existingStateOrder.ids.slice(0);
+            }
           }
           const ordered = Object.assign({}, existingState, {
             [order]: {
