@@ -15,7 +15,11 @@
     "jsx-quotes": [2, "prefer-single"],
     "no-underscore-dangle": [2, {
       "allowAfterThis": true
-    }]
+    }],
+    "jsx-a11y/anchor-is-valid": [ "error", {
+        "components": ["Link"],
+        "specialLink": ["to"]
+      }]
   },
 
   "settings": {

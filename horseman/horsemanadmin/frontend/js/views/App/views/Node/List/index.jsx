@@ -18,6 +18,17 @@ import './styles.scss';
 
 
 class NodeList extends Component {
+  static propTypes = {
+    imagesById: PropTypes.shape({ [PropTypes.string]: PropTypes.object }).isRequired,
+    nodes: PropTypes.shape({
+      [PropTypes.string]: PropTypes.shape({
+        byId: PropTypes.object,
+        configuration: PropTypes.object,
+      }),
+    }).isRequired,
+    nodesRequest: PropTypes.func.isRequired,
+    params: PropTypes.shape({ app: PropTypes.string, model: PropTypes.string }).isRequired,
+  };
 
   constructor(props, context) {
     super(props, context);
@@ -51,15 +62,8 @@ class NodeList extends Component {
     window.removeEventListener('scroll', this.handleScroll);
   }
 
-  maybeGetNodes(props) {
-    const nodeType = this.getNodeType(props);
-    if (nodeType) {
-      this.props.nodesRequest({ type: nodeType });
-    }
-  }
-
   getNodeType(props) {
-    const { nodes, params, nodesRequest } = props || this.props;
+    const { nodes, params } = props || this.props;
     const { app, model } = params;
     return getNodeTypeFromURLComponents(nodes, app, model);
   }
@@ -69,10 +73,17 @@ class NodeList extends Component {
     this._contentHeight = document.documentElement.scrollHeight;
   }
 
+  maybeGetNodes(props) {
+    const nodeType = this.getNodeType(props);
+    if (nodeType) {
+      this.props.nodesRequest({ type: nodeType });
+    }
+  }
+
   @autobind
   handleScroll() {
     const distanceFromBottom = this._contentHeight - (window.scrollY + this._containerHeight);
-    const distanceThreshold = this.scrollThreshold * this._containerHeight
+    const distanceThreshold = this.scrollThreshold * this._containerHeight;
     if (distanceFromBottom <= distanceThreshold && !this.pastThreshold) {
       this.pastThreshold = true;
       this.handleLoadNext();
@@ -92,7 +103,7 @@ class NodeList extends Component {
   }
 
   render() {
-    const { nodes, location } = this.props;
+    const { nodes } = this.props;
     const nodeType = this.getNodeType();
     const nodeState = nodes[nodeType];
     const orderedNodes = nodeState && nodeState.ordered && nodeState.ordered.default;
@@ -102,7 +113,7 @@ class NodeList extends Component {
 
         <Helmet title={titleCase(nodeState.configuration.name_plural)} />
 
-        <Link className='btn' to={`${location.pathname}new/`}>
+        <Link className='btn' to={`${nodeState.configuration.admin_path}new/`}>
           Create new { nodeState.configuration.name }
         </Link>
 
@@ -161,7 +172,7 @@ class NodeList extends Component {
                       values={{ date: new Date(node.modified_at) }}
                       defaultMessage='{date, date, long} at {date, time, short}'
                     >
-                      { (formatted) => <time dateTime={node.modified_at}>{ formatted }</time> }
+                      { formatted => <time dateTime={node.modified_at}>{ formatted }</time> }
                     </FormattedMessage>
                   </div>
 
