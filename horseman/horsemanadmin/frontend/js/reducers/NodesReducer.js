@@ -105,7 +105,7 @@ export default function nodesReducer(state = initialState.nodes, action) {
           const existingStateOrder = existingState && existingState[order];
           const oldNext = existingStateOrder && existingStateOrder.next;
           if (
-            oldNext && oldNext.offset === action.args.offset &&
+            oldNext && action.args.offset && oldNext.offset === action.args.offset &&
             existingStateOrder && existingStateOrder.ids
           ) {
             allIds = [...existingStateOrder.ids, ...ids];
