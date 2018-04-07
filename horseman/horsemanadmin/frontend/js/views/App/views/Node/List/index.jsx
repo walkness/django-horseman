@@ -113,9 +113,32 @@ class NodeList extends Component {
 
         <Helmet title={titleCase(nodeState.configuration.name_plural)} />
 
-        <Link className='btn' to={`${nodeState.configuration.admin_path}new/`}>
-          Create new { nodeState.configuration.name }
-        </Link>
+        <div styleName='page-header'>
+
+          <h1 style={{ width: '100%' }}>{ titleCase(nodeState.configuration.name_plural) }</h1>
+
+          <Link
+            className='btn btn-primary'
+            to={`${nodeState.configuration.admin_path}new/`}
+            style={{ marginRight: 'auto' }}
+          >
+            Create new { nodeState.configuration.name }
+          </Link>
+
+          <FormattedMessage
+            id='node.list.numNodes'
+            values={{
+              num: nodeState.num_nodes,
+              nodeName: nodeState.configuration.name,
+              nodeNamePlural: nodeState.configuration.name_plural,
+            }}
+            defaultMessage='{num, number} {num, plural,
+              one {{nodeName}}
+              other {{nodeNamePlural}}
+            }'
+          />
+
+        </div>
 
         <ul
           className={classNames({ 'has-featured-image': hasFeaturedImage })}

@@ -7,6 +7,7 @@ $image-size: 5.5rem;
 .nodes {
 	list-style-type: none;
 	padding: 0;
+  font-size: .8rem;
 
 	.header,
   .node > a {
@@ -38,26 +39,36 @@ $image-size: 5.5rem;
   }
 }
 
-.header {
-	font-size: .9em;
-	text-transform: uppercase;
-	color: gray(50%);
-	border-bottom: 1px solid gray(90%);
-
-  .column {
-    font-weight: bold !important;
-  }
+.page-header {
+  display: flex;
+  flex-flow: row wrap;
+  align-items: center;
+  margin-bottom: 4rem;
 }
 
 .column {
-	padding: 1rem;
-	width: 30%;
+  padding: 1.75rem 1rem;
+  width: 30%;
+}
+
+.header {
+	text-transform: uppercase;
+	border-bottom: 2px solid gray(80%);
+
+  .column {
+    color: gray(80%) !important;
+    font-weight: bold !important;
+    font-size: .9em !important;
+    padding-top: .75rem;
+    padding-bottom: .75rem;
+  }
 }
 
 .title {
 	width: 40%;
   color: gray(40%);
   font-weight: 500;
+  font-size: 1.25em;
 
 	a {
 		text-decoration: none;
