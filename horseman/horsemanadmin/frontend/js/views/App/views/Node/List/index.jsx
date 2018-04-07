@@ -173,7 +173,10 @@ class NodeList extends Component {
                     </div>
                   : null }
 
-                  <div styleName='column title'>{ node.title }</div>
+                  <div
+                    styleName='column title'
+                    dangerouslySetInnerHTML={{ __html: node.title }} // eslint-disable-line react/no-danger, max-len
+                  />
 
                   <div styleName='column'>
                     <FormattedMessage
