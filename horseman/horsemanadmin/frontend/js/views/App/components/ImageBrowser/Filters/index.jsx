@@ -18,7 +18,7 @@ const Filters = ({ filters, handleFiltersChange, display, toggleDisplay }) => (
 
         <DateRange
           name='uploaded_at'
-          label='Uploaded'
+          label='Uploaded at'
           end={filters.uploaded_before}
           start={filters.uploaded_after}
           onStartChange={uploaded_after => handleFiltersChange({ uploaded_after })}
@@ -27,7 +27,7 @@ const Filters = ({ filters, handleFiltersChange, display, toggleDisplay }) => (
 
         <DateRange
           name='captured_at'
-          label='Captured'
+          label='Captured at'
           end={filters.captured_before}
           start={filters.captured_after}
           onStartChange={captured_after => handleFiltersChange({ captured_after })}

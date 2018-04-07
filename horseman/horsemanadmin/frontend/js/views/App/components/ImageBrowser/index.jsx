@@ -191,12 +191,11 @@ class ImageBrowser extends Component {
   handleLoadNext() {
     const ordered = this.getOrderedNode();
     if (ordered.next && !ordered.loading) {
-      this.props.imagesRequest(Object.assign(
-        {},
-        { ordering: this.props.defaultOrder },
-        this.props.filters,
-        ordered.next,
-      ));
+      this.props.imagesRequest({
+        ordering: this.props.defaultOrder,
+        ...this.props.filters,
+        ...ordered.next,
+      });
     }
   }
 
@@ -216,7 +215,7 @@ class ImageBrowser extends Component {
           <div styleName='search-ordering'>
             <Input
               name='s'
-              label='Search'
+              placeholder='Search'
               getValue={() => filters.search || null}
               setValue={this.handleSearchInputChange}
             />

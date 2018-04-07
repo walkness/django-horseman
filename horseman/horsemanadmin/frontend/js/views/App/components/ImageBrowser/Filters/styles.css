@@ -9,18 +9,35 @@
 }
 
 .date-range {
-	display: flex;
-	flex-flow: row;
+  padding: 1rem 0;
+}
 
-	:global(.input-wrapper) {
-		width: 50%;
+.label {
+  text-transform: uppercase;
+  font-weight: bold;
+  font-size: .8em;
+  color: gray(60%);
+}
 
-		&:global:first-child {
-			padding-right: 1rem;
-		}
+.fields {
+  display: flex;
+  flex-flow: row;
 
-		&:global:last-child {
-			padding-left: 1rem;
-		}
-	}
+  :global(.form-group) {
+    width: 50%;
+    padding-top: 0;
+    padding-bottom: 0;
+
+    &:first-child {
+      padding-right: 1rem;
+    }
+
+    &:last-child {
+      padding-left: 1rem;
+    }
+
+    :global(.react-datepicker-wrapper) {
+      width: 100%;
+    }
+  }
 }

@@ -11,6 +11,19 @@ $selected-image-width: 20rem;
 
 .header {
 	flex: 0;
+  font-size: .8rem;
+
+  :global(.link) {
+    opacity: .5;
+
+    &:first-child {
+      padding-left: 1rem;
+    }
+
+    &:global(.active) {
+      opacity: 1;
+    }
+  }
 }
 
 .contentWrapper {

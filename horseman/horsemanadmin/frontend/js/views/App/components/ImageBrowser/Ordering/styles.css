@@ -2,13 +2,18 @@
 	display: flex;
 	flex-flow: row;
 	align-items: center;
-	font-size: .8em;
+	font-size: .75em;
 
 	> span {
 		margin-right: .5em;
 	}
 
-	button {
+	:global(.btn) {
 		padding: .5em .75em;
+    font-size: 1em;
+
+    & + :global(.btn) {
+      border-left: 0;
+    }
 	}
 }
