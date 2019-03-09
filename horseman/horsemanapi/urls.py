@@ -13,6 +13,7 @@ router = SimpleRouter()
 
 router.register(r'nodes', node_views.NodeViewSet)
 router.register(r'images', image_views.ImageViewSet)
+router.register(r'image_tasks', image_views.ImageTaskViewSet)
 router.register(r'users', user_views.UserViewSet)
 router.register(r'comments', comment_views.CommentViewSet)
 

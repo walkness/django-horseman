@@ -4,6 +4,8 @@ from django.core.files.base import ContentFile
 from rest_framework import serializers
 from rest_framework.exceptions import APIException
 import pytz
+import json
+from django_celery_results.models import TaskResult
 
 from horseman.utils import convert_null_string
 
@@ -277,3 +279,24 @@ class ImageSerializer(serializers.ModelSerializer):
 
 class AdminImageSerializer(ImageSerializer):
     renditions = RenditionsField(models.Image.admin_sizes)
+
+
+class TaskResultSerializer(serializers.ModelSerializer):
+    result = serializers.SerializerMethodField()
+
+    class Meta:
+        model = models.TaskResult
+        fields = ['status', 'content_type', 'content_encoding', 'result', 'date_done']
+
+    def get_result(self, obj):
+        if obj.content_type == 'application/json':
+            return json.loads(obj.result)
+        return obj.result
+
+
+class ImageTaskSerializer(serializers.ModelSerializer):
+    result = TaskResultSerializer()
+
+    class Meta:
+        model = models.ImageTask
+        fields = ['task_id', 'image', 'result']

@@ -10,7 +10,9 @@ from django.db import models
 from django.apps import apps as django_apps
 from django.utils import timezone
 from django.conf import settings as django_settings
-from django.contrib.postgres.fields import JSONField
+from django.contrib.postgres.fields import JSONField, ArrayField
+from joinfield.joinfield import JoinField
+from django_celery_results.models import TaskResult
 
 import pytz
 from timezone_field import TimeZoneField
@@ -295,7 +297,8 @@ class AbstractImage(models.Model):
             return self.renditions.get_with_filter(filter_)
         except Rendition.DoesNotExist:
             if callable(handle_create_rendition):
-                return handle_create_rendition(self.pk, filter_.__dict__())
+                task_id = handle_create_rendition(self.pk, filter_.__dict__())
+                return ImageTask.objects.create(task_id=task_id, result=task_id, image=self)
             return self.create_rendition(filter_)
 
     def create_rendition(self, filter_):
@@ -497,3 +500,39 @@ class AbstractRendition(models.Model):
 
 class Rendition(AbstractRendition):
     pass
+
+
+class FakeReverseField(models.ForeignObject):
+    def get_joining_columns(self, reverse_join=False):
+        print('hello!')
+        source = self.reverse_related_fields if reverse_join else self.related_fields
+        return tuple((lhs_field.column, rhs_field.column) for lhs_field, rhs_field in source)
+
+
+class ImageTaskQuerySet(models.QuerySet):
+
+    def with_result(self):
+        # task_id = self.model._meta.get_field('task_id')
+        # foreign_task_id = TaskResult._meta.get_field('task_id')
+        # connector = models.sql.datastructures.Join(
+        #     self.model._meta.db_table,
+        #     None,
+        #     None,
+        #     None,
+        #     field,
+        #     True,
+        # )
+        # self.query.join(connector)
+        return self
+
+
+class ImageTask(models.Model):
+    task_id = models.CharField(primary_key=True, max_length=255)
+    image = models.ForeignKey(Image, related_name='tasks')
+    # result = JoinField(TaskResult, to_field='task_id', on_delete=models.DO_NOTHING)
+    result = FakeReverseField(TaskResult, models.DO_NOTHING, ('task_id',), ('task_id',))
+
+    objects = ImageTaskQuerySet.as_manager()
+
+    def __str__(self):
+        return self.task_id

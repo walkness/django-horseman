@@ -125,3 +125,8 @@ class RenditionAdmin(admin.ModelAdmin):
     list_filter = ['target_width', 'target_height', 'crop', 'mime_type']
     search_fields = ['image__title', 'image__original_filename']
     ordering = ['-image__created_at', 'width', 'height', 'crop']
+
+
+@admin.register(models.ImageTask)
+class ImageTaskAdmin(admin.ModelAdmin):
+    list_display = ['task_id', 'image']

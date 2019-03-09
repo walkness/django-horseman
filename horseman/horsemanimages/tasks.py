@@ -10,6 +10,8 @@ else:
         image = models.Image.objects.get(pk=image_id)
         filter_ = models.Filter(**filter_dict)
         try:
-            return image.renditions.get_with_filter(filter_)
+            rendition = image.renditions.get_with_filter(filter_)
+            return { 'created': False, 'rendition': rendition.pk }
         except models.Rendition.DoesNotExist:
-            return image.create_rendition(filter_)
+            rendition = image.create_rendition(filter_)
+            return { 'created': True, 'rendition': rendition.pk }

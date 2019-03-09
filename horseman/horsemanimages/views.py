@@ -98,8 +98,8 @@ class ImageViewSet(BoolQueryParamMixin, SearchableMixin, viewsets.ModelViewSet):
     ordering = ('-created_at',)
 
     def get_serializer(self, *args, **kwargs):
-        if self.get_query_param_bool('async_renditions'):
-            kwargs['async_renditions'] = True
+        # if self.get_query_param_bool('async_renditions'):
+        kwargs['async_renditions'] = True
 
         if self.action == 'create':
             filterset = ImageUploadParams(self.request.query_params)
@@ -169,7 +169,7 @@ class ImageViewSet(BoolQueryParamMixin, SearchableMixin, viewsets.ModelViewSet):
 class RenditionViewSet(viewsets.ModelViewSet):
     model = models.Rendition
     serializer_class = serializers.RenditionSerializer
-    queryset = models.Rendition.objects.all()
+    queryset = models.Rendition.objects.select_related('result').all()
 
     def get_queryset(self):
         qs = super(RenditionViewSet, self).get_queryset()
@@ -179,3 +179,9 @@ class RenditionViewSet(viewsets.ModelViewSet):
             qs = qs.filter(image_id=image_pk)
 
         return qs
+
+
+class ImageTaskViewSet(viewsets.ReadOnlyModelViewSet):
+    model = models.ImageTask
+    serializer_class = serializers.ImageTaskSerializer
+    queryset = models.ImageTask.objects.with_result().all()
