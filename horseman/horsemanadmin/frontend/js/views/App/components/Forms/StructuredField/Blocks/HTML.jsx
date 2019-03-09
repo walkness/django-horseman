@@ -10,6 +10,8 @@ import 'brace/theme/xcode';
 
 import HOC from './HOC';
 
+import './styles.scss';
+
 
 class RichTextBlock extends Component {
 
@@ -64,8 +66,10 @@ class RichTextBlock extends Component {
         ref={(c) => { this.editor = c; }}
         onFocus={() => setWrapperClassName('hide-block-controls')}
         onBlur={() => setWrapperClassName(null)}
-        width='600px'
+        width='100%'
         height='150px'
+        styleName='html'
+        showPrintMargin={false}
       />
     );
   }
