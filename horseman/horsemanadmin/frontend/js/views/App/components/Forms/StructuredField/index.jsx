@@ -10,7 +10,7 @@ import FormGroup from 'react-formsy-bootstrap-components/FormGroup';
 
 import InputWrapper from '../InputWrapper';
 
-import { RichText, Image, HTML } from './Blocks';
+import { RichText, Image, HTML, Embed } from './Blocks';
 import AddBlock from './AddBlock';
 
 import styles from './styles.scss';
@@ -196,6 +196,9 @@ class _StructuredField extends Component {
             }
             if (block.type === 'html') {
               return <HTML {...blockProps} />;
+            }
+            if (block.type === 'oembed') {
+              return <Embed {...blockProps} />;
             }
 
             return null;

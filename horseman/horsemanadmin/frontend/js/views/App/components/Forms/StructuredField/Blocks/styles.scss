@@ -135,3 +135,56 @@ $block-border-color: $gray-lighter;
 .html {
   border: 1px solid $block-border-color;
 }
+
+.embed {
+  border: 1px solid $block-border-color;
+  padding: 0 1rem 1rem;
+
+  :global(.control-label) {
+    text-align: left;
+    font-weight: 400;
+  }
+
+  .embed-loading {
+    font-style: italic;
+    color: gray(70%);
+    font-size: .8em;
+  }
+
+  .embed-content {
+    display: flex;
+    flex-flow: row;
+  }
+
+  .embed-details {
+    > ul {
+      @include list-unstyled;
+      text-align: left;
+      margin: 0;
+
+      > li {
+        margin: 1.5em 0;
+        color: gray(30%);
+
+        &:first-child {
+          margin-top: 0;
+        }
+
+        &:last-child {
+          margin-bottom: 0;
+        }
+      }
+
+      .embed-detail-label {
+        font-weight: 600;
+        font-size: .8em;
+        color: gray(60%);
+        margin-bottom: .5em;
+      }
+    }
+  }
+
+  .embed-preview {
+    margin-right: 1.5rem;
+  }
+}

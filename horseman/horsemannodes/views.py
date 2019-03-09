@@ -1,9 +1,15 @@
 import re
 
 from django.db.models import Q, Prefetch
+from django.core.validators import URLValidator
+from django.core.exceptions import ValidationError
 
-from rest_framework import viewsets
+from rest_framework import views, viewsets
 from rest_framework.decorators import detail_route
+from rest_framework.response import Response
+from rest_framework.exceptions import ValidationError as DRFValidationError
+
+import micawber
 
 from horseman.mixins import SearchableMixin, BoolQueryParamMixin
 from horseman.horsemancomments.views import CommentViewSet
@@ -136,3 +142,19 @@ class NodeRevisionViewSet(viewsets.ModelViewSet):
         qs = qs.add_latest_revision()
 
         return qs
+
+
+class OEmbedView(views.APIView):
+    def get(self, request):
+        providers = micawber.bootstrap_basic()
+        url = request.GET.get('url', None)
+        validate_url = URLValidator()
+        try:
+            validate_url(url)
+        except ValidationError:
+            raise DRFValidationError('Invalid URL')
+        try:
+            result = providers.request(url)
+        except micawber.ProviderException:
+            raise DRFValidationError('Provider not found.')
+        return Response(result)

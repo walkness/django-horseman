@@ -35,9 +35,9 @@
     "sass-loader": "^6.0.7",
     "style-loader": "^0.20.3",
     "uglifyjs-webpack-plugin": "^1.2.3",
-    "webpack": "^4.1.1",
+    "webpack": "^4.29.6",
     "webpack-bundle-tracker": "^0.3.0",
-    "webpack-cli": "^2.0.11",
+    "webpack-cli": "^3.2.3",
     "webpack-dev-server": "^3.1.1"
   },
   "dependencies": {
@@ -72,6 +72,7 @@
     "react-hot-loader": "^4.0.0",
     "react-infinite": "^0.12.1",
     "react-intl": "^2.4.0",
+    "react-intl-formatted-duration": "^3.0.0",
     "react-redux": "^5.0.7",
     "react-router": "^3.2.1",
     "react-select": "^1.2.1",

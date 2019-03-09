@@ -155,3 +155,5 @@ export const changePassword = data => sendApi('auth/password/change/', 'PUT', da
 export const resetPassword = data => sendApi('auth/password/reset/', 'POST', data);
 
 export const getTimezones = () => callApi('timezones/');
+
+export const getOEmbed = url => callApi(`oembed/?url=${encodeURIComponent(url)}`);

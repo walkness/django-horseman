@@ -19,6 +19,7 @@ router.register(r'comments', comment_views.CommentViewSet)
 urlpatterns = router.urls
 
 urlpatterns += [
+    url(r'^oembed/$', node_views.OEmbedView.as_view()),
     url(r'timezones', views.TimezoneListView.as_view()),
     url(r'^auth/$', user_views.AuthView.as_view()),
     url(r'^auth/password/reset/$', user_views.PasswordResetView.as_view()),

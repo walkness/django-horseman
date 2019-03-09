@@ -146,3 +146,8 @@ class GalleryBlock(ImageBlockMixin, Block):
 class HTMLBlock(Block):
     name = 'html'
     verbose_name = 'HTML'
+
+
+class OEmbedBlock(Block):
+    name = 'oembed'
+    verbose_name = 'embed'
