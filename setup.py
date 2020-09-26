@@ -1,4 +1,4 @@
-from distutils.core import setup
+from setuptools import setup
 
 long_description = open('README.rst').read()
 
@@ -10,17 +10,7 @@ setup(
     author='Walker Angell',
     author_email='w@lker.co',
     url='http://github.com/sunlightlabs/django-wordpress/',
-    packages=[
-        'horseman'
-        'horsemanadmin',
-        'horsemanapi',
-        'horsemancomments',
-        'horsemanfrontendcache',
-        'horsemanimages',
-        'horsemannodes',
-        'horsemanoptions',
-        'horsemanusers',
-    ],
+    packages=['horseman'],
     classifiers=[],
     license='MIT',
     platforms=['any'],
