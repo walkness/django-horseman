@@ -10,7 +10,7 @@ setup(
     author='Walker Angell',
     author_email='w@lker.co',
     url='http://github.com/sunlightlabs/django-wordpress/',
-    packages=['horseman', *find_namespace_packages(where='horseman')],
+    packages=find_namespace_packages(where='horseman'),
     classifiers=[],
     license='MIT',
     platforms=['any'],
