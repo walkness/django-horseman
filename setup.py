@@ -10,7 +10,17 @@ setup(
     author='Walker Angell',
     author_email='w@lker.co',
     url='http://github.com/sunlightlabs/django-wordpress/',
-    packages=['horseman'],
+    packages=[
+        'horseman'
+        'horseman.horsemanadmin',
+        'horseman.horsemanapi',
+        'horseman.horsemancomments',
+        'horseman.horsemanfrontendcache',
+        'horseman.horsemanimages',
+        'horseman.horsemannodes',
+        'horseman.horsemanoptions',
+        'horseman.horsemanusers',
+    ],
     classifiers=[],
     license='MIT',
     platforms=['any'],
