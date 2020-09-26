@@ -1,4 +1,4 @@
-from setuptools import setup, find_packages
+from setuptools import setup, find_namespace_packages
 
 long_description = open('README.rst').read()
 
@@ -10,7 +10,7 @@ setup(
     author='Walker Angell',
     author_email='w@lker.co',
     url='http://github.com/sunlightlabs/django-wordpress/',
-    packages=find_packages(),
+    packages=['horseman', *find_namespace_packages(where='horseman')],
     classifiers=[],
     license='MIT',
     platforms=['any'],
