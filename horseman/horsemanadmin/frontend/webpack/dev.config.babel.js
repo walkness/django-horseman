@@ -17,7 +17,7 @@ config.entry.main = [
 ];
 
 // Tell django to use this URL to load packages and not use STATIC_URL + bundle_name
-config.output.publicPath = `//${os.hostname()}:3010/bundles/`;
+config.output.publicPath = '//localhost:3010/bundles/';
 
 config.plugins = config.plugins.concat([
 
