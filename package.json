@@ -4,7 +4,7 @@
   "description": "Admin for Django Horseman CMS",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "start": "webpack-dev-server --config ./horseman/horsemanadmin/frontend/webpack/dev.config.babel.js --colors",
+    "start": "node ./node_modules/webpack-dev-server/bin/webpack-dev-server.js --config ./horseman/horsemanadmin/frontend/webpack/dev.config.babel.js --colors",
     "build-production": "NODE_ENV=production webpack --config ./horseman/horsemanadmin/frontend/webpack/prod.config.babel.js --progress --colors",
     "deploy-production": "scp -r ./horseman/horsemanadmin/frontend/dist wangell@walkness.lker.co:/var/www/walkandalie.com/django/venv/src/django-horseman/horseman/horsemanadmin/frontend/"
   },
