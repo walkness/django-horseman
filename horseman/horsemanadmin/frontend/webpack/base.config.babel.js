@@ -47,7 +47,7 @@ export default {
       },
       {
         test: /\.jsx?$/,
-        include: /node_modules\/react-rte/,
+        include: /node_modules\/(react-rte|react-formsy-bootstrap-components)/,
         loader: 'babel-loader',
       },
       {
@@ -95,7 +95,6 @@ export default {
     modules: [
       'node_modules',
       path.resolve(__dirname, '../js'),
-      path.resolve(__dirname, '../js/modules'),
     ],
     alias: {
       Components: path.resolve(__dirname, '../js/views/App/components'),
