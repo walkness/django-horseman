@@ -4,7 +4,7 @@ import React, { Component } from 'react';
 import PropTypes from 'prop-types';
 import { autobind } from 'core-decorators';
 
-import RichTextEditor, { EditorValue, createValueFromString } from 'Components/RTE/src/RichTextEditor';
+import RichTextEditor, { EditorValue, createValueFromString } from 'react-rte/src/RichTextEditor';
 
 import HOC from './HOC';
 

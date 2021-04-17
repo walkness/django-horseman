@@ -7,7 +7,7 @@ import { withFormsy } from 'formsy-react';
 import BaseInputWrapper from 'react-formsy-bootstrap-components/InputWrapper';
 import FormGroup from 'react-formsy-bootstrap-components/FormGroup';
 
-import RichTextEditor from 'Components/RTE/src/RichTextEditor';
+import RichTextEditor from 'react-rte/src/RichTextEditor';
 
 import InputWrapper from './InputWrapper';
 

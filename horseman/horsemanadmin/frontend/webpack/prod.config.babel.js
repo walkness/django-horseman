@@ -83,7 +83,6 @@ config.module.rules.push(
   },
   {
     test: /\.css$/,
-    exclude: /node_modules/,
     use: ExtractTextPlugin.extract({
       fallback: 'style-loader',
       use: [
@@ -95,29 +94,6 @@ config.module.rules.push(
             importLoaders: 1,
             modules: true,
             localIdentName: cssModulesGeneratedScopedName,
-          },
-        },
-        {
-          loader: 'postcss-loader',
-          options: {
-            sourceMap: true,
-          },
-        },
-      ],
-    }),
-  },
-  {
-    test: /\.css$/,
-    include: /node_modules/,
-    use: ExtractTextPlugin.extract({
-      fallback: 'style-loader',
-      use: [
-        {
-          loader: 'css-loader',
-          options: {
-            minimize: cssNano,
-            sourceMap: true,
-            importLoaders: 1,
           },
         },
         {

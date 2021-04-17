@@ -75,6 +75,7 @@
     "react-intl-formatted-duration": "^3.0.0",
     "react-redux": "^5.0.7",
     "react-router": "^3.2.1",
+    "react-rte": "git://github.com/walkness/react-rte.git#3f482ab15bd3e3c44d0d86a3a5b66551f28cd428",
     "react-select": "^1.2.1",
     "redux": "^3.7.2",
     "redux-saga": "^0.16.0",

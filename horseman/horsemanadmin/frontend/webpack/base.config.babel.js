@@ -46,6 +46,11 @@ export default {
         },
       },
       {
+        test: /\.jsx?$/,
+        include: /node_modules\/react-rte/,
+        loader: 'babel-loader',
+      },
+      {
         test: /.*\.(gif|png|jpe?g|svg)$/i,
         use: [
           {

@@ -66,7 +66,6 @@ config.module.rules.push(
   },
   {
     test: /\.css$/,
-    exclude: /node_modules/,
     use: [
       {
         loader: 'style-loader',
@@ -78,28 +77,6 @@ config.module.rules.push(
           importLoaders: 1,
           modules: true,
           localIdentName: cssModulesGeneratedScopedName,
-        },
-      },
-      {
-        loader: 'postcss-loader',
-        options: {
-          sourceMap: true,
-        },
-      },
-    ],
-  },
-  {
-    test: /\.css$/,
-    include: /node_modules/,
-    use: [
-      {
-        loader: 'style-loader',
-      },
-      {
-        loader: 'css-loader',
-        options: {
-          sourceMap: true,
-          importLoaders: 1,
         },
       },
       {
