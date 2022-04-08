@@ -59,7 +59,7 @@
     "intl": "^1.2.5",
     "isomorphic-fetch": "^2.2.1",
     "lodash": "^4.17.5",
-    "moment": "^2.21.0",
+    "moment": "^2.29.2",
     "moment-timezone": "^0.5.14",
     "normalize.css": "^8.0.0",
     "prop-types": "^15.6.1",
