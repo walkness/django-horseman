@@ -1,6 +1,9 @@
 name: Package
 
-on: [push]
+on:
+  push:
+    # tags:
+    #   - "v*.*.*"
 
 jobs:
   build:
@@ -21,3 +24,8 @@ jobs:
         working-directory: ./horseman/horsemanadmin/frontend
 
       - run: tar -czvf /tmp/django-horseman.tar.gz .
+
+      - name: Release
+        uses: softprops/action-gh-release@v2
+        with:
+          files: /tmp/django-horseman.tar.gz
