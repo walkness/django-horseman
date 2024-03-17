@@ -19,3 +19,5 @@ jobs:
 
       - run: npm run build-production
         working-directory: ./horseman/horsemanadmin/frontend
+
+      - run: tar -czvf /tmp/django-horseman.tar.gz .
