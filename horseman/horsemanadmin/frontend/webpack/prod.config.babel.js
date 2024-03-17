@@ -10,7 +10,7 @@ import UglifyJSPlugin from 'uglifyjs-webpack-plugin';
 import config, { cssModulesGeneratedScopedName } from './base.config.babel';
 
 config.output.path = path.resolve(__dirname, '../dist/');
-config.output.publicPath = '//static.walkandalie.com/';
+config.output.publicPath = '/horsemanadmin/';
 config.output.libraryTarget = 'umd';
 
 // Add HotModuleReplacementPlugin and BundleTracker plugins
