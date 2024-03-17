@@ -11,7 +11,7 @@ setup(
     author_email='w@lker.co',
     url='https://github.com/walkness/django-horseman',
     packages=find_packages(include=['horseman', 'horseman.*']),
-    package_data={'horseman.horsemanadmin': ['templates/**/*', 'frontend/dist/**/*']},
+    package_data={'horseman.horsemanadmin': ['templates/**/*', 'frontend/**/*']},
     include_package_data=True,
     classifiers=[],
     license='MIT',
