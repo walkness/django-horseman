@@ -1,2 +1,3 @@
 include README.rst
 recursive-include horseman/horsemanadmin/templates *
+recursive-include horseman/horsemanadmin/frontend/dist *
