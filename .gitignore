@@ -10,3 +10,4 @@ __pycache__
 media/
 node_modules
 webpack-stats*.json
+build/
