@@ -14,12 +14,12 @@ class HorsemanAdminWebpackLoader(WebpackLoader):
 
         is_frontend_dev = getattr(settings, 'HORSEMANADMIN_FRONTEND_DEV', False)
 
-        frontend_path = 'webpack-stats.json' if is_frontend_dev else os.path.join('dist', 'webpack-stats.json')
+        stats_dir = 'frontend' if is_frontend_dev else os.path.join('static', 'horsemanadmin')
 
         base_config = {
             'CACHE': not is_frontend_dev,
             'BUNDLE_DIR_NAME': 'webpack_bundles/', # must end with slash
-            'STATS_FILE': os.path.join(os.path.dirname(os.path.dirname(__file__)), 'frontend', frontend_path),
+            'STATS_FILE': os.path.join(os.path.dirname(os.path.dirname(__file__)), stats_dir, 'webpack-stats.json'),
             'POLL_INTERVAL': 0.1,
             'TIMEOUT': None,
             'IGNORE': ['.+\.hot-update.js', '.+\.map']
