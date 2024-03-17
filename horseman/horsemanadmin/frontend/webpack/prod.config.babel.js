@@ -27,7 +27,7 @@ config.plugins = config.plugins.concat([
   }),
 
   new ExtractTextPlugin({
-    filename: 'styles/[name]-[contenthash].css',
+    filename: 'styles/[name]-[md5:contenthash:hex:20].css',
     allChunks: true,
   }),
 
