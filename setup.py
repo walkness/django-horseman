@@ -11,6 +11,8 @@ setup(
     author_email='w@lker.co',
     url='http://github.com/sunlightlabs/django-wordpress/',
     packages=find_packages(include=['horseman', 'horseman.*']),
+    package_data={'horseman.horsemanadmin': ['templates/**/*']},
+    include_package_data=True,
     classifiers=[],
     license='MIT',
     platforms=['any'],
