@@ -1,3 +1,5 @@
+import './utils/publicPath'
+
 /* globals window document */
 
 import React from 'react';
