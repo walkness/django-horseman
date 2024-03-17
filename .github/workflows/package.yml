@@ -14,8 +14,8 @@ jobs:
         with:
           node-version: "8.x"
 
-      - run: cd horseman/horsemanadmin/frontend
-
       - run: npm ci
+        working-directory: ./horseman/horsemanadmin/frontend
 
       - run: npm run build-production
+        working-directory: ./horseman/horsemanadmin/frontend
