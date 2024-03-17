@@ -28,7 +28,7 @@ jobs:
       - name: Move static files and cleanup
         run: |
           mkdir -p ./horseman/horsemanadmin/static/horsemanadmin/
-          mv ./horseman/horsemanadmin/frontend/dist/* ./horseman/horsemanadmin/static/horsemanadmin/
+          mv -v ./horseman/horsemanadmin/frontend/dist/* ./horseman/horsemanadmin/static/horsemanadmin/
           rm -rf ./horseman/horsemanadmin/frontend
 
       - name: Create package
