@@ -25,7 +25,7 @@
   "settings": {
     "import/resolver": {
       "webpack": {
-        "config": "./horseman/horsemanadmin/frontend/webpack/base.config.babel.js"
+        "config": "./webpack/base.config.babel.js"
       }
     }
   }
