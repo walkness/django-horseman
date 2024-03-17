@@ -17,13 +17,22 @@ jobs:
         with:
           node-version: "8.x"
 
-      - run: npm ci
+      - name: Install admin frontend dependencies
+        run: npm ci
         working-directory: ./horseman/horsemanadmin/frontend
 
-      - run: npm run build-production
+      - name: Build admin frontend
+        run: npm run build-production
         working-directory: ./horseman/horsemanadmin/frontend
 
-      - run: tar -czvf /tmp/django-horseman.tar.gz .
+      - name: Move static files and cleanup
+        run: |
+          mkdir -p ./horseman/horsemanadmin/static/horsemanadmin/
+          mv ./horseman/horsemanadmin/frontend/dist/* ./horseman/horsemanadmin/static/horsemanadmin/
+          rm -rf ./horseman/horsemanadmin/frontend
+
+      - name: Create package
+        run: tar -czvf /tmp/django-horseman.tar.gz .
 
       - name: Release
         uses: softprops/action-gh-release@v2
