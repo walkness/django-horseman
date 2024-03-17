@@ -21,6 +21,7 @@ def render(request, _init_data=None):
             'siteURL': settings.SITE_URL,
             'previewSiteURL': getattr(settings, 'PREVIEW_SITE_URL', settings.SITE_URL),
             'siteName': settings.SITE_NAME,
+            'publicPath': getattr(settings, 'HORSEMANADMIN_FRONTEND_PUBLIC_PATH', f"{settings.STATIC_URL}horsemanadmin/"),
         },
     }
     if request.user.is_authenticated():
