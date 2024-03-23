@@ -2,6 +2,7 @@ import os
 import re
 from django import template
 from django.conf import settings
+from django.contrib.staticfiles.storage import staticfiles_storage
 
 from webpack_loader.loader import WebpackLoader
 from webpack_loader.templatetags.webpack_loader import filter_by_extension, render_as_tags
@@ -26,6 +27,12 @@ class HorsemanAdminWebpackLoader(WebpackLoader):
         }
         base_config['ignores'] = [re.compile(I) for I in base_config['IGNORE']]
         self.config = base_config
+
+    def get_chunk_url(self, chunk):
+        url = super().get_chunk_url(chunk)
+        if url.startswith('/static/horsemanadmin/'):
+            return staticfiles_storage.url(url[len('/static/'):])
+        return url
 
 @register.simple_tag
 def render_bundle(bundle_name, extension=None):
