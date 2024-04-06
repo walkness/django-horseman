@@ -158,7 +158,7 @@ class ImageSerializer(serializers.ModelSerializer):
                 )
 
         if not self.ignore_duplicate_exif:
-            if len(self.file_exif.keys()) > 0:
+            if self.file_exif is not None and len(self.file_exif.keys()) > 0:
                 exif = self.file_exif.get('EXIF', {})
                 image_meta = self.file_exif.get('Image', {})
                 filters = {'exif_data__EXIF__DateTimeDigitized': exif.get('DateTimeDigitized')}

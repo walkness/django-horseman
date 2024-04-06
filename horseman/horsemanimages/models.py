@@ -217,7 +217,7 @@ class AbstractImage(models.Model):
             self.exif_updated = True
 
     def update_capture_time_from_exif(self, camera_tz=None, correct_tz=None, exif=None):
-        _exif = exif or self.exif_data
+        _exif = exif or self.exif_data or {}
         capture_time = _exif.get('EXIF', {}).get('DateTimeOriginal', None)
         if capture_time:
             naive = datetime.strptime(capture_time, '%Y-%m-%dT%H:%M:%S')
