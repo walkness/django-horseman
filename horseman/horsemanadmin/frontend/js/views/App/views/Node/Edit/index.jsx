@@ -6,6 +6,7 @@ import Formsy from 'formsy-react';
 import { autobind } from 'core-decorators';
 import slugify from 'slugify';
 import Helmet from 'react-helmet';
+import cx from 'classnames';
 
 import {
   nodes as nodesAction,
@@ -15,9 +16,10 @@ import {
   nodeCreated,
   nodeDeleted,
   images as imagesAction,
+  imagesUpdated,
   imageUploaded,
 } from 'actions';
-import { updateNode, createNode, deleteNode } from 'services/api';
+import { updateNode, createNode, deleteNode, processNodeImages } from 'services/api';
 import { getNodeTypeFromURLComponents, flattenErrors } from 'utils';
 
 import Dropdown, { DropdownMenu, DropdownToggle } from 'Components/Dropdown';
@@ -55,6 +57,9 @@ class EditNode extends Component {
       nonFormsyFieldErrors: {},
       showDeleteConfirm: false,
       deleteErrors: [],
+      isProcessingImages: false,
+      isProcessImagesSuccess: false,
+      processImagesErrorMessage: null,
     };
     this.fieldRefs = {};
     const nodeConfig = props.nodes[this.getNodeType()].configuration;
@@ -235,7 +240,7 @@ class EditNode extends Component {
       });
     }
     if (!this.state.changed) {
-      this.setState({ changed: true });
+      this.setState({ changed: true, isProcessImagesSuccess: false });
     }
   }
 
@@ -246,6 +251,29 @@ class EditNode extends Component {
   }
 
   @autobind
+  handleProcessImages() {
+    const { params } = this.props;
+    if (!params.id) throw new Error('Must have a node ID!')
+    const nodeType = this.getNodeType();
+    if (!nodeType) throw new Error('Must have a node type!')
+    this.setState({ isProcessingImages: true, isProcessImagesSuccess: false })
+    processNodeImages(params.id, {type: nodeType}).then(result => {
+      const images = result && result.response
+      if (!images || !Array.isArray(images))
+        throw new Error('Could not get images from response!')
+      this.props.imagesUpdated(images)
+      this.setState({ isProcessImagesSuccess: true, processImagesErrorMessage: null });
+    }).catch(reason => {
+      this.setState({
+        isProcessImagesSuccess: false,
+        processImagesErrorMessage: reason instanceof Error ? reason.message : String(reason),
+      });
+    }).finally(() => {
+      this.setState({ isProcessingImages: false });
+    })
+  }
+
+  @autobind
   routerWillLeave() {
     if (this.state.changed && !this._skipLeaveConfirm)
       return 'You have unsaved changes. Are you sure you want to leave?';
@@ -253,7 +281,7 @@ class EditNode extends Component {
   }
 
   render() {
-    const { changed, saving, showDeleteConfirm } = this.state;
+    const { changed, saving, showDeleteConfirm, isProcessingImages, isProcessImagesSuccess, processImagesErrorMessage } = this.state;
     const { nodes, params, location } = this.props;
     const nodeType = this.getNodeType();
     const nodeState = nodes[nodeType];
@@ -294,79 +322,95 @@ class EditNode extends Component {
           );
         }) }
 
-        <div styleName='node-actions'>
-          <div styleName='left'>
-            <div styleName='action-buttons'>
-              <button
-                type='submit'
-                className='btn'
-                disabled={!changed || saving}
-                styleName='primary-action'
-              >
-                Save draft
-              </button>
-              <Dropdown>
-                <DropdownToggle>▲</DropdownToggle>
-                <DropdownMenu styleName='extra-actions-menu' up>
-                  { node ?
-                    <li>
-                      <button
-                        type='button'
-                        className='btn'
-                        onClick={() => this.setState({ showDeleteConfirm: true })}
-                        disabled={saving}
-                      >
-                        Delete permanently
-                      </button>
-                    </li>
-                  : null }
-                  { node && node.published ?
-                    <li>
-                      <button
-                        type='button'
-                        className='btn'
-                        onClick={this.handleUnpublish}
-                        disabled={saving}
-                      >
-                        Unpublish
-                      </button>
-                    </li>
-                  : null }
-                  <li>
-                    <button
-                      type='button'
-                      className='btn'
-                      onClick={this.handlePublish}
-                      disabled={!((!(node && node.published) || changed) && !saving)}
-                    >
-                      Save and publish
-                    </button>
-                  </li>
-                </DropdownMenu>
-              </Dropdown>
+        <div styleName='footer'>
+          {processImagesErrorMessage && <div styleName='process-image-error'>
+            <b>An error occurred processing images: </b>
+            {processImagesErrorMessage || 'Unknown error'}
+          </div>}
 
+          <div styleName='node-actions'>
+            <div styleName='left'>
+              <div styleName='action-buttons'>
+                <button
+                  type='submit'
+                  className='btn'
+                  disabled={!changed || saving}
+                  styleName='primary-action'
+                >
+                  Save draft
+                </button>
+                <Dropdown>
+                  <DropdownToggle>▲</DropdownToggle>
+                  <DropdownMenu styleName='extra-actions-menu' up>
+                    { node ?
+                      <li>
+                        <button
+                          type='button'
+                          className='btn'
+                          onClick={() => this.setState({ showDeleteConfirm: true })}
+                          disabled={saving}
+                        >
+                          Delete permanently
+                        </button>
+                      </li>
+                    : null }
+                    { node && node.published ?
+                      <li>
+                        <button
+                          type='button'
+                          className='btn'
+                          onClick={this.handleUnpublish}
+                          disabled={saving}
+                        >
+                          Unpublish
+                        </button>
+                      </li>
+                    : null }
+                    <li>
+                      <button
+                        type='button'
+                        className='btn'
+                        onClick={this.handlePublish}
+                        disabled={!((!(node && node.published) || changed) && !saving && !isProcessingImages && isProcessImagesSuccess)}
+                      >
+                        Save and publish
+                      </button>
+                    </li>
+                  </DropdownMenu>
+                </Dropdown>
+
+              </div>
+
+              <button
+                type='button'
+                className={cx('btn', {'is-success': isProcessImagesSuccess})}
+                styleName='process-images-btn'
+                onClick={this.handleProcessImages}
+                disabled={!node || changed || isProcessingImages}
+              >
+                {isProcessingImages ? 'Processing…' : 'Process Images'}
+              </button>
+
+              { revision && revision.revision && revision.revision.preview_url && isProcessImagesSuccess ?
+                <a
+                  href={revision.revision.preview_url}
+                  target='_blank' // eslint-disable-line react/jsx-no-target-blank
+                >
+                  Preview
+                </a>
+              : null }
             </div>
 
-            { revision && revision.revision && revision.revision.preview_url ?
-              <a
-                href={revision.revision.preview_url}
-                target='_blank' // eslint-disable-line react/jsx-no-target-blank
-              >
-                Preview
-              </a>
-            : null }
+            <RevisionsList
+              revisions={node && node.revisions}
+              revisionsById={node && node.revisionsById}
+              current={currentRevision}
+              latest={node && node.latest_revision}
+              usersById={this.props.usersById}
+              saving={saving}
+            />
           </div>
-
-          <RevisionsList
-            revisions={node && node.revisions}
-            revisionsById={node && node.revisionsById}
-            current={currentRevision}
-            latest={node && node.latest_revision}
-            usersById={this.props.usersById}
-            saving={saving}
-          />
         </div>
-
       </Formsy>
     );
 
@@ -413,5 +457,6 @@ export default connect(
     nodeCreated,
     nodeDeleted,
     imagesRequest,
+    imagesUpdated,
     imageUploaded,
   })(EditNode);

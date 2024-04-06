@@ -13,6 +13,7 @@ import micawber
 
 from horseman.mixins import SearchableMixin, BoolQueryParamMixin
 from horseman.horsemancomments.views import CommentViewSet
+from horseman.horsemanimages.serializers import ImageSerializer
 
 from . import models, serializers
 
@@ -124,6 +125,14 @@ class NodeViewSet(BoolQueryParamMixin, SearchableMixin, viewsets.ModelViewSet):
     @detail_route(methods=['GET'])
     def revisions(self, request, pk):
         return NodeRevisionViewSet.as_view({'get': 'list'})(request, node_pk=pk)
+
+    @detail_route(methods=['PATCH'])
+    def generate_image_renditions(self, request, pk):
+        obj = self.get_object()
+        images, renditions = obj.get_related_images()
+        serializer = ImageSerializer(images, many=True, extra_image_sizes=renditions)
+        # raise Exception('test!')
+        return Response(serializer.data)
 
 
 class NodeRevisionViewSet(viewsets.ModelViewSet):

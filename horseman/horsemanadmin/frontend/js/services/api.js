@@ -131,6 +131,8 @@ export const updateNode = (pk, data, args) => sendApi(`nodes/${pk}/?${queryStrin
 export const createNode = (data, args) => sendApi(`nodes/?${queryString(args)}`, 'POST', data);
 export const deleteNode = pk => sendApi(`nodes/${pk}/`, 'DELETE', {});
 export const getNodeRevisions = (pk, args) => callApi(`nodes/${pk}/revisions/?${queryString(args)}`);
+export const processNodeImages = (pk, args) => sendApi(
+  `nodes/${pk}/generate_image_renditions/?${queryString(args)}`, 'PATCH');
 
 export const getImages = (args) => callApi(`images/?${queryString(args)}`);
 export const getImage = (id) => callApi(`images/${id}/`);
