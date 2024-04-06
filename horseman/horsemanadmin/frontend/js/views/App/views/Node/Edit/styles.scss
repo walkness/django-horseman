@@ -17,23 +17,54 @@ $extra-actions-width: 14rem;
     }
 }
 
-.node-actions {
+.footer {
     position: fixed;
     bottom: 0;
     left: 15rem;
     right: 0;
-    height: 4.5rem;
     background-color: $body-bg;
+    padding: 1rem;
+}
+
+.node-actions {
     display: flex;
     flex-flow: row;
     justify-content: space-between;
-    padding: 1rem;
+    height: 2.5rem;
 
     :global {
         .btn {
             @include button-variant($gray, $gray-lightest, darken($gray-lightest, 10%));
         }
     }
+}
+
+.process-images-btn {
+  font-size: .75em;
+  padding: .25em .5em;
+  margin-left: .5em;
+  margin-right: .5em;
+
+  &:global(.is-success) {
+    color: $state-success-text;
+    background-color: $state-success-bg;
+    border-color: $state-success-border-color;
+
+    &::after {
+      content: '✓';
+      display: inline-block;
+      margin-left: .5em;
+      font-weight: 800;
+    }
+  }
+}
+
+.process-image-error {
+  color: $state-danger-text;
+  background-color: $state-danger-bg;
+  padding: .5em;
+  margin-bottom: .5em;
+  border-radius: 3px;
 }
 
 .left {
