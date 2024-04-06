@@ -162,6 +162,7 @@ class EditNode extends Component {
           if (!params.id) {
             const { adminURLBase } = this.props;
             const { app_label, model_name } = nodeState.configuration;
+            this._skipLeaveConfirm = true;
             this.context.router.replace(
               `${adminURLBase}${app_label}/${model_name}/${response.pk}/`, // eslint-disable-line camelcase
             );
@@ -246,7 +247,8 @@ class EditNode extends Component {
 
   @autobind
   routerWillLeave() {
-    if (this.state.changed) return 'You have unsaved changes. Are you sure you want to leave?';
+    if (this.state.changed && !this._skipLeaveConfirm)
+      return 'You have unsaved changes. Are you sure you want to leave?';
     return null;
   }
 
