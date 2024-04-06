@@ -52,6 +52,23 @@ const cssNano = {
 
 config.module.rules.push(
   {
+    test: /node_modules\/.*\.css$/,
+    exclude: /node_modules\/react-rte\/src/,
+    use: ExtractTextPlugin.extract({
+      fallback: 'style-loader',
+      use: [
+        {
+          loader: 'css-loader',
+          options: {
+            minimize: cssNano,
+            sourceMap: true,
+            importLoaders: 0,
+          },
+        },
+      ],
+    }),
+  },
+  {
     test: /\.scss$/,
     use: ExtractTextPlugin.extract({
       fallback: 'style-loader',
@@ -83,6 +100,7 @@ config.module.rules.push(
   },
   {
     test: /\.css$/,
+    exclude: /node_modules(?!\/react-rte\/src)/,
     use: ExtractTextPlugin.extract({
       fallback: 'style-loader',
       use: [

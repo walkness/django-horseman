@@ -36,6 +36,11 @@ config.plugins = config.plugins.concat([
 
 config.module.rules.push(
   {
+    test: /node_modules\/.*\.css$/,
+    exclude: /node_modules\/react-rte\/src/,
+    loader: ['style-loader', 'css-loader'],
+  },
+  {
     test: /\.scss$/,
     use: [
       {
@@ -66,6 +71,7 @@ config.module.rules.push(
   },
   {
     test: /\.css$/,
+    exclude: /node_modules(?!\/react-rte\/src)/,
     use: [
       {
         loader: 'style-loader',
