@@ -146,8 +146,8 @@ export default function nodesReducer(state = initialState.nodes, action) {
       return Object.assign({}, state, {
         [action.nodeType]: Object.assign({}, existingState, {
           byId: Object.assign({}, existingState.byId, byId),
-          ordered: Object.assign({}, existingState.ordered, {
-            default: [action.data.pk, ...(existingState.ordered && existingState.ordered.default)],
+          ordered: Object.assign({}, existingState.ordered || {}, {
+            default: [action.data.pk, ...((existingState.ordered && existingState.ordered.default) || [])],
           }),
         }),
       });
