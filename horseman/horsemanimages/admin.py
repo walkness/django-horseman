@@ -121,7 +121,7 @@ class ImageAdmin(admin.ModelAdmin):
 
 @admin.register(models.Rendition)
 class RenditionAdmin(admin.ModelAdmin):
-    list_display = ['image', 'width', 'height', 'crop']
+    list_display = ['image', 'width', 'height', 'crop', 'created_at']
     list_filter = ['target_width', 'target_height', 'crop', 'mime_type']
     search_fields = ['image__title', 'image__original_filename']
     ordering = ['-image__created_at', 'width', 'height', 'crop']
